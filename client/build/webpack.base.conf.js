@@ -32,12 +32,19 @@ module.exports = {
       : config.dev.assetsPublicPath
   },
   resolve: {
-    extensions: ['.js', '.vue', '.json'],
+    extensions: [".wasm", ".mjs", ".js", ".jsx", ".ts", ".tsx", ".json"],
     alias: {
-      'vue$': 'vue/dist/vue.esm.js',
+      // 'vue$': 'vue/dist/vue.esm.js',
       '@': resolve('src'),
     }
   },
+
+  // resolve: {
+  //   extensions: [".wasm", ".mjs", ".js", ".jsx", ".ts", ".tsx", ".json"],
+  //   alias: {
+  //     "@": resolvePath("src"),
+  //   }
+  // },
   module: {
     rules: [
       ...(config.dev.useEslint ? [createLintingRule()] : []),
