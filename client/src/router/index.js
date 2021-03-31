@@ -1,8 +1,7 @@
 // IMPORTS
 import Vue from 'vue'
 import Router from 'vue-router'
-import MainPage from '../pages/MainPage.vue'
-import LoginPage from '../pages/LoginPage.vue'
+import welcomeComponent from '../components/welcomeComponent'
 
 Vue.use(Router)
 
@@ -10,13 +9,8 @@ Vue.use(Router)
 const routes = [
   {
     path: '/',
-    name: 'login',
-    component: LoginPage
-  },
-  {
-    path: '/home',
     name: 'welcome',
-    component: MainPage
+    component: welcomeComponent
   }
 ]
 // EXPORT ROUTER
