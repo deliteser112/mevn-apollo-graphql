@@ -1,34 +1,66 @@
-// IMPORTS
-import Vue from 'vue'
-import VueApollo from 'vue-apollo'
-import Vuetify from 'vuetify'
-import ApolloClient from './apollo'
-import store from './store'
-import router from './router'
-import App from './App'
-import VueMaterial from 'vue-material'
-import 'vue-material/dist/vue-material.min.css'
-import 'vue-material/dist/theme/default.css'
+import "@babel/polyfill";
+import Vue from "vue";
+import "./plugins/vuetify";
+import App from "./App.vue";
+import router from "./router";
+import store from "./store";
 
-Vue.use(VueMaterial)
+import ApolloClient from "apollo-boost";
+import VueApollo from "vue-apollo";
 
-// SETUP PLUGINS
-Vue.config.productionTip = false
-Vue.use(VueApollo)
-Vue.use(Vuetify)
+// global error component
+import FormAlert from './components/System/FormAlert';
 
-// APOLLO PROVIDER
-const apolloProvider = new VueApollo({
-  defaultClient: ApolloClient,
-  defaultOptions: {
-    $loadingKey: 'loading'
+Vue.component('form-alert', FormAlert);
+
+Vue.use(VueApollo);
+
+// Setup ApolloClient
+// with token for auth routes
+export const defaultClient = new ApolloClient({
+  uri: "http://localhost:4000/graphql",
+  fetchOptions: {
+    credentials: 'include'
+  },
+  request: operation => {
+    if (!localStorage.token) {
+      localStorage.setItem('token', '');
+      localStorage.setItem('user', '');
+    }
+    operation.setContext({
+      headers: {
+        authorization: localStorage.getItem('token')
+      }
+    })
+  },
+  onError: ({ graphQLErrors, networkError }) => {
+    if (networkError) {
+      console.log("[networkError]", networkError);
+    }
+    if (graphQLErrors) {
+      for (let err of graphQLErrors) {
+        console.dir(err);
+        if(err.name === 'AuthenticationError') {
+           store.commit('setAuthError', err);
+           store.dispatch('logoutUser');
+        }
+      }
+    }
   }
-})
+
+});
+
+// needs to be called even before beforeCreate()
+// otherwise AuthGuard in router is called before user is initalized
+store.dispatch('initUser');
+
+const apolloProvider = new VueApollo({ defaultClient });
+
+Vue.config.productionTip = false;
 
 new Vue({
-  store,
+  apolloProvider,
   router,
-  el: '#app',
-  provide: apolloProvider.provide(),
-  render: h => h(App)
-})
+  store,
+  render: h => h(App),
+}).$mount("#app");

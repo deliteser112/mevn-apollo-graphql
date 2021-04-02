@@ -1,0 +1,81 @@
+type User {
+  _id: ID
+  username: String! @unique
+  email: String!
+  password: String!
+  avatar: String
+  joinDate: String
+  favorites: [Post]
+}
+
+type Post {
+  _id: ID
+  title: String!
+  imageUrl: String
+  categories: [String]!
+  description: String
+  createdDate: String
+  likes: Int
+  userId: User!
+  messages: [Message]
+}
+
+type LikesFaves {
+  likes: Int
+  favorites: [Post]
+
+}
+
+type Message {
+  _id: ID
+  messageBody: String!
+  messageDate: String
+  messageUser: User!
+}
+
+type PostsPage {
+ posts: [Post]
+ hasMore: Boolean
+}
+
+type Query {
+  getCurrentUser: User
+  getPosts: [Post]
+  getPost(postId: ID!): Post!
+  getUserPosts(userId: ID!): [Post]
+  infiniteScrollPosts(pageNum: Int!, pageSize: Int!): PostsPage
+  searchPosts(searchTerm:String): [Post]
+}
+
+type Token {
+  token: String!
+}
+
+type LoggedInUser {
+  token: String!
+  user: User!
+}
+
+type Mutation {
+  addPost(
+    title: String!
+    imageUrl: String!
+    categories: [String]!
+    description: String!
+    userId: ID!
+  ): Post!
+  updateUserPost(
+    postId: ID!
+    userId: ID!
+    title: String!
+    imageUrl: String!
+    categories: [String]!
+    description: String!
+  ): Post!
+  deleteUserPost(postId: ID!): Post!
+  addPostMessage(messageBody: String!, userId: ID!, postId: ID!): Message!
+  likePost(postId: ID!, username: String!): LikesFaves
+  unlikePost(postId: ID!, username: String!): LikesFaves
+  registerUser(username: String!, email: String!, password: String!): Token!
+  loginUser(email: String!, password: String!): LoggedInUser!
+}
