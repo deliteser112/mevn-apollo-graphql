@@ -4,7 +4,7 @@
       <v-toolbar color="accent" flat dark>
         <v-toolbar-side-icon @click="toggleSideNav"></v-toolbar-side-icon>
         <router-link to="/" tag="span" style="cursor: pointer;">
-          <h1>Vue Share</h1>
+          <h1>Template Validation</h1>
         </router-link>
       </v-toolbar>
       <v-divider></v-divider>
@@ -14,7 +14,6 @@
         <v-list-tile ripple v-for="item in sideNavbar" :key="item.title" :to="item.link">
           <v-list-tile-action>
             <v-icon>{{ item.icon }}</v-icon>
-
           </v-list-tile-action>
           <v-list-tile-content>
             <span>{{ item.title }}</span>
@@ -26,12 +25,12 @@
     <v-toolbar fixed color="primary" dark>
       <v-toolbar-side-icon @click="toggleSideNav"></v-toolbar-side-icon>
       <v-toolbar-title class="hidden-xs-only">
-        <router-link to="/" tag="span" style="cursor: pointer;">Vue Share</router-link>
+        <router-link to="/" tag="span" style="cursor: pointer;">Template Validation</router-link>
       </v-toolbar-title>
 
       <v-spacer></v-spacer>
 
-      <v-text-field id="header_search"
+      <!-- <v-text-field id="header_search"
                     v-model="searchTerm"
                     @input="handleSearchPosts"
                     flex prepend-icon="search"
@@ -40,7 +39,7 @@
                     single-line
                     hide-details></v-text-field>
 
-      <v-card dark v-if="searchResults.length" id="search__card">
+      <v-card  v-if="searchResults.length" id="search__card">
         <v-list>
           <v-list-tile v-for="result in searchResults" :key="result._id" @click="goToSearchResult(result._id)">
             <v-list-tile-title>
@@ -53,7 +52,7 @@
 
           </v-list-tile>
         </v-list>
-      </v-card>
+      </v-card> -->
 
       <v-spacer></v-spacer>
 
@@ -131,22 +130,22 @@
         ];
         if (this.user) {
           items = [
-            { icon: 'chat', title: 'Posts', link: '/posts' },
+            { icon: 'computer', title: 'Table View', link: '/posts' },
           ];
         }
         return items;
       },
       sideNavbar() {
         let items = [
-          { icon: 'chat', title: 'Posts', link: '/posts' },
-          { icon: 'add', title: 'Add Post', link: '/post/add' },
+          { icon: 'computer', title: 'Table View', link: '/posts' },
+          { icon: 'add', title: 'Import CSV', link: '/post/add' },
           { icon: 'create', title: 'Register', link: '/register' },
           { icon: 'lock_open', title: 'Login', link: '/login' },
         ];
         if (this.user) {
           items = [
-            { icon: 'chat', title: 'Posts', link: '/posts' },
-            { icon: 'stars', title: 'Add Posts', link: '/post/add' },
+            { icon: 'computer', title: 'Table View', link: '/posts' },
+            { icon: 'stars', title: 'Import CSV', link: '/post/add' },
             { icon: 'account_box', title: 'Profile', link: '/profile' },
           ];
         }
@@ -228,6 +227,7 @@
     animation: bounce 1s both;
   }
 
+  
   @keyframes bounce {
     0%,
     20%,
