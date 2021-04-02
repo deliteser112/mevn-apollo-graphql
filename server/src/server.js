@@ -36,7 +36,7 @@ mongoose.Promise = global.Promise
 mongoose
     .connect(`mongodb://localhost:27017/template`)
     .then(() => {
-        console.log(`Connection to database successful!`)
+        console.log(`mongodb://localhost:27017`)
         console.log('----------------------------------')
     })
     .catch(err => console.log(`Error connecting to database: ${err}`))

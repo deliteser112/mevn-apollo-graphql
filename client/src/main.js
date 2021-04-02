@@ -6,6 +6,11 @@ import ApolloClient from './apollo'
 import store from './store'
 import router from './router'
 import App from './App'
+import VueMaterial from 'vue-material'
+import 'vue-material/dist/vue-material.min.css'
+import 'vue-material/dist/theme/default.css'
+
+Vue.use(VueMaterial)
 
 // SETUP PLUGINS
 Vue.config.productionTip = false

@@ -26,11 +26,11 @@ export default {
 <style>
 
 #app {
-  background-color: rgba(66, 184, 131, 0.03)
+  background-color: rgba(6, 184, 131, 0.03)
 }
 .alert {
   position: absolute;
-  width: 100%;
+  width: 50%;
   font-family: 'Fira Code', sans-serif
 }
 
