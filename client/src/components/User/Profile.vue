@@ -13,8 +13,8 @@
               <div>
                 <div class="headline">{{user.username}}</div>
                 <div>Joined {{user.joinDate}}</div>
-                <div class="hidden-xs-only font-weight-thin">{{user.favorites.length}} Favorites</div>
-                <div class="hidden-xs-only font-weight-thin">{{userPosts.length}} Posts Added</div>
+                <!-- <div class="hidden-xs-only font-weight-thin">{{user.favorites.length}} popular</div>
+                <div class="hidden-xs-only font-weight-thin">{{userPosts.length}} templates Added</div> -->
               </div>
             </v-card-title>
           </v-flex>
@@ -23,7 +23,7 @@
     </v-flex>
 
     <!-- Posts Favorited by User -->
-    <v-container v-if="!userFavorites.length">
+    <!-- <v-container v-if="!userFavorites.length">
       <v-layout row wrap>
         <v-flex xs12>
           <h2>You have no favorites currently. Go and add some!</h2>
@@ -45,20 +45,20 @@
           </v-card>
         </v-flex>
       </v-layout>
-    </v-container>
+    </v-container> -->
 
     <!-- Posts Created By user -->
-    <v-container v-if="!userPosts.length">
+    <!-- <v-container v-if="!userPosts.length">
       <v-layout row wrap>
         <v-flex xs12>
-          <h2>You have no posts currently. Go and add some!</h2>
+          <h2>You have no templates currently. Go and add some!</h2>
         </v-flex>
       </v-layout>
-    </v-container>
+    </v-container> -->
 
-    <v-container class="mt-3" v-else>
+    <!-- <v-container class="mt-3" v-else>
       <v-flex xs12>
-        <h2 class="font-weight-light">Your Posts
+        <h2 class="font-weight-light">Your templates
           <span class="font-weight-regular">({{userPosts.length}})</span>
         </h2>
       </v-flex>
@@ -77,7 +77,7 @@
           </v-card>
         </v-flex>
       </v-layout>
-    </v-container>
+    </v-container> -->
 
     <!-- Edit Post Dialog -->
     <v-dialog xs12 sm6 offset-sm3 persistent v-model="editPostDialog">

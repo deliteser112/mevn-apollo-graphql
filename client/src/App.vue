@@ -130,21 +130,21 @@
         ];
         if (this.user) {
           items = [
-            { icon: 'computer', title: 'Table View', link: '/posts' },
+            { icon: 'computer', title: 'Templates', link: '/posts' },
           ];
         }
         return items;
       },
       sideNavbar() {
         let items = [
-          { icon: 'computer', title: 'Table View', link: '/posts' },
+          { icon: 'computer', title: 'Templates', link: '/posts' },
           { icon: 'add', title: 'Import CSV', link: '/post/add' },
           { icon: 'create', title: 'Register', link: '/register' },
           { icon: 'lock_open', title: 'Login', link: '/login' },
         ];
         if (this.user) {
           items = [
-            { icon: 'computer', title: 'Table View', link: '/posts' },
+            { icon: 'computer', title: 'Templates', link: '/posts' },
             { icon: 'stars', title: 'Import CSV', link: '/post/add' },
             { icon: 'account_box', title: 'Profile', link: '/profile' },
           ];
