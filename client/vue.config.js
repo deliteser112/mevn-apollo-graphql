@@ -2,7 +2,7 @@ const config = {
   configureWebpack: {
     resolve: {
       // .mjs needed for https://github.com/graphql/graphql-js/issues/1272
-      extensions: ['*', '.mjs', '.js', '.vue', '.json', '.gql', '.graphql'],
+      extensions: ['*', '.mjs', '.js', '.ts', '.vue', '.json', '.gql', '.graphql'],
     },
     module: {
       rules: [ // fixes https://github.com/graphql/graphql-js/issues/1272
