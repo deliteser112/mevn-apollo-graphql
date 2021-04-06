@@ -67,7 +67,7 @@
           <v-icon class="hidden-sm-only" left>account_box</v-icon>
           <v-badge right color="blue darken-2" :class="{ 'bounce': badgeAnimated }">
             <span slot="badge" v-if="userFavorites.length">{{userFavorites.length}}</span>
-            Profile
+            Own Templates
           </v-badge>
         </v-btn>
         <v-btn flat @click="onLogoutUser" v-if="user">
@@ -130,23 +130,23 @@
         ];
         if (this.user) {
           items = [
-            { icon: 'computer', title: 'Templates', link: '/posts' },
+            { icon: 'computer', title: 'All templates', link: '/posts' },
           ];
         }
         return items;
       },
       sideNavbar() {
         let items = [
-          { icon: 'computer', title: 'Templates', link: '/posts' },
+          { icon: 'computer', title: 'All templates', link: '/posts' },
           { icon: 'add', title: 'Import CSV', link: '/post/add' },
           { icon: 'create', title: 'Register', link: '/register' },
           { icon: 'lock_open', title: 'Login', link: '/login' },
         ];
         if (this.user) {
           items = [
-            { icon: 'computer', title: 'Templates', link: '/posts' },
+            { icon: 'computer', title: 'All templates', link: '/posts' },
             { icon: 'stars', title: 'Import CSV', link: '/post/add' },
-            { icon: 'account_box', title: 'Profile', link: '/profile' },
+            { icon: 'account_box', title: 'Your templates', link: '/profile' },
           ];
         }
         return items;

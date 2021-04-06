@@ -120,16 +120,16 @@
       submitForm() {
         if (this.$refs.form.validate()) {
           EventBus.$emit('submitPostForm',
-            {
-              parentName: this.parentName,
-              post: {
-                postId: this.postId,
-                userId: this.userId,
-                title: this.title,
-                imageUrl: this.imageUrl,
-                categories: this.categories,
-                description: this.description
-              }
+          {
+            parentName: this.parentName,
+            post: {
+              postId: this.postId,
+              userId: this.userId,
+              title: this.title,
+              imageUrl: this.imageUrl,
+              categories: this.categories,
+              description: this.description
+            }
           });
         }
       }

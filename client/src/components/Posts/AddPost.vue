@@ -8,26 +8,25 @@
       </v-flex>
     </v-layout>
 
+    <v-layout row>
+      <v-flex xs12 class="left-padding">
+        <input type="file" id="csv_file" name="csv_file" class="form-control" @change="loadCSV($event)">
+        <v-btn :loading="loading" :disabled="!isCSV || loading" color="info" type="submit"  @click="saveCSV">
+                <span slot="loader" class="custom-loader">
+                  <v-icon light>cached</v-icon>
+                </span>
+          Submit
+        </v-btn>
+      </v-flex>
+    </v-layout>
+
     <!-- Add Post Form -->
     <v-layout row wrap>
       <!-- <v-flex xs12 sm6 offset-sm3> -->
           <div class="container">
             <div class="panel panel-sm">
-              <div class="panel-heading"> 
-                <h4>CSV Import</h4>
-              </div>
               <div class="panel-body">
-                <div class="form-group">
-                  <label for="csv_file" class="control-label col-sm-3 text-right">CSV file to import</label>
-                  <div class="col-sm-9">
-                    <input type="file" id="csv_file" name="csv_file" class="form-control" @change="loadCSV($event)">
-                  </div>
-                </div>
-                
-                <div class="col-sm-offset-3 col-sm-9">
-                  <a href="#" class="btn btn-primary">Parse CSV</a>
-                </div>
-                <table v-if="parse_csv">
+                <table v-if="parse_csv" id="table_content">
                   <thead>
                     <tr>
                       <th v-for="key in parse_header"
@@ -38,7 +37,7 @@
                         </span>
                       </th>
                     </tr>
-                  </thead> 
+                  </thead>
                   <tr v-for="csv in parse_csv">
                     <td v-for="key in parse_header">
                       <input type="text" :value="csv[key]" class="input-cell"/>
@@ -50,7 +49,7 @@
             </div>
             
           </div>
-        <!-- <post-form :userId="user._id" :parent-name="$options.name"></post-form> -->
+        <post-form :userId="user._id" :parent-name="$options.name"></post-form>
       <!-- </v-flex> -->
     </v-layout>
 
@@ -67,6 +66,7 @@
     components: { PostForm },
     data() {
       return {
+        isCSV: false,
         headline: 'Import CSV',
         channel_name: '',
         channel_fields: [],
@@ -90,11 +90,28 @@
         if (parentName !== this.$options.name) return;
 
         let createdPost = JSON.parse(JSON.stringify(post));
+        // console.log("this is post:", post, "this is createdPost:", JSON.stringify(post))
         delete createdPost.postId;
+
+        console.log(createdPost)
+
         this.addPost(createdPost);
       });
     },
     methods: {
+      saveCSV(){
+        // let table_content = document.getElementById("table_content")
+        // console.log(table_content)document.getElementById("myDIV").querySelectorAll(".example")
+        let data = document.getElementById("table_content").querySelectorAll(".input-cell");
+        let rowObj = {}
+        let allArr = new Array()
+        for(let i = 0; i < data.length; i+=7){
+          rowObj = {'project_id':data[i].value, 'node_id':data[i+1].value, 'var_ip':data[i+2].value, 'var_sm':data[i+3].value, 'var_gw':data[i+4].value, 'var_addr':data[i+5].value, 'var_cont':data[i+6].value}
+          allArr.push(rowObj)
+        }
+        console.log(this.$options.name)
+        console.log(allArr)
+      },
       addPost(post) {
         this.$store.dispatch('addPost', post);
         this.$router.push("/");
@@ -107,6 +124,7 @@
       csvJSON(csv){
         var vm = this
         var lines = csv.split("\n")
+        if(lines.length>0) this.isCSV = true
         console.log(lines)
         var result = []
         var headers = lines[0].split(",")
@@ -160,11 +178,11 @@
   .panel {
     border: 2px solid #dfdfdf;
     box-shadow: rgba(0, 0, 0, 0.15) 0 1px 0 0;
-    margin: 10px;
   } 
   .panel.panel-sm {
-    max-width: 700px;
-    margin: 10px auto;
+    width:100%;
+    /* max-width: 700px; */
+    /* margin: 10px auto; */
   }
   .panel-heading {
     border-bottom: 2px solid #dfdfdf;
@@ -193,5 +211,8 @@
   }
   .input-cell{
     width:100%;
+  }
+  .left-padding{
+    padding: 20px;
   }
 </style>
