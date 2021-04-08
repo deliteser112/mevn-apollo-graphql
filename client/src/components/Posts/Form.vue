@@ -2,48 +2,88 @@
 <div>
   <v-form v-model="isFormValid" ref="form" @submit.prevent>
 
-    <!-- Title Input -->
-    <v-layout row>
-      <v-flex xs12>
-        <v-text-field :rules="titleRules" v-model="title" label="Post Title" type="text" required></v-text-field>
-      </v-flex>
-    </v-layout>
+      <!-- Title Input -->
+      <v-layout row>
+        <v-flex xs12>
+          <v-text-field :rules="titleRules" v-model="title" class="margin-top" label="Template Title" type="text" required></v-text-field>
+        </v-flex>
+      </v-layout>
+
+        <v-layout row>
+          <v-flex xs12 class="left-padding">
+            <input type="file" id="csv_file" name="csv_file" class="form-control" @change="loadCSV($event)">
+            <!-- <v-btn :loading="loading" :disabled="!isCSV || loading" color="info" type="submit"  @click="saveCSV">
+                    <span slot="loader" class="custom-loader">
+                      <v-icon light>cached</v-icon>
+                    </span>
+              Submit
+            </v-btn> -->
+          </v-flex>
+        </v-layout>
+
+          <div class="container">
+            <div class="panel panel-sm">
+              <div class="panel-body">
+                <table v-if="parse_csv" id="table_content">
+                  <thead>
+                    <tr>
+                      <th v-for="key in parse_header"
+                          @click="sortBy(key)"
+                          :class="{ active: sortKey == key }">
+                        {{ key | capitalize }}
+                        <span class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'">
+                        </span>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tr v-for="csv in parse_csv">
+                    <td v-for="key in parse_header">
+                      <input type="text" :value="csv[key]" class="input-cell"/>
+                    </td>
+                  </tr>
+                  
+                </table>
+              </div>
+            </div>
+            
+          </div>
+    
 
     <!-- Image Url Input -->
-    <v-layout row>
+    <!-- <v-layout row>
       <v-flex xs12>
         <v-text-field v-model="imageUrl" :rules="imageRules" label="Image URL" type="text"
                       required></v-text-field>
       </v-flex>
-    </v-layout>
+    </v-layout> -->
 
     <!-- Image Preview -->
-    <v-layout row v-if="imageUrl">
+    <!-- <v-layout row v-if="imageUrl">
       <v-flex xs12>
         <img :src="imageUrl" height="300px">
       </v-flex>
-    </v-layout>
+    </v-layout> -->
 
     <!-- Categories Select -->
-    <v-layout row>
+    <!-- <v-layout row>
       <v-flex xs12>
         <v-select v-model="categories" :rules="categoriesRules"
                   :items="postCategories" multiple
                   label="Categories"></v-select>
       </v-flex>
-    </v-layout>
+    </v-layout> -->
 
     <!-- Description Text Area -->
-    <v-layout row>
+    <!-- <v-layout row>
       <v-flex xs12>
         <v-textarea v-model="description" :rules="descRules" label="Description" type="text"
                     required></v-textarea>
       </v-flex>
-    </v-layout>
+    </v-layout> -->
 
     <v-layout row>
       <v-flex xs12>
-        <v-btn :loading="loading" :disabled="!isFormValid || loading" color="info" type="submit"  @click="submitForm">
+        <v-btn :loading="loading" :disabled="!isCSV || loading" color="info" type="submit"  @click="submitForm">
                 <span slot="loader" class="custom-loader">
                   <v-icon light>cached</v-icon>
                 </span>
@@ -77,13 +117,30 @@
         }
       }
     },
+    filters: {
+      capitalize: function (str) {
+        return str.charAt(0) + str.slice(1)
+      }
+    },
     watch: {
       post(post) {
         this.assignPostToInputFields(post);
+        console.log("this is assignPostToInputFields")
       }
     },
     data() {
       return {
+        // import csv
+        isCSV: false,
+        headline: 'Import CSV',
+        channel_name: '',
+        channel_fields: [],
+        channel_entries: [],
+        parse_header: [],
+        parse_csv: [],
+        sortOrders:{},
+        sortKey: '',
+        // adding post
         isFormValid: true,
         postId: null,
         title: "",
@@ -110,14 +167,9 @@
       ...mapState(['user', 'error', 'loading','postCategories'])
     },
     methods: {
-      assignPostToInputFields({ _id, title, imageUrl, categories, description }) {
-        this.postId = _id;
-        this.title = title;
-        this.imageUrl = imageUrl;
-        this.categories = categories;
-        this.description = description;
-      },
+ 
       submitForm() {
+
         if (this.$refs.form.validate()) {
           EventBus.$emit('submitPostForm',
           {
@@ -126,13 +178,138 @@
               postId: this.postId,
               userId: this.userId,
               title: this.title,
-              imageUrl: this.imageUrl,
-              categories: this.categories,
-              description: this.description
+              imageUrl: "https://designshack.net/wp-content/uploads/photoshop-logo-templates-368x246.png",
+              categories: this.saveCSV(),
+              description: "no description"
             }
           });
         }
+      },
+
+      /////////// import csv
+      saveCSV(){
+        // let table_content = document.getElementById("table_content")
+        // console.log(table_content)document.getElementById("myDIV").querySelectorAll(".example")
+        let data = document.getElementById("table_content").querySelectorAll(".input-cell");
+        let rowObj = {}
+        let allArr = new Array()
+        let linerArr = new Array()
+        for(let i = 0; i < data.length; i+=7){
+          rowObj = {'project_id':data[i].value, 'node_id':data[i+1].value, 'var_ip':data[i+2].value, 'var_sm':data[i+3].value, 'var_gw':data[i+4].value, 'var_addr':data[i+5].value, 'var_cont':data[i+6].value}
+          allArr.push(rowObj)
+        }
+
+        for(let i = 0; i < data.length; i++) linerArr.push(data[i].value)
+        console.log(linerArr)
+        return linerArr
+      },
+      addPost(post) {
+        this.$store.dispatch('addPost', post);
+        this.$router.push("/");
+      },
+      sortBy: function (key) {
+        var vm = this
+        vm.sortKey = key
+        vm.sortOrders[key] = vm.sortOrders[key] * -1
+      },
+      csvJSON(csv){
+        var vm = this
+        var lines = csv.split("\n")
+        if(lines.length>0) this.isCSV = true
+        var result = []
+        var headers = lines[0].split(",")
+        vm.parse_header = lines[0].split(",") 
+        lines[0].split(",").forEach(function (key) {
+          vm.sortOrders[key] = 1
+        })
+        
+        lines.map(function(line, indexLine){
+          if (indexLine < 1) return // Jump header line
+          
+          var obj = {}
+          var currentline = line.split(",")
+          
+          headers.map(function(header, indexHeader){
+            obj[header] = currentline[indexHeader]
+          })
+          
+          result.push(obj)
+        })
+        
+        result.pop() // remove the last item because undefined values
+        
+        return result // JavaScript object
+      },
+      loadCSV(e) {
+        var vm = this
+        if (window.FileReader) {
+          var reader = new FileReader();
+          reader.readAsText(e.target.files[0]);
+          // Handle errors load
+          reader.onload = function(event) {
+            var csv = event.target.result;
+            vm.parse_csv = vm.csvJSON(csv)
+            
+          };
+          reader.onerror = function(evt) {
+            if(evt.target.error.name == "NotReadableError") {
+              alert("Canno't read file !");
+            }
+          };
+        } else {
+          alert('FileReader are not supported in this browser.');
+        }
       }
     }
+    
   };
 </script>
+
+<style>
+  .margin-top{
+    margin-top:30px;
+  }
+  .layou.row.wrap>div{
+    width: 100%;
+  }
+  .panel {
+    border: 2px solid #dfdfdf;
+    box-shadow: rgba(0, 0, 0, 0.15) 0 1px 0 0;
+  } 
+  .panel.panel-sm {
+    width:100%;
+    /* max-width: 700px; */
+    /* margin: 10px auto; */
+  }
+  .panel-heading {
+    border-bottom: 2px solid #dfdfdf;
+  }
+  .panel-heading h1, .panel-heading h2, .panel-heading h3, .panel-heading h4, .panel-heading h5, .panel-heading h6 {
+    margin: 0;
+    padding: 0;
+  }
+  .panel-body .checkbox-inline {
+    padding: 15px 20px;
+  }
+  table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  td, th {
+    border: 1px solid #b7aeae;
+    text-align: left;
+    padding: 8px;
+  }
+
+  tr:nth-child(even) {
+    background-color: #dddddd;
+  }
+  .input-cell{
+    width:100%;
+  }
+  .left-padding{
+    padding: 20px;
+  }
+</style>

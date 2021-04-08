@@ -7,10 +7,10 @@
         <v-card hover>
           <v-card-title>
             <h1>{{getPost.title}}</h1>
-            <v-btn @click="handleToggleLike" large icon v-if="user">
+            <!-- <v-btn @click="handleToggleLike" large icon v-if="user">
               <v-icon large :color="checkIfPostLiked(getPost._id) ? 'red' : 'grey'">favorite</v-icon>
             </v-btn>
-            <h3 class="ml-3 font-weight-thin">{{getPost.likes}} LIKES</h3>
+            <h3 class="ml-3 font-weight-thin">{{getPost.likes}} LIKES</h3> -->
             <v-spacer></v-spacer>
             <v-icon @click="goToPreviousPage" color="info" large>arrow_back</v-icon>
           </v-card-title>
@@ -28,12 +28,60 @@
             </v-card>
           </v-dialog>
 
-          <v-card-text>
-            <span v-for="(category, index) in getPost.categories" :key="index">
+          <!-- <v-card-text> -->
+            <!-- <span v-for="(category, index) in getPost.categories" :key="index">
               <v-chip class="mb-3" color="accent" text-color="white">{{category}}</v-chip>
-            </span>
-            <h3>{{getPost.description}}</h3>
-          </v-card-text>
+            </span> -->
+            <v-container>
+          <!-- <post-form :post="postToEdit" :userId="user._id" :parent-name="$options.name"></post-form> -->
+
+            <table style="width:100%">
+              <!-- <template v-slot:default> -->
+                <thead>
+                  <tr>
+                    <th class="text-left">
+                      Project_ID
+                    </th>
+                    <th class="text-left">
+                      Node_ID
+                    </th>
+                    <th class="text-left">
+                      $var_IP
+                    </th>
+                    <th class="text-left">
+                      $var_SM
+                    </th>
+                    <th class="text-left">
+                      $var_GW
+                    </th>
+                    <th class="text-left">
+                      $var_Address
+                    </th>
+                    <th class="text-left">
+                      $var_content
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="item in csvTable"
+                    :key="item.node_id"
+                  >
+                    <td>{{ item.project_id }}</td>
+                    <td>{{ item.node_id }}</td>
+                    <td>{{ item.var_ip }}</td>
+                    <td>{{ item.var_sm }}</td>
+                    <td>{{ item.var_gw }}</td>
+                    <td>{{ item.var_addr }}</td>
+                    <td>{{ item.var_cont }}</td>
+                  </tr>
+                </tbody>
+              <!-- </template> -->
+            </table>
+
+          </v-container>
+            <!-- <h3>{{getPost.description}}</h3> -->
+          <!-- </v-card-text> -->
         </v-card>
       </v-flex>
     </v-layout>
@@ -41,7 +89,7 @@
     <!-- Messages Section -->
     <div class="mt-3">
       <!-- Message Input -->
-      <v-layout class="mb-3" v-if="user">
+      <!-- <v-layout class="mb-3" v-if="user">
         <v-flex xs12>
           <v-form v-model="isFormValid" lazy-validation ref="form" @submit.prevent="handleAddPostMessage">
             <v-layout row>
@@ -53,10 +101,10 @@
             </v-layout>
           </v-form>
         </v-flex>
-      </v-layout>
+      </v-layout> -->
 
       <!-- Messages -->
-      <v-layout row wrap>
+      <!-- <v-layout row wrap>
         <v-flex xs12>
           <v-list subheader two-line>
             <v-subheader>Messages ({{getPost.messages.length}})</v-subheader>
@@ -87,7 +135,7 @@
             </template>
           </v-list>
         </v-flex>
-      </v-layout>
+      </v-layout> -->
 
     </div>
 
@@ -113,6 +161,7 @@
         dialog: false,
         messageBody: "",
         isFormValid: true,
+        csvTable:[],
         messageRules: [
           message => !!message || "Message is required",
           message =>
@@ -130,10 +179,52 @@
         }
       }
     },
+    mounted(){
+      this.ToConvertJSON()
+    },
+    // watch:{
+    //   ToConvertJSON(){
+    //     console.log("asdfasdfasdfasdf")
+    //     let rowObj = {}
+    //     let allArr = new Array()
+
+    //     let tempArr = this.getPost.categories
+    //     for(let i = 0; i < tempArr.length; i+=7){
+    //       rowObj = {'project_id':tempArr[i], 'node_id':tempArr[i+1], 'var_ip':tempArr[i+2], 'var_sm':tempArr[i+3], 'var_gw':tempArr[i+4], 'var_addr':tempArr[i+5], 'var_cont':tempArr[i+6]}
+    //       allArr.push(rowObj)
+    //     }
+    //     this.csvTable = rowObj
+    //   }
+    // },
     computed: {
       ...mapState(["user"])
     },
     methods: {
+      async ToConvertJSON(){
+        console.log('calling');
+        const result = await this.toJSON();
+        this.csvTable = result
+        // console.log(this.csvTable);
+        // console.log("this is id:", id, "this is All posts:", this.userPosts)
+      },
+      toJSON(){
+        // console.log(this.getPost.categories)
+        return new Promise(resolve => {
+          setTimeout(() => {
+            // console.log(this.getPost.categories)
+            let rowObj = {}
+            let allArr = new Array()
+
+            let tempArr = this.getPost.categories
+            console.log(this.getPost)
+            for(let i = 0; i < tempArr.length; i+=7){
+              rowObj = {'project_id':tempArr[i], 'node_id':tempArr[i+1], 'var_ip':tempArr[i+2], 'var_sm':tempArr[i+3], 'var_gw':tempArr[i+4], 'var_addr':tempArr[i+5], 'var_cont':tempArr[i+6]}
+              allArr.push(rowObj)
+            }
+            resolve(allArr);
+          }, 100);
+        });
+      },
       getTimeFromNow(time){
         return moment(new Date(time)).fromNow();
       },
