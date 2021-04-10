@@ -1,8 +1,8 @@
 # Vue Apollo GraphQl
-Small project to make use of Graphql and Apollo Server as an alternative paradigm to define APIs.
+This project to make use of Graphql and Apollo Server as an alternative paradigm to define APIs.
 Uses a node.js / express backend and a vue.js frontend.
 
-Basically is a small CRUD application for displaying images with the following features
+Basically is a Template Validation application for output the template with the following features
 
 # Project Outline
 The repo contains both the Node.js backend and Vue.js frontend. 
@@ -19,9 +19,7 @@ The repo contains both the Node.js backend and Vue.js frontend.
 - GraphQl integration with Apollo Client via vue-apollo
 - Query definitions in GQL language for Queries and Mutations encapsulated in queries.js
 - Most queries happening inside Vuex except
-- Functionality: User registration/ login, CRUD posts, like/ favorite Posts
-
-![Vue GraphQl Screenshot](./docs/vue_graphql.jpg?raw=true "GraphQl")
+- Functionality: User registration/ login, Datasets and Templates input/output 
 
 
 Backend makes use of mongoose and MongoDB which could be set up at MongoDB Atlas, mlab or as a Docker container.
