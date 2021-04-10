@@ -20,8 +20,8 @@
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
-
     </v-navigation-drawer>
+
     <v-toolbar fixed color="primary" dark>
       <v-toolbar-side-icon @click="toggleSideNav"></v-toolbar-side-icon>
       <v-toolbar-title class="hidden-xs-only">
@@ -64,10 +64,10 @@
         </v-btn>
 
         <v-btn flat to="/profile" v-if="user">
-          <v-icon class="hidden-sm-only" left>account_box</v-icon>
+          <v-icon class="hidden-sm-only" left>inventory</v-icon>
           <v-badge right color="blue darken-2" :class="{ 'bounce': badgeAnimated }">
             <span slot="badge" v-if="userFavorites.length">{{userFavorites.length}}</span>
-            Own Templates
+            Template Inventory
           </v-badge>
         </v-btn>
         <v-btn flat @click="onLogoutUser" v-if="user">
@@ -106,7 +106,6 @@
 
 <script>
   import { mapState } from 'vuex';
-
   export default {
     name: 'App',
     data() {
@@ -130,23 +129,22 @@
         ];
         if (this.user) {
           items = [
-            { icon: 'computer', title: 'All templates', link: '/posts' },
+            { icon: 'summarize', title: 'Import Template', link: '/posts' },
+            { icon: 'storage', title: 'Import DataSet', link: '/post/add' },
           ];
         }
         return items;
       },
       sideNavbar() {
         let items = [
-          { icon: 'computer', title: 'All templates', link: '/posts' },
-          { icon: 'add', title: 'Import CSV', link: '/post/add' },
           { icon: 'create', title: 'Register', link: '/register' },
           { icon: 'lock_open', title: 'Login', link: '/login' },
         ];
         if (this.user) {
           items = [
-            { icon: 'computer', title: 'All templates', link: '/posts' },
-            { icon: 'stars', title: 'Import CSV', link: '/post/add' },
-            { icon: 'account_box', title: 'Your templates', link: '/profile' },
+            { icon: 'summarize', title: 'Import Template', link: '/posts' },
+            { icon: 'storage', title: 'Import DataSet', link: '/post/add' },
+            { icon: 'account_box', title: 'Template Inventory', link: '/profile' },
           ];
         }
         return items;
@@ -195,7 +193,14 @@
     }
   }
 </script>
-<style>
+<style scoped>
+  .v-btn {
+    text-transform: none;
+  }
+  .accent {
+      background-color: #3b4f74 !important;
+      border-color: #c5d2b2 !important;
+  }
   #search__card {
     position: absolute;
     width: 100vw;

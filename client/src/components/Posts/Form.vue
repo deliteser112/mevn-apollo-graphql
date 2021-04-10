@@ -5,19 +5,13 @@
       <!-- Title Input -->
       <v-layout row>
         <v-flex xs12>
-          <v-text-field :rules="titleRules" v-model="title" class="margin-top" label="Template Title" type="text" required></v-text-field>
+          <v-text-field :rules="titleRules" v-model="title" class="margin-top" label="Dataset name" type="text" required></v-text-field>
         </v-flex>
       </v-layout>
 
         <v-layout row>
           <v-flex xs12 class="left-padding">
             <input type="file" id="csv_file" name="csv_file" class="form-control" @change="loadCSV($event)">
-            <!-- <v-btn :loading="loading" :disabled="!isCSV || loading" color="info" type="submit"  @click="saveCSV">
-                    <span slot="loader" class="custom-loader">
-                      <v-icon light>cached</v-icon>
-                    </span>
-              Submit
-            </v-btn> -->
           </v-flex>
         </v-layout>
 
@@ -47,40 +41,6 @@
             </div>
             
           </div>
-    
-
-    <!-- Image Url Input -->
-    <!-- <v-layout row>
-      <v-flex xs12>
-        <v-text-field v-model="imageUrl" :rules="imageRules" label="Image URL" type="text"
-                      required></v-text-field>
-      </v-flex>
-    </v-layout> -->
-
-    <!-- Image Preview -->
-    <!-- <v-layout row v-if="imageUrl">
-      <v-flex xs12>
-        <img :src="imageUrl" height="300px">
-      </v-flex>
-    </v-layout> -->
-
-    <!-- Categories Select -->
-    <!-- <v-layout row>
-      <v-flex xs12>
-        <v-select v-model="categories" :rules="categoriesRules"
-                  :items="postCategories" multiple
-                  label="Categories"></v-select>
-      </v-flex>
-    </v-layout> -->
-
-    <!-- Description Text Area -->
-    <!-- <v-layout row>
-      <v-flex xs12>
-        <v-textarea v-model="description" :rules="descRules" label="Description" type="text"
-                    required></v-textarea>
-      </v-flex>
-    </v-layout> -->
-
     <v-layout row>
       <v-flex xs12>
         <v-btn :loading="loading" :disabled="!isCSV || loading" color="info" type="submit"  @click="submitForm">
@@ -132,7 +92,7 @@
       return {
         // import csv
         isCSV: false,
-        headline: 'Import CSV',
+        headline: 'Import DataSet',
         channel_name: '',
         channel_fields: [],
         channel_entries: [],

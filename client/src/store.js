@@ -27,7 +27,7 @@ export default new Vuex.Store({
     authError: null,
     searchResults: [],
     userPosts: [],
-    postCategories: ['Art', 'Education', 'Travel', 'Photography', 'Technology'],
+    postCategories: ['$var_ip', '$var_sm', '$var_gw', 'address', 'location'],
   },
   mutations: {
     setPosts: (state, posts) => {
