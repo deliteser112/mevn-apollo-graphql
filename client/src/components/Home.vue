@@ -10,13 +10,6 @@
       </v-dialog>
     </v-layout>
     <login-form v-if="!login && !loading"></login-form>
-    <!-- <v-flex xs12>
-      <v-carousel v-if="!loading && posts.length > 0" v-bind="{ 'cycle': true }" interval="3000">
-        <v-carousel-item v-for="post in posts" :key="post._id" :src="post.imageUrl" @click.native="goToPost(post._id)">
-          <h2 class="carousel_title">{{ post.title }}</h2>
-        </v-carousel-item>
-      </v-carousel>
-    </v-flex> -->
   </v-container>
 </template>
 

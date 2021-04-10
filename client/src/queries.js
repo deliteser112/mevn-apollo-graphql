@@ -115,18 +115,6 @@ export const INFINITE_SCROLL_POSTS = gql`
     }
     `;
 
-export const SEARCH_POSTS = gql`
-  query($searchTerm: String) {
-    searchPosts(searchTerm: $searchTerm) {
-      _id
-      title
-      description
-      imageUrl
-      likes
-    }
-  }
-`;
-
 export const GET_USER_POSTS = gql`
   query($userId: ID!) {
     getUserPosts(userId: $userId) {
@@ -199,38 +187,6 @@ export const LOGIN_USER = gql`
               title
               imageUrl
             }
-        }
-      }
-    }
-    `;
-
-export const LIKE_POST = gql`
-    mutation($postId: ID!, $username: String!) {
-      likePost(
-        postId: $postId
-        username: $username
-      ) {
-        likes
-        favorites {
-          _id
-          title
-          imageUrl
-        }
-      }
-    }
-    `;
-
-export const UNLIKE_POST = gql`
-    mutation($postId: ID!, $username: String!) {
-      unlikePost(
-        postId: $postId
-        username: $username
-      ) {
-        likes
-        favorites {
-          _id
-          title
-          imageUrl
         }
       }
     }

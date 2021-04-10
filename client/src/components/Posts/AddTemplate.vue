@@ -1,17 +1,17 @@
 <template>
   <v-container text-xs-center mt-5 pt-5>
 
-    <!-- Add Dataset Title -->
+    <!-- Add Template Title -->
     <v-layout row wrap>
       <v-flex xs12 sm6>
         <h1 class="primary--text">{{ headline }}</h1>
       </v-flex>
     </v-layout>
 
-    <!-- Add Dataset Form -->
-    <v-layout row wrap>
+    <!-- Add Template Form -->
+    <!-- <v-layout row wrap>
         <post-form :userId="user._id" :parent-name="$options.name"></post-form>
-    </v-layout>
+    </v-layout> -->
 
   </v-container>
 </template>
@@ -22,11 +22,11 @@
   import PostForm from "@/components/Posts/Form";
 
   export default {
-    name: "AddDataset",
+    name: "AddTemplate",
     components: { PostForm },
     data() {
       return {
-        headline: 'Import DataSet',
+        headline: 'Not finished yet',
       };
     },
     computed: {

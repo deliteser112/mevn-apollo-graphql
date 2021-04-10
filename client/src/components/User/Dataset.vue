@@ -22,32 +22,7 @@
       </v-card>
     </v-flex>
 
-    <!-- Posts Favorited by User -->
-    <!-- <v-container v-if="!userFavorites.length">
-      <v-layout row wrap>
-        <v-flex xs12>
-          <h2>You have no favorites currently. Go and add some!</h2>
-        </v-flex>
-      </v-layout>
-    </v-container>
-
-    <v-container class="mt-3" v-else>
-      <v-flex xs12>
-        <h2 class="font-weight-light">Favorited
-          <span class="font-weight-regular">({{userFavorites.length}})</span>
-        </h2>
-      </v-flex>
-      <v-layout row wrap>
-        <v-flex xs12 sm6 v-for="favorite in userFavorites" :key="favorite._id">
-          <v-card class="mt-3 ml-1 mr-2" hover>
-            <v-img height="30vh" :src="favorite.imageUrl"></v-img>
-            <v-card-text>{{favorite.title}}</v-card-text>
-          </v-card>
-        </v-flex>
-      </v-layout>
-    </v-container> -->
-
-    <!-- Posts Created By user -->
+    <!-- DataSets Created By user -->
     <v-container v-if="!userPosts.length">
       <v-layout row wrap>
         <v-flex xs12>
@@ -58,16 +33,13 @@
 
     <v-container class="mt-3" v-else>
       <v-flex xs12>
-        <h2 class="font-weight-light">Your templates
+        <h2 class="font-weight-light">(for Testing)Your templates
           <span class="font-weight-regular">({{userPosts.length}})</span>
         </h2>
       </v-flex>
       <v-layout row wrap>
         <v-flex xs12 sm6 v-for="post in userPosts" :key="post._id">
           <v-card class="mt-3 ml-1 mr-2" hover>
-            <!-- <v-btn @click="openEditPost(post)" color="info" floating fab small dark>
-              <v-icon>edit</v-icon>
-            </v-btn> -->
             <v-btn @click="deletePost(post._id)" color="error" floating fab small dark>
               <v-icon>delete</v-icon>
             </v-btn>
@@ -79,12 +51,11 @@
       </v-layout>
     </v-container>
 
-    <!-- Edit Post Dialog -->
+    <!-- View Dataset Dialog -->
     <v-dialog xs12 sm6 offset-sm3 persistent v-model="editPostDialog">
       <v-card>
-        <v-card-title class="headline grey lighten-2">Your Variables</v-card-title>
+        <v-card-title class="headline grey lighten-2">DataSet</v-card-title>
         <v-container>
-          <!-- <post-form :post="postToEdit" :userId="user._id" :parent-name="$options.name"></post-form> -->
 
           <v-simple-table>
             <!-- <template v-slot:default> -->
@@ -157,7 +128,7 @@
     GET_POST,
   } from "../../queries";
   export default {
-    name: "Profile",
+    name: "Dataset",
     components: { Post, PostForm },
     data() {
       return {

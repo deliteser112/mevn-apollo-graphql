@@ -127,9 +127,7 @@
       ...mapState(['user', 'error', 'loading','postCategories'])
     },
     methods: {
- 
       submitForm() {
-
         if (this.$refs.form.validate()) {
           EventBus.$emit('submitPostForm',
           {
@@ -139,7 +137,7 @@
               userId: this.userId,
               title: this.title,
               imageUrl: "https://designshack.net/wp-content/uploads/photoshop-logo-templates-368x246.png",
-              categories: this.saveCSV(),
+              categories: this.saveDataSet(),
               description: "no description"
             }
           });
@@ -147,7 +145,7 @@
       },
 
       /////////// import csv
-      saveCSV(){
+      saveDataSet(){
         // let table_content = document.getElementById("table_content")
         // console.log(table_content)document.getElementById("myDIV").querySelectorAll(".example")
         let data = document.getElementById("table_content").querySelectorAll(".input-cell");

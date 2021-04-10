@@ -1,7 +1,7 @@
 {
   "name": "fullstack-vue-graphql",
   "version": "1.0.0",
-  "description": "Full-Stack Vue-GraphQL-Apollo Project",
+  "description": "Full-Stack Vue-GraphQL-Apollo Project for Template Validation",
   "main": "server.js",
   "license": "MIT",
   "scripts": {

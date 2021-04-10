@@ -24,10 +24,6 @@ mongoose.connect(uri, { useNewUrlParser: true })
     console.log('Error while connecting to DB');
   });
 
-/**
- * Remove deprecation warning without indexes
- * https://github.com/Automattic/mongoose/issues/6890
- */
 mongoose.set('useCreateIndex', true);
 
 // Verify JWT Token passed from client
