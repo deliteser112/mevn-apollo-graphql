@@ -2,17 +2,17 @@
   <v-container text-xs-center mt-5 pt-5>
     <v-form>
       <v-layout row wrap>
-        <v-flex xs12 sm6>
+        <v-flex xs12 sm4>
           <h1>{{ headline }}</h1>
         </v-flex>
       </v-layout>
       <v-layout v-if="error" row wrap>
-        <v-flex xs12 sm6>
+        <v-flex xs12 sm4>
           <form-alert :message="error.message"></form-alert>
         </v-flex>
       </v-layout>
       <v-layout row wrap>
-        <v-flex xs12 sm6>
+        <v-flex xs12 sm4>
           <v-card color="secondary" dark>
             <v-container>
               <v-form ref="form" v-model="isFormValid" lazy-validation @submit.prevent="registerUser">

@@ -137,7 +137,7 @@
             let allArr = new Array()
 
             let tempArr = this.getPost.categories
-            console.log(this.getPost)
+            // console.log(this.getPost)
             for(let i = 0; i < tempArr.length; i+=7){
               rowObj = {'project_id':tempArr[i], 'node_id':tempArr[i+1], 'var_ip':tempArr[i+2], 'var_sm':tempArr[i+3], 'var_gw':tempArr[i+4], 'var_addr':tempArr[i+5], 'var_cont':tempArr[i+6]}
               allArr.push(rowObj)

@@ -12,7 +12,6 @@ import {
   LOGIN_USER,
   REGISTER_USER,
   GET_CURRENT_USER,
-  SEARCH_POSTS,
   GET_USER_POSTS,
   INFINITE_SCROLL_POSTS
 } from './queries';
@@ -104,18 +103,20 @@ export default new Vuex.Store({
         commit('setPosts', data.getPosts);
         commit('setLoading', false);
       }).catch(err => {
-        console.log(err)
+        // console.log(err)
         commit('setLoading', false);
       });
     },
-    searchPosts: ({ commit }, payload) => {
-      apolloClient.query({
-        query: SEARCH_POSTS,
-        variables: payload,
-      }).then(({ data }) => {
-        commit('setSearchResults', data.searchPosts);
-      }).catch(err => console.log(err));
-    },
+    // searchPosts: ({ commit }, payload) => {
+    //   apolloClient.query({
+    //     query: SEARCH_POSTS,
+    //     variables: payload,
+    //   }).then(({ data }) => {
+    //     commit('setSearchResults', data.searchPosts);
+    //   }).catch(err => 
+    //     console.log(err)
+    //     );
+    // },
     addPost: ({ commit }, payload) => {
       apolloClient
         .mutate({
@@ -212,7 +213,7 @@ export default new Vuex.Store({
           variables: payload
         })
         .then(({ data }) => {
-          console.log(data);
+          // console.log(data);
           commit("setLoading", false);
           localStorage.setItem('token', data.loginUser.token);
           commit('setUser', data.loginUser.user);
@@ -220,7 +221,7 @@ export default new Vuex.Store({
         }).catch(err => {
         commit('setError', err);
         commit("setLoading", false);
-        console.log(err)
+        // console.log(err)
 
       });
     },

@@ -12,15 +12,31 @@
         <v-layout row>
           <v-flex xs12 class="left-padding">
             <input type="file" id="csv_file" name="csv_file" class="form-control" @change="loadCSV($event)">
+            <v-btn :loading="loading" :disabled="!isCSV || loading" color="info" type="submit"  @click="submitForm">
+              <span slot="loader" class="custom-loader">
+                <v-icon light>cached</v-icon>
+              </span>
+              Submit
+            </v-btn>
+
+            <v-btn :loading="loading" v-if="isCSV" color="info" type="submit"  @click="addRow">
+              <v-icon light>add</v-icon>
+              Add row
+            </v-btn>
+            <!-- <v-btn :loading="loading" v-if="isCSV" color="info" type="submit"  @click="deleteRows">
+              <v-icon light>delete</v-icon>
+              Delete row
+            </v-btn> -->
           </v-flex>
         </v-layout>
 
           <div class="container">
             <div class="panel panel-sm">
               <div class="panel-body">
-                <table v-if="parse_csv" id="table_content">
+                <table v-if="parse_csv">
                   <thead>
                     <tr>
+                      <!-- <th></th> -->
                       <th v-for="key in parse_header"
                           @click="sortBy(key)"
                           :class="{ active: sortKey == key }">
@@ -30,28 +46,19 @@
                       </th>
                     </tr>
                   </thead>
-                  <tr v-for="csv in parse_csv">
-                    <td v-for="key in parse_header">
-                      <input type="text" :value="csv[key]" class="input-cell"/>
-                    </td>
-                  </tr>
-                  
+                  <tbody id="table_content" ref="ref_table">
+                    <tr v-for="csv in parse_csv">
+                      <!-- <td><input type="checkbox" @click="isChecked"></td> -->
+                      <td v-for="key in parse_header">
+                        <input type="text" :value="csv[key]" class="input-cell"/>
+                      </td>
+                    </tr>
+                  </tbody>
                 </table>
               </div>
             </div>
             
           </div>
-    <v-layout row>
-      <v-flex xs12>
-        <v-btn :loading="loading" :disabled="!isCSV || loading" color="info" type="submit"  @click="submitForm">
-                <span slot="loader" class="custom-loader">
-                  <v-icon light>cached</v-icon>
-                </span>
-          Submit
-        </v-btn>
-      </v-flex>
-    </v-layout>
-
   </v-form>
 </div>
 </template>
@@ -85,14 +92,14 @@
     watch: {
       post(post) {
         this.assignPostToInputFields(post);
-        console.log("this is assignPostToInputFields")
       }
     },
     data() {
       return {
         // import csv
-        isCSV: false,
         headline: 'Import DataSet',
+        isCSV: false,
+        checked:[],
         channel_name: '',
         channel_fields: [],
         channel_entries: [],
@@ -136,19 +143,48 @@
               postId: this.postId,
               userId: this.userId,
               title: this.title,
-              imageUrl: "https://designshack.net/wp-content/uploads/photoshop-logo-templates-368x246.png",
+              imageUrl: "https://cdn.pixabay.com/photo/2013/07/12/17/22/database-152091_960_720.png",
               categories: this.saveDataSet(),
               description: "no description"
             }
           });
         }
       },
-
+      isChecked(event){
+        console.log("this is isChecked functions")
+      },
+      deleteRows(){
+        let tbl_data = this.$refs.ref_table
+      },
+      addRow(){
+        let tbl_data = this.$refs.ref_table
+        let value = tbl_data.querySelectorAll(".input-cell");
+        let project_id = value[0].value
+        let node_id = Number(value[1].value)-1
+        let c_tr, c_td, c_input
+        c_tr = document.createElement("tr")
+        for(let i = 0; i < 7; i++){
+          c_td = document.createElement("td")
+          c_input = document.createElement("input")
+          // if(i == 0){
+          //   c_input.setAttribute('type','checkbox')
+          //   c_input.setAttribute('onClick','isChecked()')
+          // }else{
+            c_input.setAttribute('type','text')
+            c_input.setAttribute('class', 'input-cell')
+          // }
+          if(i == 0) c_input.setAttribute('value', project_id)
+          if(i == 1) c_input.setAttribute('value', node_id+tbl_data.rows.length+1)
+          c_td.appendChild(c_input)
+          c_tr.appendChild(c_td)
+        }
+        
+        tbl_data.appendChild(c_tr)
+      },
       /////////// import csv
       saveDataSet(){
-        // let table_content = document.getElementById("table_content")
-        // console.log(table_content)document.getElementById("myDIV").querySelectorAll(".example")
-        let data = document.getElementById("table_content").querySelectorAll(".input-cell");
+        let element = this.$refs.ref_table
+        let data = element.querySelectorAll(".input-cell");
         let rowObj = {}
         let allArr = new Array()
         let linerArr = new Array()
@@ -158,7 +194,6 @@
         }
 
         for(let i = 0; i < data.length; i++) linerArr.push(data[i].value)
-        console.log(linerArr)
         return linerArr
       },
       addPost(post) {

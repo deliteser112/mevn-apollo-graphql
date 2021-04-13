@@ -15,7 +15,6 @@ const Post = require('./models/Post');
  * @type {string}
  */
 const uri = process.env.MONGO_CONNECTION;
-console.log("this is my uri:", uri)
 mongoose.connect(uri, { useNewUrlParser: true })
   .then(() => {
     console.log('Connected to db');

@@ -20,7 +20,9 @@
   import { mapState } from "vuex";
   import { EventBus } from "@/event";
   import PostForm from "@/components/Posts/Form";
-
+  import {
+    GET_POSTS,
+  } from "../../queries";
   export default {
     name: "AddDataset",
     components: { PostForm },
@@ -28,6 +30,11 @@
       return {
         headline: 'Import DataSet',
       };
+    },
+    apollo: {
+      getPosts: {
+        query: GET_POSTS,
+      }
     },
     computed: {
       ...mapState(['user', 'error', 'loading'])
@@ -37,7 +44,22 @@
         if (parentName !== this.$options.name) return;
         let createdPost = JSON.parse(JSON.stringify(post));
         delete createdPost.postId;
-        this.addPost(createdPost);
+        let objAllData = this.getPosts;
+        let titleArr = new Array()
+        let double = false
+        for(let row in objAllData) titleArr.push(objAllData[row].title)
+        console.log(titleArr)
+        for(let i = 0; i < titleArr.length; i++){
+          if(titleArr[i]==createdPost.title){
+            double = true
+            break
+          } 
+        }
+        if(double){
+          alert("This dataset already exists!")
+        }else{
+          this.addPost(createdPost);
+        }
       });
     },
     methods:{

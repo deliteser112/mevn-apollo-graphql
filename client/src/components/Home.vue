@@ -43,13 +43,10 @@
       goToPost(_id){
         this.$router.push(`/posts/${_id}`);
       }
-    },
-    mounted() {
-      console.log(this.login)
     }
   };
 </script>
-<style>
+<style scoped>
   .carousel_title {
     position: absolute;
     background-color: rgba(0, 0, 0, 0.5);

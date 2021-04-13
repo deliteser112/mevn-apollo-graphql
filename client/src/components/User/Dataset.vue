@@ -37,14 +37,14 @@
           <span class="font-weight-regular">({{userPosts.length}})</span>
         </h2>
       </v-flex>
-      <v-layout row wrap>
+      <v-layout row wrap style="justify-content:left;">
         <v-flex xs12 sm6 v-for="post in userPosts" :key="post._id">
           <v-card class="mt-3 ml-1 mr-2" hover>
             <v-btn @click="deletePost(post._id)" color="error" floating fab small dark>
               <v-icon>delete</v-icon>
             </v-btn>
 
-            <v-img height="30vh" :src="user.avatar" @click="open(post._id)"></v-img>
+            <v-img :src="post.imageUrl" @click="open(post._id)"></v-img>
             <v-card-text>{{post.title}}</v-card-text>
           </v-card>
         </v-flex>
@@ -57,7 +57,7 @@
         <v-card-title class="headline grey lighten-2">DataSet</v-card-title>
         <v-container>
 
-          <v-simple-table>
+          <!-- <v-simple-table> -->
             <!-- <template v-slot:default> -->
               <thead>
                 <tr>
@@ -99,7 +99,7 @@
                 </tr>
               </tbody>
             <!-- </template> -->
-          </v-simple-table>
+          <!-- </v-simple-table> -->
 
           <v-layout row>
             <v-flex xs12>
@@ -154,7 +154,7 @@
     },
     created() {
       this.getUserPosts();
-
+      
       EventBus.$on('submitPostForm', ({parentName, post}) => {
         if (parentName !== this.$options.name) return;
         this.updatePost(post);
@@ -167,10 +167,12 @@
       async open(id, editPostDialog=true){
         this.postId = id
         console.log('calling');
+        console.log("this is value", this.getPosts)
+
         const result = await this.apolloFnc();
         this.csvTable = result
         this.editPostDialog = editPostDialog;
-        console.log(this.csvTable);
+        // console.log(this.csvTable);
         // console.log("this is id:", id, "this is All posts:", this.userPosts)
       },
       apolloFnc(){
@@ -193,7 +195,7 @@
       getUserPosts() {
         this.$store.dispatch("getUserPosts", {
           userId: this.user._id
-        });
+        })
       },
       updatePost(post) {
         this.$store.dispatch("updateUserPost", JSON.parse(JSON.stringify(post)));
@@ -218,7 +220,19 @@
 </script>
 <style>
 .v-dialog {
-    width: auto !important;
+    width: auto;
 }
+
+@media (min-width: 600px){
+  .flex.sm6 {
+      -ms-flex-preferred-size: 50%;
+      flex-basis: 20%;
+      -webkit-box-flex: 0;
+      -ms-flex-positive: 0;
+      flex-grow: 0;
+      max-width: 50%;
+  }
+}
+
 
 </style>

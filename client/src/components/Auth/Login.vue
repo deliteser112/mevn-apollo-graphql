@@ -4,12 +4,12 @@
     <h2 v-else>Welcome back</h2>
     <v-form>
       <v-layout v-if="error" row wrap>
-        <v-flex xs12 sm6>
+        <v-flex xs12 sm4>
           <form-alert :message="error.message"></form-alert>
         </v-flex>
       </v-layout>
       <v-layout row wrap>
-        <v-flex xs12 sm6>
+        <v-flex xs12 sm4>
           <v-card color="secondary" dark>
             <v-container>
               <v-form ref="form" v-model="isFormValid" lazy-validation @submit.prevent="loginUser">
