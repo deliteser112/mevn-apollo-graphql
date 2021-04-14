@@ -43,13 +43,13 @@
           <v-icon class="hidden-sm-only" left>inventory</v-icon>
           <v-badge right color="blue darken-2" :class="{ 'bounce': badgeAnimated }">
             <span slot="badge" v-if="userFavorites.length">{{userFavorites.length}}</span>
-            Template Inventory
+            <span class="hidden-xs-only">Template Inventory</span>
           </v-badge>
         </v-btn>
         <v-btn flat @click="onLogoutUser" v-if="user">
           <v-icon class="hidden-sm-only" left>exit_to_app</v-icon>
           <v-badge right color="blue darken-2">
-            Log out
+            <span class="hidden-xs-only">Log out</span>
           </v-badge>
         </v-btn>
       </v-toolbar-items>

@@ -9,9 +9,9 @@
     </v-layout>
 
     <!-- Add Template Form -->
-    <!-- <v-layout row wrap>
+    <v-layout row wrap class="template-ops">
         <post-form :userId="user._id" :parent-name="$options.name"></post-form>
-    </v-layout> -->
+    </v-layout>
 
   </v-container>
 </template>
@@ -19,14 +19,14 @@
 <script>
   import { mapState } from "vuex";
   import { EventBus } from "@/event";
-  import PostForm from "@/components/Posts/Form";
+  import PostForm from "@/components/Posts/TemplateForm";
 
   export default {
     name: "AddTemplate",
     components: { PostForm },
     data() {
       return {
-        headline: 'Not finished yet',
+        headline: 'Import Template',
       };
     },
     computed: {
@@ -52,4 +52,13 @@
 .layout{
   justify-content: center;
 }
+
+@media only screen and (min-width: 959px){
+  .template-ops{
+      max-width:600px;
+      margin-left: 50%;
+      transform: translate(-50%, 10px);
+  }
+}
+
 </style>

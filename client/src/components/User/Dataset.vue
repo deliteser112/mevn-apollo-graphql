@@ -52,7 +52,7 @@
     </v-container>
 
     <!-- View Dataset Dialog -->
-    <v-dialog xs12 sm6 offset-sm3 persistent v-model="editPostDialog">
+    <v-dialog xs12 sm6 offset-sm3 persistent v-model="editPostDialog" style="width:100px">
       <v-card>
         <v-card-title class="headline grey lighten-2">DataSet</v-card-title>
         <v-container>

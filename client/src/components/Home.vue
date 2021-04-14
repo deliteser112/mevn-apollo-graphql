@@ -1,13 +1,13 @@
 <template>
   <v-container text-xs-center>
     <v-layout row>
-      <v-dialog v-model="loading" persistent fullscreen>
+      <!-- <v-dialog v-model="loading" persistent fullscreen style="width:100%!important">
         <v-container fill-height>
           <v-layout row justify-center align-center>
             <v-progress-circular indeterminate :size="70" :width="7" color="secondary"></v-progress-circular>
           </v-layout>
         </v-container>
-      </v-dialog>
+      </v-dialog> -->
     </v-layout>
     <login-form v-if="!login && !loading"></login-form>
   </v-container>

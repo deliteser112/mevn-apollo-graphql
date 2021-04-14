@@ -4,14 +4,18 @@
 
       <!-- Title Input -->
       <v-layout row>
-        <v-flex xs12>
+        <v-flex xs6>
           <v-text-field :rules="titleRules" v-model="title" class="margin-top" label="Dataset name" type="text" required></v-text-field>
         </v-flex>
       </v-layout>
 
         <v-layout row>
           <v-flex xs12 class="left-padding">
-            <input type="file" id="csv_file" name="csv_file" class="form-control" @change="loadCSV($event)">
+            <div class="import-icon" v-if="!isCSV">
+              <input type="file" id="csv_file" name="csv_file" class="form-control file-input-type" @change="loadCSV($event)">
+              <img src="https://4.bp.blogspot.com/-RvcP073l-D4/XEnytR0HqyI/AAAAAAAAACg/VZVoarvnCGc1TKpSlliQ60EnujJiCm1OwCLcBGAs/s1600/import-csv-to-database.png" class="cover-image"/>
+            </div>
+            
             <v-btn :loading="loading" :disabled="!isCSV || loading" color="info" type="submit"  @click="submitForm">
               <span slot="loader" class="custom-loader">
                 <v-icon light>cached</v-icon>
@@ -259,6 +263,25 @@
 </script>
 
 <style>
+  .import-icon{
+    position:relative;
+  }
+  .cover-image{
+    width: 300px;
+    height: 120px;
+    cursor: pointer;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px 0 rgb(0 0 0 / 20%), 0 6px 20px 0 rgb(0 0 0 / 19%);
+  }
+
+  .file-input-type{
+    cursor: pointer;
+    width: 300px;
+    height: 120px;
+    position: absolute;
+    opacity: 0;
+  }
+
   .margin-top{
     margin-top:30px;
   }
