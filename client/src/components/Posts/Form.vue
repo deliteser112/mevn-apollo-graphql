@@ -27,10 +27,10 @@
               <v-icon light>add</v-icon>
               Add row
             </v-btn>
-            <!-- <v-btn :loading="loading" v-if="isCSV" color="info" type="submit"  @click="deleteRows">
+            <v-btn :loading="loading" v-if="isCSV" color="info" type="submit"  @click="deleteRows">
               <v-icon light>delete</v-icon>
               Delete row
-            </v-btn> -->
+            </v-btn>
           </v-flex>
         </v-layout>
 
@@ -40,7 +40,7 @@
                 <table v-if="parse_csv">
                   <thead>
                     <tr>
-                      <!-- <th></th> -->
+                     <th></th>
                       <th v-for="key in parse_header"
                           @click="sortBy(key)"
                           :class="{ active: sortKey == key }">
@@ -52,7 +52,7 @@
                   </thead>
                   <tbody id="table_content" ref="ref_table">
                     <tr v-for="csv in parse_csv">
-                      <!-- <td><input type="checkbox" @click="isChecked"></td> -->
+                      <td><input type="checkbox" @click="isChecked"></td>
                       <td v-for="key in parse_header">
                         <input type="text" :value="csv[key]" class="input-cell"/>
                       </td>
