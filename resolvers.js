@@ -151,6 +151,10 @@ module.exports = {
       const post = await Post.findOneAndRemove({ _id: postId });
       return post;
     },
+    deleteUserTemplate: async (_, { templateId }, { Template }) => {
+      const template = await Template.findOneAndRemove({ _id: templateId });
+      return template;
+    },
     addPostMessage: async (_, { messageBody, userId, postId }, { Post }) => {
       const newMessage = {
         messageBody,

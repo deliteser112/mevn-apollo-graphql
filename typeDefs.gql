@@ -95,6 +95,7 @@ type Mutation {
     description: String!
   ): Post!
   deleteUserPost(postId: ID!): Post!
+  deleteUserTemplate(templateId: ID!): Template!
   addPostMessage(messageBody: String!, userId: ID!, postId: ID!): Message!
   likePost(postId: ID!, username: String!): LikesFaves
   unlikePost(postId: ID!, username: String!): LikesFaves

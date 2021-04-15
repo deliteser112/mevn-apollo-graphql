@@ -230,6 +230,14 @@ export const DELETE_USER_POST = gql`
   }
 `;
 
+export const DELETE_USER_TEMPLATE = gql`
+  mutation($templateId: ID!) {
+    deleteUserTemplate(templateId: $templateId) {
+      _id
+    }
+  }
+`;
+
 
 export const LOGIN_USER = gql`
     mutation($email: String!, $password: String!) {

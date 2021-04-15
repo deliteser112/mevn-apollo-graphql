@@ -88,7 +88,7 @@
               <v-layout row wrap style="justify-content:left;">
                 <v-flex xs12 sm6 v-for="template in userTemplates" :key="template._id">
                   <v-card class="mt-3 ml-1 mr-2" hover>
-                    <v-btn @click="deletePost(template._id)" color="error" floating fab small dark>
+                    <v-btn @click="deleteTemplate(template._id)" color="error" floating fab small dark>
                       <v-icon>delete</v-icon>
                     </v-btn>
 
@@ -272,6 +272,16 @@
         if (deletePost) {
           this.$store.dispatch("deleteUserPost", {
             postId: postId
+          });
+        }
+      },
+      deleteTemplate(templateId) {
+        const deleteTemplate = window.confirm(
+          "Are you sure you want to delete this post?"
+        );
+        if (deleteTemplate) {
+          this.$store.dispatch("deleteUserTemplate", {
+            templateId: templateId
           });
         }
       },

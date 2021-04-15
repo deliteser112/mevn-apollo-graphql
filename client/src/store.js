@@ -11,6 +11,7 @@ import {
   ADD_TEMPLATE,
   UPDATE_USER_POST,
   DELETE_USER_POST,
+  DELETE_USER_TEMPLATE,
   LOGIN_USER,
   REGISTER_USER,
   GET_CURRENT_USER,
@@ -269,6 +270,28 @@ export default new Vuex.Store({
           console.error(err);
         });
     },
+
+    deleteUserTemplate: ({ state, commit }, payload) => {
+      apolloClient
+        .mutate({
+          mutation: DELETE_USER_TEMPLATE,
+          variables: payload
+        })
+        .then(({ data }) => {
+          const index = state.userTemplates.findIndex(
+            template => template._id === data.deleteUserTemplate._id
+          );
+          const userTemplates = [
+            ...state.userTemplates.slice(0, index),
+            ...state.userTemplates.slice(index + 1)
+          ];
+          commit("setUserTemplates", userTemplates);
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    },
+
     loginUser: ({ commit }, payload) => {
       commit('clearError');
       commit("setLoading", true);
