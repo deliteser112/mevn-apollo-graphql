@@ -1,5 +1,5 @@
 {
-  "name": "client",
+  "name": "Template",
   "version": "0.1.0",
   "private": true,
   "main": "dist/vue-csv-import.umd.min.js",

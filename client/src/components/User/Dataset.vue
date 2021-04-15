@@ -1,6 +1,6 @@
 <template>
   <v-container class="text-xs-center">
-
+  <v-card color="basil">
     <!-- User Details Card -->
     <v-flex sm6 offset-sm3>
       <v-card class="white--text" color="secondary">
@@ -14,7 +14,7 @@
                 <div class="headline">{{user.username}}</div>
                 <div>Joined {{user.joinDate}}</div>
                 <!-- <div class="hidden-xs-only font-weight-thin">{{user.favorites.length}} popular</div> -->
-                <div class="hidden-xs-only font-weight-thin">{{userPosts.length}} templates Added</div>
+                <div class="hidden-xs-only font-weight-thin">{{userPosts.length}} datasets and {{userTemplates.length}} templates Added</div>
               </div>
             </v-card-title>
           </v-flex>
@@ -22,34 +22,87 @@
       </v-card>
     </v-flex>
 
-    <!-- DataSets Created By user -->
-    <v-container v-if="!userPosts.length">
-      <v-layout row wrap>
-        <v-flex xs12>
-          <h2>You have no templates currently. Go and add some!</h2>
-        </v-flex>
-      </v-layout>
-    </v-container>
+    <v-tabs v-model="tab" grow>
+      <v-tab>
+       Datasets
+      </v-tab>
+      <v-tab>
+       Templates
+      </v-tab>
+    </v-tabs>
 
-    <v-container class="mt-3" v-else>
-      <v-flex xs12>
-        <h2 class="font-weight-light">(for Testing)Your templates
-          <span class="font-weight-regular">({{userPosts.length}})</span>
-        </h2>
-      </v-flex>
-      <v-layout row wrap style="justify-content:left;">
-        <v-flex xs12 sm6 v-for="post in userPosts" :key="post._id">
-          <v-card class="mt-3 ml-1 mr-2" hover>
-            <v-btn @click="deletePost(post._id)" color="error" floating fab small dark>
-              <v-icon>delete</v-icon>
-            </v-btn>
+    <v-tabs-items v-model="tab">
+      <v-tab-item >
+        <v-card flat>
+          <v-card-text>
+            <!-- DataSets Created By user -->
+            <v-container v-if="!userPosts.length">
+              <v-layout row wrap>
+                <v-flex xs12>
+                  <h2>You have no datasets currently. Go and add some!</h2>
+                </v-flex>
+              </v-layout>
+            </v-container>
 
-            <v-img :src="post.imageUrl" @click="open(post._id)"></v-img>
-            <v-card-text>{{post.title}}</v-card-text>
-          </v-card>
-        </v-flex>
-      </v-layout>
-    </v-container>
+            <v-container class="mt-3" v-else>
+              <v-flex xs12>
+                <h2 class="font-weight-light">Your datasets
+                  <span class="font-weight-regular">({{userPosts.length}})</span>
+                </h2>
+              </v-flex>
+              <v-layout row wrap style="justify-content:left;">
+                <v-flex xs12 sm6 v-for="post in userPosts" :key="post._id">
+                  <v-card class="mt-3 ml-1 mr-2" hover>
+                    <v-btn @click="deletePost(post._id)" color="error" floating fab small dark>
+                      <v-icon>delete</v-icon>
+                    </v-btn>
+
+                    <v-img :src="post.imageUrl" @click="open(post._id)"></v-img>
+                    <v-card-text>{{post.title}}</v-card-text>
+                  </v-card>
+                </v-flex>
+              </v-layout>
+            </v-container>
+
+          </v-card-text>
+        </v-card>
+      </v-tab-item>
+       <v-tab-item >
+        <v-card flat>
+          <v-card-text>
+            <!-- DataSets Created By user -->
+            <v-container v-if="!userTemplates.length">
+              <v-layout row wrap>
+                <v-flex xs12>
+                  <h2>You have no templates currently. Go and add some!</h2>
+                </v-flex>
+              </v-layout>
+            </v-container>
+
+            <v-container class="mt-3" v-else>
+              <v-flex xs12>
+                <h2 class="font-weight-light">Your templates
+                  <span class="font-weight-regular">({{userTemplates.length}})</span>
+                </h2>
+              </v-flex>
+              <v-layout row wrap style="justify-content:left;">
+                <v-flex xs12 sm6 v-for="template in userTemplates" :key="template._id">
+                  <v-card class="mt-3 ml-1 mr-2" hover>
+                    <v-btn @click="deletePost(template._id)" color="error" floating fab small dark>
+                      <v-icon>delete</v-icon>
+                    </v-btn>
+
+                    <v-img :src="template.imageUrl" @click="open(template._id)"></v-img>
+                    <v-card-text>{{template.title}}</v-card-text>
+                  </v-card>
+                </v-flex>
+              </v-layout>
+            </v-container>
+          </v-card-text>
+        </v-card>
+      </v-tab-item>
+    </v-tabs-items>
+  </v-card>
 
     <!-- View Dataset Dialog -->
     <v-dialog xs12 sm6 offset-sm3 persistent v-model="editPostDialog" style="width:100px">
@@ -135,12 +188,17 @@
         editPostDialog: false,
         postToEdit: {},
         postId:'',
-        csvTable:[]
+        csvTable:[],
+        tab: null,
+        items: [
+          'Appetizers', 'Entrees',
+        ],
+        text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
       };
     },
     computed: {
       ...mapGetters(["userFavorites"]),
-      ...mapState(["user", "userPosts"])
+      ...mapState(["user", "userPosts", "userTemplates"])
     },
     apollo: {
       getPost: {
@@ -154,6 +212,7 @@
     },
     created() {
       this.getUserPosts();
+      this.getUserTemplates();
       
       EventBus.$on('submitPostForm', ({parentName, post}) => {
         if (parentName !== this.$options.name) return;
@@ -191,6 +250,11 @@
             resolve(allArr);
           }, 100);
         });
+      },
+      getUserTemplates() {
+        this.$store.dispatch("getUserTemplates", {
+          userId: this.user._id
+        })
       },
       getUserPosts() {
         this.$store.dispatch("getUserPosts", {

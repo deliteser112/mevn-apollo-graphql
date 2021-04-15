@@ -43,7 +43,7 @@
           <v-icon class="hidden-sm-only" left>inventory</v-icon>
           <v-badge right color="blue darken-2" :class="{ 'bounce': badgeAnimated }">
             <span slot="badge" v-if="userFavorites.length">{{userFavorites.length}}</span>
-            <span class="hidden-xs-only">Template Inventory</span>
+            <span class="hidden-xs-only">Inventory</span>
           </v-badge>
         </v-btn>
         <v-btn flat @click="onLogoutUser" v-if="user">
@@ -120,7 +120,7 @@
           items = [
             { icon: 'summarize', title: 'Import Template', link: '/post/addtemplate' },
             { icon: 'storage', title: 'Import DataSet', link: '/post/addpost' },
-            { icon: 'account_box', title: 'Template Inventory', link: '/dataset' },
+            { icon: 'account_box', title: 'Inventory', link: '/dataset' },
           ];
         }
         return items;

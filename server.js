@@ -10,6 +10,7 @@ const resolvers = require('./resolvers');
 
 const User = require('./models/User');
 const Post = require('./models/Post');
+const Template = require('./models/Template');
 /**
  * Connect to MongoDB
  * @type {string}
@@ -46,7 +47,7 @@ const server = new ApolloServer({
   },
   context: async ({ req }) => {
     const token = req.headers['authorization'];
-    return { User, Post, currentUser: await getUser(token) };
+    return { User, Template, Post, currentUser: await getUser(token) };
   }
 });
 

@@ -10,7 +10,7 @@
 
     <!-- Add Template Form -->
     <v-layout row wrap class="template-ops">
-        <post-form :userId="user._id" :parent-name="$options.name"></post-form>
+        <template-form :userId="user._id" :parent-name="$options.name"></template-form>
     </v-layout>
 
   </v-container>
@@ -19,11 +19,11 @@
 <script>
   import { mapState } from "vuex";
   import { EventBus } from "@/event";
-  import PostForm from "@/components/Posts/TemplateForm";
+  import TemplateForm from "@/components/Posts/TemplateForm";
 
   export default {
     name: "AddTemplate",
-    components: { PostForm },
+    components: { TemplateForm },
     data() {
       return {
         headline: 'Import Template',
@@ -33,16 +33,16 @@
       ...mapState(['user', 'error', 'loading'])
     },
     created() {
-      EventBus.$on('submitPostForm', ({parentName, post}) => {
+      EventBus.$on('submitPostForm', ({parentName, template}) => {
         if (parentName !== this.$options.name) return;
-        let createdPost = JSON.parse(JSON.stringify(post));
-        delete createdPost.postId;
-        this.addPost(createdPost);
+        let createdTemplate = JSON.parse(JSON.stringify(template));
+        delete createdTemplate.templateId;
+        this.addTemplate(createdTemplate);
       });
     },
     methods:{
-      addPost(post) {
-        this.$store.dispatch('addPost', post);
+      addTemplate(template) {
+        this.$store.dispatch('addTemplate', template);
         this.$router.push("/");
       },
     }

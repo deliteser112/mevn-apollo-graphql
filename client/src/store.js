@@ -6,14 +6,18 @@ Vue.use(Vuex)
 
 import {
   GET_POSTS,
+  GET_TEMPLATES,
   ADD_POST,
+  ADD_TEMPLATE,
   UPDATE_USER_POST,
   DELETE_USER_POST,
   LOGIN_USER,
   REGISTER_USER,
   GET_CURRENT_USER,
   GET_USER_POSTS,
-  INFINITE_SCROLL_POSTS
+  GET_USER_TEMPLATES,
+  INFINITE_SCROLL_POSTS,
+  INFINITE_SCROLL_TEMPLATES
 } from './queries';
 import { defaultClient as apolloClient } from './main';
 
@@ -26,6 +30,7 @@ export default new Vuex.Store({
     authError: null,
     searchResults: [],
     userPosts: [],
+    userTemplates: [],
     postCategories: ['$var_ip', '$var_sm', '$var_gw', 'address', 'location'],
   },
   mutations: {
@@ -39,6 +44,9 @@ export default new Vuex.Store({
     },
     setUserPosts: (state, payload) => {
       state.userPosts = payload;
+    },
+    setUserTemplates: (state, payload) => {
+      state.userTemplates = payload;
     },
     setLoading: (state, value) => {
       state.loading = value;
@@ -94,6 +102,21 @@ export default new Vuex.Store({
           console.error(err);
         });
     },
+    getUserTemplates: ({ commit }, payload) => {
+      apolloClient
+        .query({
+          query: GET_USER_TEMPLATES,
+          variables: payload
+        })
+        .then(({ data }) => {
+          commit("setUserTemplates", data.getUserTemplates);
+          // console.log(data.getUserTemplates);
+        })
+        .catch(err => {
+          console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+          console.error(err);
+        });
+    },
     getPosts: ({ commit }) => {
       commit('setLoading', true);
       apolloClient
@@ -146,6 +169,50 @@ export default new Vuex.Store({
           refetchQueries: [
             {
               query: INFINITE_SCROLL_POSTS,
+              variables: {
+                pageNum: 1,
+                pageSize: 2
+              }
+            }
+          ]
+        })
+        .then(({ data }) => {
+          //console.log(data.addPost);
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    },
+    addTemplate: ({ commit }, payload) => {
+      apolloClient
+        .mutate({
+          mutation: ADD_TEMPLATE,
+          variables: payload,
+          update: (cache, { data: { addTemplate } }) => {
+            console.log("this is graphql:", addTemplate)
+            // First read the query you want to update
+            const data = cache.readQuery({ query: GET_TEMPLATES });
+            // Create updated data
+            data.getPosts.unshift(addTemplate);
+            // Write updated data back to query
+            cache.writeQuery({
+              query: GET_TEMPLATES,
+              data
+            });
+          },
+          // optimistic response ensures data is added immediately as we specified for the update function
+          optimisticResponse: {
+            __typename: "Mutation",
+            addTemplate: {
+              __typename: "Template",
+              _id: -1,
+              ...payload
+            }
+          },
+          // Rerun specified queries after performing the mutation in order to get fresh data
+          refetchQueries: [
+            {
+              query: INFINITE_SCROLL_TEMPLATES,
               variables: {
                 pageNum: 1,
                 pageSize: 2

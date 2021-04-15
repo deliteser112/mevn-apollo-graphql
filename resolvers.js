@@ -15,12 +15,26 @@ module.exports = {
       });
       return posts;
     },
+    getTemplates: async (_, args, { Template }) => {
+      const templates = await Template.find().sort({ createdDate: 'desc' }).populate({
+        path: 'userId',
+        model: 'User'
+      });
+      return templates;
+    },
     getPost: async (_, { postId }, { Post }) => {
       const post = await Post.findOne({ _id: postId }).populate({
         path: "messages.messageUser",
         model: "User"
       });
       return post;
+    },
+    getTemplate: async (_, { templateId }, { Template }) => {
+      const template = await Template.findOne({ _id: templateId }).populate({
+        path: "messages.messageUser",
+        model: "User"
+      });
+      return template;
     },
     getCurrentUser: async (_, args, { User, currentUser }) => {
       if (!currentUser) {
@@ -84,6 +98,12 @@ module.exports = {
       });
       return posts;
     },
+    getUserTemplates: async (_, { userId }, { Template }) => {
+      const templates = await Template.find({
+        userId: userId
+      });
+      return templates;
+    },
   },
   Mutation: {
     addPost: async (
@@ -99,6 +119,20 @@ module.exports = {
         userId,
       }).save();
       return newPost;
+    },
+    addTemplate: async (
+      _,
+      { title, imageUrl, content, description, userId },
+      { Template }
+    ) => {
+      const newTemplate = await new Template({
+        title,
+        imageUrl,
+        content,
+        description,
+        userId,
+      }).save();
+      return newTemplate;
     },
     updateUserPost: async (
       _,

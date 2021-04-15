@@ -15,6 +15,17 @@ export const GET_POSTS = gql`
     }
     `;
 
+export const GET_TEMPLATES = gql`
+    query {
+      getTemplates {
+        _id
+        title
+        imageUrl
+        description
+      }
+    }
+    `;
+
 export const GET_POST = gql`
     query($postId: ID!){
       getPost(postId: $postId)   {
@@ -63,6 +74,30 @@ export const ADD_POST = gql`
     }
     `;
 
+  export const ADD_TEMPLATE = gql`
+    mutation(
+      $title: String!,
+      $imageUrl:String!,
+      $content: String!,
+      $description: String!,
+      $userId:ID!
+    ) {
+      addTemplate(
+        title:$title
+        imageUrl:$imageUrl
+        content:$content
+        description:$description
+        userId:$userId
+      ){
+        _id
+        title
+        imageUrl
+        content
+        description
+      }
+    }
+    `;
+
 export const INFINITE_SCROLL_POSTS = gql`
     query(
       $pageNum: Int!,
@@ -95,6 +130,38 @@ export const INFINITE_SCROLL_POSTS = gql`
     }
     `;
 
+  export const INFINITE_SCROLL_TEMPLATES = gql`
+    query(
+      $pageNum: Int!,
+      $pageSize: Int!,
+    
+    ) {
+      infiniteScrollTemplates(
+        pageNum:$pageNum
+        pageSize:$pageSize
+      ){
+        hasMore
+        templates {
+          _id
+          title
+          imageUrl
+          content
+          description
+          likes
+          createdDate
+          messages {
+            _id
+          }
+          userId {
+            _id
+            username
+            avatar
+          }
+        }
+      }
+    }
+    `;
+
 export const GET_USER_POSTS = gql`
   query($userId: ID!) {
     getUserPosts(userId: $userId) {
@@ -103,6 +170,20 @@ export const GET_USER_POSTS = gql`
       imageUrl
       description
       categories
+      createdDate
+      likes
+    }
+  }
+`;
+
+export const GET_USER_TEMPLATES = gql`
+  query($userId: ID!) {
+    getUserTemplates(userId: $userId) {
+      _id
+      title
+      imageUrl
+      description
+      content
       createdDate
       likes
     }

@@ -58,13 +58,13 @@
     props: {
       userId: String,
       parentName: String,
-      post: {
+      template: {
         type: Object,
         default: () => {
           return {
             title: "",
             imageUrl: "",
-            categories: [],
+            content: "",
             description: "",
           }
         }
@@ -85,13 +85,13 @@
         // import csv
         headline: 'Import Template',
         isTemplate: false,
-        text:'',
+        text:"",
         // adding post
         isFormValid: true,
-        postId: null,
+        templateId: null,
         title: "",
         imageUrl: "",
-        categories: [],
+        content: "",
         description: "",
         titleRules: [
           title => !!title || "Title is required",
@@ -114,27 +114,23 @@
     },
     methods: {
       processData(){
-        console.log(typeof this.text)
+        console.log(this.text)
       },
       submitForm() {
         if (this.$refs.form.validate()) {
           EventBus.$emit('submitPostForm',
           {
             parentName: this.parentName,
-            post: {
-              postId: this.postId,
+            template: {
+              templateId: this.templateId,
               userId: this.userId,
               title: this.title,
-              imageUrl: "https://cdn.pixabay.com/photo/2013/07/12/17/22/database-152091_960_720.png",
-              categories: this.saveDataSet(),
+              imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrBE7meLSJg_1PE9w2EQzKKG6lqDwuAQ0xMPejJzekaPjl8raNuYw_QCmRwBfYaWM6ny8&usqp=CAU",
+              content: this.text,
               description: "no description"
             }
           });
         }
-      },
-      addPost(post) {
-        this.$store.dispatch('addPost', post);
-        this.$router.push("/");
       },
       selectedFile() {
         console.log('selected a file');
