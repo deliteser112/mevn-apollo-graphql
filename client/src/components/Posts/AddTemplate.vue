@@ -20,7 +20,9 @@
   import { mapState } from "vuex";
   import { EventBus } from "@/event";
   import TemplateForm from "@/components/Posts/TemplateForm";
-
+  import {
+    GET_TEMPLATES,
+  } from "../../queries";
   export default {
     name: "AddTemplate",
     components: { TemplateForm },
@@ -28,6 +30,11 @@
       return {
         headline: 'Import Template',
       };
+    },
+    apollo: {
+      getTemplates: {
+        query: GET_TEMPLATES,
+      }
     },
     computed: {
       ...mapState(['user', 'error', 'loading'])
@@ -37,7 +44,24 @@
         if (parentName !== this.$options.name) return;
         let createdTemplate = JSON.parse(JSON.stringify(template));
         delete createdTemplate.templateId;
-        this.addTemplate(createdTemplate);
+        console.log(this.getTemplates)
+        let objAllData = this.getTemplates;
+        let titleArr = new Array()
+        let double = false
+        for(let row in objAllData) titleArr.push(objAllData[row].title)
+        console.log(titleArr)
+
+        for(let i = 0; i < titleArr.length; i++){
+          if(titleArr[i]==createdTemplate.title){
+            double = true
+            break
+          } 
+        }
+        if(double){
+          alert("This dataset already exists!")
+        }else{
+          this.addTemplate(createdTemplate);
+        }
       });
     },
     methods:{
