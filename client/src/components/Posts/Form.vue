@@ -167,18 +167,18 @@
         let node_id = Number(value[1].value)-1
         let c_tr, c_td, c_input
         c_tr = document.createElement("tr")
-        for(let i = 0; i < 7; i++){
+        for(let i = 0; i < 8; i++){
           c_td = document.createElement("td")
           c_input = document.createElement("input")
-          // if(i == 0){
-          //   c_input.setAttribute('type','checkbox')
-          //   c_input.setAttribute('onClick','isChecked()')
-          // }else{
+          if(i == 0){
+            c_input.setAttribute('type','checkbox')
+            c_input.setAttribute('onClick','isChecked()')
+          }else{
             c_input.setAttribute('type','text')
             c_input.setAttribute('class', 'input-cell')
-          // }
-          if(i == 0) c_input.setAttribute('value', project_id)
-          if(i == 1) c_input.setAttribute('value', node_id+tbl_data.rows.length+1)
+          }
+          if(i == 1) c_input.setAttribute('value', project_id)
+          if(i == 2) c_input.setAttribute('value', node_id+tbl_data.rows.length+1)
           c_td.appendChild(c_input)
           c_tr.appendChild(c_td)
         }
