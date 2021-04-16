@@ -50,6 +50,30 @@ export const GET_POST = gql`
     }
     `;
 
+export const GET_TEMPLATE = gql`
+    query($templateId: ID!){
+      getTemplate(templateId: $templateId){
+          _id
+          title
+          imageUrl
+          content
+          description
+          likes
+          createdDate
+          messages {
+            _id
+            messageBody
+            messageDate
+            messageUser {
+              _id
+              username
+              avatar
+            }
+          }
+      }
+    }
+    `;
+
 export const ADD_POST = gql`
     mutation(
       $title: String!,

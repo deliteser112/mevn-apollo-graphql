@@ -1,5 +1,5 @@
 <template>
-<!-- <div v-cloak> -->
+<div v-cloak>
   <v-form v-model="isFormValid" ref="form" @submit.prevent style="width:100%;">
       <!-- Title Input -->
       <v-layout row>
@@ -28,9 +28,9 @@
               Save template
             </v-btn>
 
-            <v-btn :loading="loading" v-if="isTemplate" color="info" type="submit"  @click="processData">
+            <v-btn :loading="loading" v-if="isTemplate" color="info" type="submit"  @click="selectDataset">
               <v-icon light>cached</v-icon>
-              Processing Data
+              Select dataset
             </v-btn>
             <!-- <v-btn :loading="loading" v-if="isCSV" color="info" type="submit"  @click="deleteRows">
               <v-icon light>delete</v-icon>
@@ -46,7 +46,47 @@
         </v-layout>
                 
   </v-form>
-<!-- </div> -->
+
+  <!-- View Process Dialog -->
+    <v-dialog xs12 sm6 offset-sm3 persistent v-model="processDialog">
+      <v-card>
+        <v-card-title class="headline grey lighten-2">Select the dataset</v-card-title>
+        <v-container>
+
+          <v-layout row v-for="item in processToDialog" :key="item._id">
+            <v-flex xs4 sm12>
+              <div>{{item.dataset_name}}</div>
+            </v-flex>
+            <v-flex xs4 sm12>
+              <div>{{item.project_id}}</div>
+            </v-flex>
+            <v-flex xs4 sm12>
+              <div>{{item.node_id_range}}</div>
+            </v-flex>
+          </v-layout>
+
+          <v-layout row>
+            <v-flex xs12>
+              <v-btn color="info" type="button"  @click="closeProcess">
+                      <span slot="loader" class="custom-loader">
+                        <v-icon light>cached</v-icon>
+                      </span>
+                Close
+              </v-btn>
+              <v-btn color="info" type="button"  @click="processData">
+                      <span slot="loader" class="custom-loader">
+                        <v-icon light>cached</v-icon>
+                      </span>
+                Process
+              </v-btn>
+              
+            </v-flex>
+          </v-layout>
+
+        </v-container>
+      </v-card>
+    </v-dialog>
+</div>
 </template>
 
 <script>
@@ -86,7 +126,9 @@
         headline: 'Import Template',
         isTemplate: false,
         text:"",
-        // adding post
+        processDialog:false,
+        processToDialog:[],
+        // adding template
         isFormValid: true,
         templateId: null,
         title: "",
@@ -110,11 +152,78 @@
       };
     },
     computed: {
-      ...mapState(['user', 'error', 'loading','postCategories'])
+      ...mapState(['user', 'userPosts', 'error', 'loading','postCategories'])
+    },
+    created() {
+      this.getUserPosts();
     },
     methods: {
       processData(){
-        console.log(this.text)
+        let ext_data = this.extractID(this.text)
+        let project_id = ext_data.project_id
+        let node_id = ext_data.node_id
+        let full_data = this.getData(this.userPosts)
+        let selected_id = ['6078d4552d4a671184df4af0', '6078e6cb2d4a671184df4af2']
+        // in case of node id is several.????????????
+        for(let r in full_data){
+          for(let c in selected_id){
+            if(full_data[r][0]._id == selected_id[c]){
+              if(full_data[r][0].project_id == project_id){
+                console.log(full_data[r][0].project_id, project_id, full_data[r][0].node_id, node_id)
+                // console.log(selected_id[c])
+              }
+            } 
+          }
+        }
+      },
+      selectDataset(){
+        let rowObj = {}
+        let pData = new Array()
+        let full_data = this.getData(this.userPosts)
+        
+        for(let r in full_data){
+          let _id = full_data[r][0]._id
+          let ds_nm = full_data[r][0].dataset_name
+          let pj_id = full_data[r][0].project_id
+          let nd_id_rng = full_data[r][0].node_id + " ~ " + full_data[r][full_data[r].length-1].node_id
+          rowObj = {'_id':_id, 'dataset_name': ds_nm, 'project_id': pj_id, 'node_id_range': nd_id_rng}
+          pData.push(rowObj)
+        }
+        
+        this.processToDialog = pData
+        this.processDialog = true;
+      },
+      getData(data){
+        let res = new Array()
+        let rowObj = {}
+        for(let r in data){
+          let tempArr = data[r].categories
+          let allArr = new Array()
+          for(let i = 0; i < tempArr.length; i+=7){
+            rowObj = {'_id':data[r]._id,'dataset_name':data[r].title, 'project_id':tempArr[i], 'node_id':tempArr[i+1], 'var_ip':tempArr[i+2], 'var_sm':tempArr[i+3], 'var_gw':tempArr[i+4], 'var_addr':tempArr[i+5], 'var_cont':tempArr[i+6]}
+            allArr.push(rowObj)
+          }
+          res.push(allArr)
+        }
+        return res
+      },
+      extractID(text){
+        let temp_string = text
+        while(temp_string.indexOf("\n")>-1){
+          temp_string = temp_string.replace('\n',' ')
+        }
+
+        while(temp_string.indexOf('  ')>-1){
+          temp_string = temp_string.replace('  ',' ')
+        }
+        temp_string = temp_string.split(' ')
+
+        let res = {}
+        for(let i = 0; i < temp_string.length; i++){
+          if(temp_string[i] == "project-id:") res["project_id"] = temp_string[i+1]
+          if(temp_string[i] == "node-id:") res["node_id"] = temp_string[i+1]
+        }
+        return res
       },
       submitForm() {
         if (this.$refs.form.validate()) {
@@ -133,8 +242,8 @@
         }
       },
       selectedFile() {
-        console.log('selected a file');
-        console.log(this.$refs.myFile.files[0]);
+        // console.log('selected a file');
+        // console.log(this.$refs.myFile.files[0]);
         
         let file = this.$refs.myFile.files[0];
         if(!file || file.type !== 'text/plain') return;
@@ -149,15 +258,23 @@
           console.error(evt);
         }
         this.isTemplate = true
+      },
+      getUserPosts() {
+        this.$store.dispatch("getUserPosts", {
+          userId: this.user._id
+        })
+      },
+      closeProcess(){
+        this.processDialog = false
       }
     }
-    
   };
 </script>
 
 <style>
   .text-area{
     width:100%;
+    min-width:300px;
     min-height:300px;
     border: 1px solid;
   }
@@ -206,5 +323,13 @@
   }
   .left-padding{
     padding: 20px;
+  }
+  @media only screen and (min-width: 500px){
+    .text-area{
+      width:100%;
+      min-width:500px;
+      min-height:300px;
+      border: 1px solid;
+    }
   }
 </style>

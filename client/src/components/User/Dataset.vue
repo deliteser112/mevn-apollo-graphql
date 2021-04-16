@@ -92,7 +92,7 @@
                       <v-icon>delete</v-icon>
                     </v-btn>
 
-                    <v-img :src="template.imageUrl" @click="open(template._id)"></v-img>
+                    <v-img :src="template.imageUrl" @click="template_view(template._id)"></v-img>
                     <v-card-text>{{template.title}}</v-card-text>
                   </v-card>
                 </v-flex>
@@ -110,10 +110,24 @@
         <v-card-title class="headline grey lighten-2">DataSet</v-card-title>
         <v-container>
 
+          <v-layout row>
+            <v-flex xs12 style="text-align:right">
+              <v-btn color="info" type="submit"  @click="addRow">
+                <v-icon light>add</v-icon>
+                Add row
+              </v-btn>
+              <v-btn color="info" type="submit"  @click="deleteRows">
+                <v-icon light>delete</v-icon>
+                Delete row
+              </v-btn>
+            </v-flex>
+          </v-layout>
+          
           <!-- <v-simple-table> -->
             <!-- <template v-slot:default> -->
               <thead>
                 <tr>
+                  <th></th>
                   <th class="text-left">
                     Project_ID
                   </th>
@@ -142,6 +156,7 @@
                   v-for="item in csvTable"
                   :key="item.node_id"
                 >
+                  <td><input type="checkbox"></td>
                   <td>{{ item.project_id }}</td>
                   <td>{{ item.node_id }}</td>
                   <td>{{ item.var_ip }}</td>
@@ -156,11 +171,59 @@
 
           <v-layout row>
             <v-flex xs12>
-              <v-btn color="info" type="button"  @click="confirm">
+              <v-btn color="info" type="button"  @click="closeDataset">
                       <span slot="loader" class="custom-loader">
                         <v-icon light>cached</v-icon>
                       </span>
                 Close
+              </v-btn>
+              <v-btn color="info" type="button"  @click="closeDataset">
+                      <span slot="loader" class="custom-loader">
+                        <v-icon light>cached</v-icon>
+                      </span>
+                Update
+              </v-btn>
+              
+            </v-flex>
+          </v-layout>
+          
+        </v-container>
+      </v-card>
+    </v-dialog>
+
+
+
+    <!-- View Template Dialog -->
+    <v-dialog xs12 sm6 offset-sm3 persistent v-model="editTemplateDialog" style="width:100px">
+      <v-card>
+        <v-card-title class="headline grey lighten-2">Template ({{templateTitle}})</v-card-title>
+        <v-container>
+
+          <v-layout row>
+            <v-flex xs12>
+                <textarea v-model="templateContent" class="text-area"></textarea>
+            </v-flex>
+          </v-layout>
+
+          <v-layout row>
+            <v-flex xs12>
+              <v-btn color="info" type="button"  @click="closeTemplate">
+                      <span slot="loader" class="custom-loader">
+                        <v-icon light>cached</v-icon>
+                      </span>
+                Close
+              </v-btn>
+              <v-btn color="info" type="button"  @click="closeTemplate">
+                      <span slot="loader" class="custom-loader">
+                        <v-icon light>cached</v-icon>
+                      </span>
+                Update
+              </v-btn>
+              <v-btn color="info" type="button"  @click="closeTemplate">
+                      <span slot="loader" class="custom-loader">
+                        <v-icon light>cached</v-icon>
+                      </span>
+                Data Processing
               </v-btn>
             </v-flex>
           </v-layout>
@@ -168,6 +231,7 @@
         </v-container>
       </v-card>
     </v-dialog>
+
   </v-container>
 </template>
 
@@ -186,9 +250,13 @@
     data() {
       return {
         editPostDialog: false,
+        editTemplateDialog: false,
         postToEdit: {},
         postId:'',
+        templateId:'',
         csvTable:[],
+        templateContent:'',
+        templateTitle:'',
         tab: null,
         items: [
           'Appetizers', 'Entrees',
@@ -220,28 +288,43 @@
       })
     },
     methods: {
-      confirm(){
+      addRow(){
+        console.log("add row")
+      },
+      deleteRows(){
+        console.log("delete row")
+      },
+      closeDataset(){
         this.editPostDialog = false;
+      },
+      closeTemplate(){
+        this.editTemplateDialog = false;
+      },
+      template_view(id, editTemplateDialog=true){
+        let templates = this.userTemplates;
+        for(let row in templates){
+          if(id == templates[row]._id){
+              this.templateContent = templates[row].content
+              this.templateTitle = templates[row].title
+              break;
+          } 
+        } 
+        console.log(this.templateContent, this.templateTitle)
+        this.editTemplateDialog = editTemplateDialog;
       },
       async open(id, editPostDialog=true){
         this.postId = id
         console.log('calling');
-        console.log("this is value", this.getPosts)
 
         const result = await this.apolloFnc();
         this.csvTable = result
         this.editPostDialog = editPostDialog;
-        // console.log(this.csvTable);
-        // console.log("this is id:", id, "this is All posts:", this.userPosts)
       },
       apolloFnc(){
-        // console.log(this.getPost.categories)
         return new Promise(resolve => {
           setTimeout(() => {
-            // console.log(this.getPost.categories)
             let rowObj = {}
             let allArr = new Array()
-
             let tempArr = this.getPost.categories
             for(let i = 0; i < tempArr.length; i+=7){
               rowObj = {'project_id':tempArr[i], 'node_id':tempArr[i+1], 'var_ip':tempArr[i+2], 'var_sm':tempArr[i+3], 'var_gw':tempArr[i+4], 'var_addr':tempArr[i+5], 'var_cont':tempArr[i+6]}
