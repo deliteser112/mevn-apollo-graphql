@@ -287,9 +287,8 @@
       },
       downloadTemplate(m_template){
         let res_template = this.makeTemplate(m_template)
-
-        // for getting timestamp
         
+        // for getting timestamp
         let d = new Date(); 
         let timestamp = d.getFullYear() + ""
           + (d.getMonth()+1) + ""
