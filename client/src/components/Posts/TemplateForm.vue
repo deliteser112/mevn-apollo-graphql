@@ -224,18 +224,58 @@
               if(temp_type == "any"){
                 for(let w in full_data[r]){
                   console.log(full_data[r][w].project_id, full_data[r][w].node_id, full_data[r][w].var_ip, full_data[r][w].var_sm, full_data[r][w].var_gw, full_data[r][w].var_cont, full_data[r][w].var_addr)
-                }
+                  let m_template = {}
+
+                  m_template["project_id"] = full_data[r][w].project_id
+                  m_template["node_id"] = full_data[r][w].node_id
+                  m_template["var_ip"] = full_data[r][w].var_ip
+                  m_template["var_sm"] = full_data[r][w].var_sm
+                  m_template["var_gw"] = full_data[r][w].var_gw
+                  m_template["var_content"] = full_data[r][w].var_cont
+                  m_template["var_addr"] = full_data[r][w].var_addr
+
+                  this.downloadTemplate(m_template)
+               }
               }else if(temp_type == "multiple"){
                 let node_ids = new Array()
                 node_ids = ext_data.node_id
                 for(let w in full_data[r]){
                   for(let q in node_ids){
-                    if(full_data[r][w].node_id == node_ids[q]) console.log(full_data[r][w].project_id, full_data[r][w].node_id, full_data[r][w].var_ip, full_data[r][w].var_sm, full_data[r][w].var_gw, full_data[r][w].var_cont, full_data[r][w].var_addr)
+                    if(full_data[r][w].node_id == node_ids[q]){
+
+                      console.log(full_data[r][w].project_id, full_data[r][w].node_id, full_data[r][w].var_ip, full_data[r][w].var_sm, full_data[r][w].var_gw, full_data[r][w].var_cont, full_data[r][w].var_addr)
+                      
+                      let m_template = {}
+
+                      m_template["project_id"] = full_data[r][w].project_id
+                      m_template["node_id"] = full_data[r][w].node_id
+                      m_template["var_ip"] = full_data[r][w].var_ip
+                      m_template["var_sm"] = full_data[r][w].var_sm
+                      m_template["var_gw"] = full_data[r][w].var_gw
+                      m_template["var_content"] = full_data[r][w].var_cont
+                      m_template["var_addr"] = full_data[r][w].var_addr
+
+                      this.downloadTemplate(m_template)
+                    } 
                   }
                 }
               }else if(temp_type == "single"){
                 for(let w in full_data[r]){
-                  if(full_data[r][w].node_id == ext_data.node_id) console.log(full_data[r][w].project_id, full_data[r][w].node_id, full_data[r][w].var_ip, full_data[r][w].var_sm, full_data[r][w].var_gw, full_data[r][w].var_cont, full_data[r][w].var_addr)
+                  if(full_data[r][w].node_id == ext_data.node_id){
+                    console.log(full_data[r][w].project_id, full_data[r][w].node_id, full_data[r][w].var_ip, full_data[r][w].var_sm, full_data[r][w].var_gw, full_data[r][w].var_cont, full_data[r][w].var_addr)
+                    
+                    let m_template = {}
+
+                    m_template["project_id"] = full_data[r][w].project_id
+                    m_template["node_id"] = full_data[r][w].node_id
+                    m_template["var_ip"] = full_data[r][w].var_ip
+                    m_template["var_sm"] = full_data[r][w].var_sm
+                    m_template["var_gw"] = full_data[r][w].var_gw
+                    m_template["var_content"] = full_data[r][w].var_cont
+                    m_template["var_addr"] = full_data[r][w].var_addr
+
+                    this.downloadTemplate(m_template)
+                  }
                 }
               }
             }
@@ -244,6 +284,48 @@
 
         
         
+      },
+      downloadTemplate(m_template){
+        let res_template = this.makeTemplate(m_template)
+
+        // for getting timestamp
+        
+        let d = new Date(); 
+        let timestamp = d.getFullYear() + ""
+          + (d.getMonth()+1) + ""
+          + d.getDate() + ""
+          + d.getHours() + ""  
+          + d.getMinutes() + "" 
+          + d.getSeconds() + ""
+          + d.getMilliseconds()
+        
+        // download the templates
+        const blob = new Blob([res_template], { type: 'text/plain' }) //text/plain //application/pdf
+        const link = document.createElement('a')
+        link.href = URL.createObjectURL(blob)
+        link.download = m_template["node_id"]+ "_" +timestamp + ".txt"
+        link.click()
+        URL.revokeObjectURL(link.href)
+      },
+      makeTemplate(m_template){
+        console.log(m_template)
+        let s_template = ""
+        s_template += " Template:\n"
+        s_template += "---\n"
+        s_template += "- project-id: " + m_template["project_id"] + "\n"
+        s_template += "  node-id: " + m_template["node_id"] + "\n"
+        s_template += "\n\n"
+        s_template += "  task:\n\n"
+        s_template += " - IP of Node: " + m_template["var_ip"] + "\n\n"
+        s_template += " - SM of Node: " + m_template["var_sm"] + "\n\n"
+        s_template += " - GW of Node: " + m_template["var_gw"] + "\n\n"
+        s_template += " - Name of Node: " + m_template["var_content"] + "\n"
+        s_template += "\n\n"
+        s_template += "  Node is located at location: " + m_template["var_addr"] + "\n"
+        s_template += "\n\n"
+        s_template += "  For questions please call us at : +49111111111"
+
+        return s_template
       },
       selectDataset(){
         let rowObj = {}
