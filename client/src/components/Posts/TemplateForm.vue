@@ -269,6 +269,7 @@
       processData(){
         let ext_data = this.extractID(this.templateContent)
         let full_data = this.getData(this.userPosts)
+        let arr = this.userPosts
         let selected_id = new Array() // selected id of dataset
         
         if(this.selection.length > 0) 
@@ -281,25 +282,38 @@
         }
 
         let temp_type = ext_data.type
-        console.log(full_data)
         for(let r in full_data){
           for(let c in selected_id){
             let f_project_id = full_data[r][0][2].trim()
             let e_project_id = ext_data.project_id.trim()
             if(full_data[r][0][0] == selected_id[c] && !f_project_id.localeCompare(e_project_id)){
+              let project_variables = new Array()
               if(temp_type == "any"){
                 for(let w in full_data[r]){
-                  console.log(full_data[r][w])
-
-                  // this.downloadTemplate(m_template)
+                  let dataset_variables = arr[r].variables
+                  let template_variables = ext_data.variables
+                  let row = {}
+                  for(let q in template_variables){
+                    for(let m in dataset_variables){
+                      if(template_variables[q] == dataset_variables[m]){
+                        let index = Number(m) + 2
+                        let key = dataset_variables[m].trim()
+                        row[key] = full_data[r][w][index]
+                      } 
+                    }
+                  }
+                  project_variables.push(row)
                }
+               let processedTemplate = this.makeTemplate(this.templateContent, project_variables)
+               console.log(processedTemplate)
               }else if(temp_type == "multiple"){
-              console.log("here is temp_type:", temp_type)
-
+                console.log("here is temp_type:", temp_type)
                 let node_ids = new Array()
                 node_ids = ext_data.node_id
+                console.log("node_id:", node_ids)
                 for(let w in full_data[r]){
                   for(let q in node_ids){
+                    console.log(full_data[r][w])
                     if(full_data[r][w].node_id == node_ids[q]){
 
                       this.downloadTemplate(m_template)
@@ -348,7 +362,6 @@
               }
               node_ids.push(temp_string[j])
               res["node_id"] = node_ids
-              // console.log(temp_string[i+1])
             }else if(temp_string[i+1].indexOf('*') > -1){
               res["type"] = "any"
             }else{
@@ -389,25 +402,17 @@
         link.click()
         URL.revokeObjectURL(link.href)
       },
-      makeTemplate(m_template){
-        // console.log(m_template)
-        let s_template = ""
-        s_template += " Template:\n"
-        s_template += "---\n"
-        s_template += "- project-id: " + m_template["project_id"] + "\n"
-        s_template += "  node-id: " + m_template["node_id"] + "\n"
-        s_template += "\n\n"
-        s_template += "  task:\n\n"
-        s_template += " - IP of Node: " + m_template["var_ip"] + "\n\n"
-        s_template += " - SM of Node: " + m_template["var_sm"] + "\n\n"
-        s_template += " - GW of Node: " + m_template["var_gw"] + "\n\n"
-        s_template += " - Name of Node: " + m_template["var_content"] + "\n"
-        s_template += "\n\n"
-        s_template += "  Node is located at location: " + m_template["var_addr"] + "\n"
-        s_template += "\n\n"
-        s_template += "  For questions please call us at : +49111111111"
-
-        return s_template
+      makeTemplate(m_template, variables){
+        let processedTemplate = new Array()
+        for(let r in variables){
+          let t_template = m_template
+          let keys = Object.keys(variables[r])
+          for(let k in keys){
+            t_template = t_template.replace(keys[k], variables[r][keys[k]])
+          }
+          processedTemplate.push(t_template)
+        }
+        return processedTemplate
       },
       selectDataset(){
         if(this.templateContent.indexOf('project_id') > -1 && this.templateContent.indexOf('node_id') > -1){
@@ -437,7 +442,7 @@
           let tempArr = data[r].categories
           let variableArr = data[r].variables
           let allArr = new Array()
-          for(let i = 0; i < tempArr.length; i+=variableArr.length){
+          for(let i = 0; i < tempArr.length; i += variableArr.length){
             let rows = new Array()
             rows.push(data[r]._id)
             rows.push(data[r].title)
