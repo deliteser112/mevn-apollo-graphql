@@ -33,6 +33,16 @@ type Template {
   messages: [Message]
 }
 
+type Process {
+  _id: ID
+  title: String!
+  imageUrl: String
+  templates: [String]!
+  node_ids: [String]
+  createdDate: String
+  userId: User!
+}
+
 type LikesFaves {
   likes: Int
   favorites: [Post]
@@ -55,10 +65,12 @@ type Query {
   getCurrentUser: User
   getPosts: [Post]
   getTemplates: [Template]
+  getSavedTemplates: [Process]
   getPost(postId: ID!): Post!
   getTemplate(templateId: ID!): Template!
   getUserPosts(userId: ID!): [Post]
   getUserTemplates(userId: ID!): [Template]
+  getUserSavedTemplates(userId: ID!): [Process]
   infiniteScrollPosts(pageNum: Int!, pageSize: Int!): PostsPage
   searchPosts(searchTerm:String): [Post]
 }
@@ -88,6 +100,13 @@ type Mutation {
     description: String!
     userId: ID!
   ): Template!
+  saveTemplates(
+    title: String!
+    imageUrl: String!
+    templates: [String]!
+    node_ids: [String]!
+    userId: ID!
+  ): Process!
   updateUserPost(
     postId: ID!
     userId: ID!
@@ -98,6 +117,7 @@ type Mutation {
   ): Post!
   deleteUserPost(postId: ID!): Post!
   deleteUserTemplate(templateId: ID!): Template!
+  deleteUserSavedTemplate(templateId: ID!): Process!
   addPostMessage(messageBody: String!, userId: ID!, postId: ID!): Message!
   likePost(postId: ID!, username: String!): LikesFaves
   unlikePost(postId: ID!, username: String!): LikesFaves

@@ -44,12 +44,11 @@
         if (parentName !== this.$options.name) return;
         let createdTemplate = JSON.parse(JSON.stringify(template));
         delete createdTemplate.templateId;
-        console.log(this.getTemplates)
+        console.log("+++++++++++++", createdTemplate)
         let objAllData = this.getTemplates;
         let titleArr = new Array()
         let double = false
         for(let row in objAllData) titleArr.push(objAllData[row].title)
-        console.log(titleArr)
 
         for(let i = 0; i < titleArr.length; i++){
           if(titleArr[i]==createdTemplate.title){

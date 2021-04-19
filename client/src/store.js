@@ -9,14 +9,18 @@ import {
   GET_TEMPLATES,
   ADD_POST,
   ADD_TEMPLATE,
+  SAVE_TEMPLATES,
   UPDATE_USER_POST,
   DELETE_USER_POST,
   DELETE_USER_TEMPLATE,
+  DELETE_USER_SAVED_TEMPLATE,
   LOGIN_USER,
   REGISTER_USER,
   GET_CURRENT_USER,
   GET_USER_POSTS,
   GET_USER_TEMPLATES,
+  GET_USER_SAVED_TEMPLATES,
+  GET_SAVED_TEMPLATES,
   INFINITE_SCROLL_POSTS,
   INFINITE_SCROLL_TEMPLATES
 } from './queries';
@@ -32,6 +36,7 @@ export default new Vuex.Store({
     searchResults: [],
     userPosts: [],
     userTemplates: [],
+    userSavedTemplates: [],
     postCategories: ['$var_ip', '$var_sm', '$var_gw', 'address', 'location'],
   },
   mutations: {
@@ -48,6 +53,9 @@ export default new Vuex.Store({
     },
     setUserTemplates: (state, payload) => {
       state.userTemplates = payload;
+    },
+    setUserSavedTemplates: (state, payload) => {
+      state.userSavedTemplates = payload;
     },
     setLoading: (state, value) => {
       state.loading = value;
@@ -112,6 +120,20 @@ export default new Vuex.Store({
         .then(({ data }) => {
           commit("setUserTemplates", data.getUserTemplates);
           // console.log(data.getUserTemplates);
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    },
+    getUserSavedTemplates: ({ commit }, payload) => {
+      apolloClient
+        .query({
+          query: GET_USER_SAVED_TEMPLATES,
+          variables: payload
+        })
+        .then(({ data }) => {
+          commit("setUserSavedTemplates", data.getUserSavedTemplates);
+          console.log("this ismy data:", data)
         })
         .catch(err => {
           console.error(err);
@@ -231,6 +253,52 @@ export default new Vuex.Store({
           console.error(err);
         });
     },
+    saveTemplates: ({ commit }, payload) => {
+      apolloClient
+        .mutate({
+          mutation: SAVE_TEMPLATES,
+          variables: payload,
+          update: (cache, { data: { saveTemplates } }) => {
+
+            // First read the query you want to update
+            const data = cache.readQuery({ query: GET_SAVED_TEMPLATES });
+            console.log("this is my data:", data)
+
+            // Create updated data
+            data.getPosts.unshift(saveTemplates);
+            // Write updated data back to query
+            cache.writeQuery({
+              query: GET_SAVED_TEMPLATES,
+              data
+            });
+          },
+          // optimistic response ensures data is added immediately as we specified for the update function
+          optimisticResponse: {
+            __typename: "Mutation",
+            saveTemplates: {
+              __typename: "Process",
+              _id: -1,
+              ...payload
+            }
+          },
+          // Rerun specified queries after performing the mutation in order to get fresh data
+          refetchQueries: [
+            {
+              query: INFINITE_SCROLL_TEMPLATES,
+              variables: {
+                pageNum: 1,
+                pageSize: 2
+              }
+            }
+          ]
+        })
+        .then(({ data }) => {
+          //console.log(data.addPost);
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    },
     updateUserPost: ({ state, commit }, payload) => {
       apolloClient
         .mutate({
@@ -289,6 +357,27 @@ export default new Vuex.Store({
             ...state.userTemplates.slice(index + 1)
           ];
           commit("setUserTemplates", userTemplates);
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    },
+
+    deleteUserSavedTemplate: ({ state, commit }, payload) => {
+      apolloClient
+        .mutate({
+          mutation: DELETE_USER_SAVED_TEMPLATE,
+          variables: payload
+        })
+        .then(({ data }) => {
+          const index = state.userSavedTemplates.findIndex(
+            template => template._id === data.deleteUserSavedTemplate._id
+          );
+          const userSavedTemplates = [
+            ...state.userSavedTemplates.slice(0, index),
+            ...state.userSavedTemplates.slice(index + 1)
+          ];
+          commit("setUserSavedTemplates", userSavedTemplates);
         })
         .catch(err => {
           console.error(err);

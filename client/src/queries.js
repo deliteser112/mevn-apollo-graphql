@@ -26,6 +26,16 @@ export const GET_TEMPLATES = gql`
     }
     `;
 
+export const GET_SAVED_TEMPLATES = gql`
+    query {
+      getSavedTemplates {
+        _id
+        title
+        imageUrl
+      }
+    }
+    `;
+
 export const GET_POST = gql`
     query($postId: ID!){
       getPost(postId: $postId)   {
@@ -126,6 +136,30 @@ export const ADD_POST = gql`
     }
     `;
 
+  export const SAVE_TEMPLATES = gql`
+    mutation(
+      $title: String!,
+      $imageUrl:String!,
+      $templates: [String]!,
+      $node_ids: [String]!,
+      $userId:ID!
+    ) {
+      saveTemplates(
+        title:$title
+        imageUrl:$imageUrl
+        templates:$templates
+        node_ids:$node_ids
+        userId:$userId
+      ){
+        _id
+        title
+        imageUrl
+        templates
+        node_ids
+      }
+    }
+    `;
+
 export const INFINITE_SCROLL_POSTS = gql`
     query(
       $pageNum: Int!,
@@ -220,6 +254,19 @@ export const GET_USER_TEMPLATES = gql`
   }
 `;
 
+export const GET_USER_SAVED_TEMPLATES = gql`
+  query($userId: ID!) {
+    getUserSavedTemplates(userId: $userId) {
+      _id
+      title
+      imageUrl
+      node_ids
+      templates
+      createdDate
+    }
+  }
+`;
+
 export const UPDATE_USER_POST = gql`
   mutation(
     $postId: ID!
@@ -265,7 +312,15 @@ export const DELETE_USER_POST = gql`
 
 export const DELETE_USER_TEMPLATE = gql`
   mutation($templateId: ID!) {
-    deleteUserTemplate(templateId: $templateId) {
+    deleteUserTemplate (templateId: $templateId) {
+      _id
+    }
+  }
+`;
+
+export const DELETE_USER_SAVED_TEMPLATE = gql`
+  mutation($templateId: ID!) {
+    deleteUserSavedTemplate(templateId: $templateId) {
       _id
     }
   }

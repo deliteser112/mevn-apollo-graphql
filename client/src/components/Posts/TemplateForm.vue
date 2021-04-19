@@ -287,13 +287,14 @@
             let e_project_id = ext_data.project_id.trim()
             if(full_data[r][0][0] == selected_id[c] && !f_project_id.localeCompare(e_project_id)){
               let project_variables = new Array()
-
+              let p_node_ids = new Array()
               // in case of template type is any
               if(temp_type == "any"){
                 for(let w in full_data[r]){
                   let dataset_variables = arr[r].variables
                   let template_variables = ext_data.variables
                   let row = {}
+                  p_node_ids.push(full_data[r][w][3])
 
                   // checking if template variables exist in dataset, and take the variables.
                   for(let q in template_variables){
@@ -306,21 +307,25 @@
                     }
                   }
                   project_variables.push(row)
-               }
-               let processedTemplate = this.makeTemplate(this.templateContent, project_variables)
-               console.log(processedTemplate)
+                }
+                let processedTemplate = this.makeTemplate(this.templateContent, project_variables)
+                let saveTemplates = this.configTemplate(processedTemplate, e_project_id, p_node_ids)
+
+                this.storeTemplates(saveTemplates)
 
                // in case of template node ids are several.
               }else if(temp_type == "multiple"){
+                console.log("here is multiple")
                 let node_ids = new Array()
 
                 // node ids in template
                 node_ids = ext_data.node_id
+                p_node_ids = node_ids
                 for(let w in full_data[r]){
                   for(let q in node_ids){
 
                     // in case of template node id is matched with dataset node id, 
-                    if(full_data[r][w][3] == node_ids[q]){
+                    if(full_data[r][w][3] == node_ids[q].trim()){
                       let dataset_variables = arr[r].variables
                       let template_variables = ext_data.variables
                       let row = {}
@@ -340,11 +345,14 @@
                   }
                 }
 
-                // console.log(project_variables)
                 let processedTemplate = this.makeTemplate(this.templateContent, project_variables)
+                let saveTemplates = this.configTemplate(processedTemplate, e_project_id, p_node_ids)
+
+                this.storeTemplates(saveTemplates)
 
                 // in case of template node ids is only one.
               }else if(temp_type.trim() == "single"){
+                p_node_ids.push(ext_data.node_id.trim())
                 for(let w in full_data[r]){
 
                   // in case of template node id is matched with dataset node id, 
@@ -363,13 +371,15 @@
                           row[key] = full_data[r][w][index]
                         }
                       }
-                      console.log(row)
                     }
                     project_variables.push(row)
                   }
                 }
-                // console.log(project_variables)
+                console.log("this is my value:", project_variables)
                 let processedTemplate = this.makeTemplate(this.templateContent, project_variables)
+                let saveTemplates = this.configTemplate(processedTemplate, e_project_id, p_node_ids)
+
+                this.storeTemplates(saveTemplates)
               }
             }
           }
@@ -554,7 +564,7 @@
           "Are you sure you want to delete this post?"
         );
         if (deleteTemplate) {
-          this.$store.dispatch("deleteUserTemplate", {
+          this.$store.dispatch("deleteUserSavedTemplate", {
             templateId: templateId
           });
         }
@@ -584,6 +594,31 @@
       importAgain(){
         this.isTemplate = false
         this.text = ""
+      },
+      storeTemplates(template) {
+        this.$store.dispatch('saveTemplates', template);
+        this.$router.push("/");
+      },
+      configTemplate(templates, project_id, node_ids){
+        // for getting timestamp
+        let d = new Date(); 
+        let timestamp = d.getFullYear() + ""
+          + (d.getMonth()+1) + ""
+          + d.getDate() + ""
+          + d.getHours() + ""  
+          + d.getMinutes() + "" 
+          + d.getSeconds() + ""
+          + d.getMilliseconds()
+
+        let title = project_id+"_"+timestamp
+        let template= {
+          "userId": this.userId,
+          "title": title,
+          "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrBE7meLSJg_1PE9w2EQzKKG6lqDwuAQ0xMPejJzekaPjl8raNuYw_QCmRwBfYaWM6ny8&usqp=CAU",
+          "templates": templates,
+          "node_ids": node_ids
+        }
+        return template
       }
     }
   };

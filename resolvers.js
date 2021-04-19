@@ -22,6 +22,13 @@ module.exports = {
       });
       return templates;
     },
+    getSavedTemplates: async (_, args, { Process }) => {
+      const templates = await Process.find().sort({ createdDate: 'desc' }).populate({
+        path: 'userId',
+        model: 'User'
+      });
+      return templates;
+    },
     getPost: async (_, { postId }, { Post }) => {
       const post = await Post.findOne({ _id: postId }).populate({
         path: "messages.messageUser",
@@ -104,6 +111,12 @@ module.exports = {
       });
       return templates;
     },
+    getUserSavedTemplates: async (_, { userId }, { Process }) => {
+      const templates = await Process.find({
+        userId: userId
+      });
+      return templates;
+    },
   },
   Mutation: {
     addPost: async (
@@ -135,6 +148,20 @@ module.exports = {
       }).save();
       return newTemplate;
     },
+    saveTemplates: async (
+      _,
+      { title, imageUrl, templates, node_ids, userId },
+      { Process }
+    ) => {
+      const newSavedTemplates = await new Process({
+        title,
+        imageUrl,
+        templates,
+        node_ids,
+        userId,
+      }).save();
+      return newSavedTemplates;
+    },
     updateUserPost: async (
       _,
       { postId, userId, title, imageUrl, categories, variables, description },
@@ -154,6 +181,10 @@ module.exports = {
     },
     deleteUserTemplate: async (_, { templateId }, { Template }) => {
       const template = await Template.findOneAndRemove({ _id: templateId });
+      return template;
+    },
+    deleteUserSavedTemplate: async (_, { templateId }, { Process }) => {
+      const template = await Process.findOneAndRemove({ _id: templateId });
       return template;
     },
     addPostMessage: async (_, { messageBody, userId, postId }, { Post }) => {

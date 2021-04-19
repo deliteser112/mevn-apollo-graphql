@@ -6,7 +6,7 @@
       <v-card class="white--text" color="secondary">
         <v-layout>
           <v-flex xs5>
-            <v-img height="125px" contain :src="user.avatar"></v-img>
+            <v-img height="125px" contain :src="user.avatar" @click="test_console"></v-img>
           </v-flex>
           <v-flex xs7>
             <v-card-title primary-title>
@@ -71,7 +71,7 @@
         <v-card flat>
           <v-card-text>
             <!-- DataSets Created By user -->
-            <v-container v-if="!userTemplates.length">
+            <v-container v-if="!userSavedTemplates.length">
               <v-layout row wrap>
                 <v-flex xs12>
                   <h2>You have no templates currently. Go and add some!</h2>
@@ -82,13 +82,13 @@
             <v-container class="mt-3" v-else>
               <v-flex xs12>
                 <h2 class="font-weight-light">Your templates
-                  <span class="font-weight-regular">({{userTemplates.length}})</span>
+                  <span class="font-weight-regular">({{userSavedTemplates.length}})</span>
                 </h2>
               </v-flex>
               <v-layout row wrap style="justify-content:left;">
-                <v-flex xs12 sm6 v-for="template in userTemplates" :key="template._id">
+                <v-flex xs12 sm6 v-for="template in userSavedTemplates" :key="template._id">
                   <v-card class="mt-3 ml-1 mr-2" hover>
-                    <v-btn @click="deleteTemplate(template._id)" color="error" floating fab small dark>
+                    <v-btn @click="deleteSavedTemplate(template._id)" color="error" floating fab small dark>
                       <v-icon>delete</v-icon>
                     </v-btn>
 
@@ -170,14 +170,31 @@
 
 
     <!-- View Template Dialog -->
-    <v-dialog xs12 sm6 offset-sm3 persistent v-model="editTemplateDialog" style="width:100px">
+    <v-dialog xs6 sm6 offset-sm3 persistent v-model="editTemplateDialog" >
       <v-card>
         <v-card-title class="headline grey lighten-2">Template ({{templateTitle}})</v-card-title>
         <v-container>
 
           <v-layout row>
             <v-flex xs12>
-                <textarea v-model="templateContent" class="text-area"></textarea>
+              <v-card>
+                
+                <v-list two-line subheader>
+                  
+                  <v-list-tile v-for="(item, index) in templateContent" v-bind:key="index" avatar @click="">
+                    <v-list-tile-avatar>
+                      <v-icon v-bind:class="[item.iconClass]">{{ item.icon }}</v-icon>
+                    </v-list-tile-avatar>
+                    <v-list-tile-content>
+                      <v-list-tile-title>{{ item.node_id }}</v-list-tile-title>
+                      <v-list-tile-sub-title>{{ item.template_content }}</v-list-tile-sub-title>
+                    </v-list-tile-content>
+                    <v-list-tile-action>
+                        <v-icon color="grey lighten-1">info</v-icon>
+                    </v-list-tile-action>
+                  </v-list-tile>
+                </v-list>
+              </v-card>
             </v-flex>
           </v-layout>
 
@@ -189,17 +206,12 @@
                       </span>
                 Close
               </v-btn>
+    
               <v-btn color="info" type="button"  @click="closeTemplate">
                       <span slot="loader" class="custom-loader">
                         <v-icon light>cached</v-icon>
                       </span>
-                Update
-              </v-btn>
-              <v-btn color="info" type="button"  @click="closeTemplate">
-                      <span slot="loader" class="custom-loader">
-                        <v-icon light>cached</v-icon>
-                      </span>
-                Data Processing
+                Download templates
               </v-btn>
             </v-flex>
           </v-layout>
@@ -232,7 +244,7 @@
         templateId:'',
         csvTable:[],
         csvHeader:[],
-        templateContent:'',
+        templateContent:[],
         templateTitle:'',
         tab: null,
         items: [
@@ -243,7 +255,7 @@
     },
     computed: {
       ...mapGetters(["userFavorites"]),
-      ...mapState(["user", "userPosts", "userTemplates"])
+      ...mapState(["user", "userPosts", "userTemplates", "userSavedTemplates"])
     },
     apollo: {
       getPost: {
@@ -258,6 +270,7 @@
     created() {
       this.getUserPosts();
       this.getUserTemplates();
+      this.getUserSavedTemplates();
       
       EventBus.$on('submitPostForm', ({parentName, post}) => {
         if (parentName !== this.$options.name) return;
@@ -265,6 +278,9 @@
       })
     },
     methods: {
+      test_console(){
+        console.log("this is post:", this.userSavedTemplates)
+      },
       addRow(){
         console.log("add row")
       },
@@ -278,17 +294,27 @@
         this.editTemplateDialog = false;
       },
       template_view(id, editTemplateDialog=true){
-        let templates = this.userTemplates;
+        let templates = this.userSavedTemplates;
         for(let row in templates){
+          console.log(id, templates[row]._id)
           if(id == templates[row]._id){
-              this.templateContent = templates[row].content
               this.templateTitle = templates[row].title
+              let temp_row = {}
+              let tempArray = new Array()
+              for(let i in templates[row].templates){
+                temp_row["template_content"] = templates[row].templates[i]
+                temp_row["node_id"] = templates[row].node_ids[i]
+                temp_row["icon"] = "folder"
+                temp_row["iconClass"] = "grey lighten-1 white--text"
+                tempArray.push(temp_row)
+              }
+              this.templateContent = tempArray
               break;
           } 
         } 
-        console.log(this.templateContent, this.templateTitle)
         this.editTemplateDialog = editTemplateDialog;
       },
+
       open(id, editPostDialog=true){
         let datasets = this.userPosts;
         let values = new Array()
@@ -336,6 +362,11 @@
           userId: this.user._id
         })
       },
+      getUserSavedTemplates() {
+        this.$store.dispatch("getUserSavedTemplates", {
+          userId: this.user._id
+        })
+      },
       getUserPosts() {
         this.$store.dispatch("getUserPosts", {
           userId: this.user._id
@@ -355,12 +386,12 @@
           });
         }
       },
-      deleteTemplate(templateId) {
-        const deleteTemplate = window.confirm(
+      deleteSavedTemplate(templateId) {
+        const deleteSavedTemplate = window.confirm(
           "Are you sure you want to delete this post?"
         );
-        if (deleteTemplate) {
-          this.$store.dispatch("deleteUserTemplate", {
+        if (deleteSavedTemplate) {
+          this.$store.dispatch("deleteUserSavedTemplate", {
             templateId: templateId
           });
         }
