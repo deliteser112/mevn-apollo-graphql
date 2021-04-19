@@ -264,7 +264,6 @@
       this.getUserTemplates();
     },
     methods: {
-
 /////////////////// ----- start the prcess of the template ------ ////////////
       processData(){
         let ext_data = this.extractID(this.templateContent)
@@ -280,7 +279,7 @@
             selected_id.push(full_data[r][0][0])
           }
         }
-
+        /// --- main processing section --- ///
         let temp_type = ext_data.type
         for(let r in full_data){
           for(let c in selected_id){
@@ -288,46 +287,89 @@
             let e_project_id = ext_data.project_id.trim()
             if(full_data[r][0][0] == selected_id[c] && !f_project_id.localeCompare(e_project_id)){
               let project_variables = new Array()
+
+              // in case of template type is any
               if(temp_type == "any"){
                 for(let w in full_data[r]){
                   let dataset_variables = arr[r].variables
                   let template_variables = ext_data.variables
                   let row = {}
+
+                  // checking if template variables exist in dataset, and take the variables.
                   for(let q in template_variables){
                     for(let m in dataset_variables){
                       if(template_variables[q] == dataset_variables[m]){
                         let index = Number(m) + 2
                         let key = dataset_variables[m].trim()
                         row[key] = full_data[r][w][index]
-                      } 
+                      }
                     }
                   }
                   project_variables.push(row)
                }
                let processedTemplate = this.makeTemplate(this.templateContent, project_variables)
                console.log(processedTemplate)
+
+               // in case of template node ids are several.
               }else if(temp_type == "multiple"){
-                console.log("here is temp_type:", temp_type)
                 let node_ids = new Array()
+
+                // node ids in template
                 node_ids = ext_data.node_id
-                console.log("node_id:", node_ids)
                 for(let w in full_data[r]){
                   for(let q in node_ids){
-                    console.log(full_data[r][w])
-                    if(full_data[r][w].node_id == node_ids[q]){
 
-                      this.downloadTemplate(m_template)
+                    // in case of template node id is matched with dataset node id, 
+                    if(full_data[r][w][3] == node_ids[q]){
+                      let dataset_variables = arr[r].variables
+                      let template_variables = ext_data.variables
+                      let row = {}
+
+                      // checking if template variables exist in dataset, and take the variables.
+                      for(let q in template_variables){
+                        for(let m in dataset_variables){
+                          if(template_variables[q].trim() == dataset_variables[m].trim()){
+                            let index = Number(m) + 2
+                            let key = dataset_variables[m].trim()
+                            row[key] = full_data[r][w][index]
+                          }
+                        }
+                      }
+                      project_variables.push(row)
                     }
                   }
                 }
-              }else if(temp_type == "single"){
-                for(let w in full_data[r]){
-                  if(full_data[r][w].node_id == ext_data.node_id){
-                    console.log(full_data[r][w].project_id, full_data[r][w].node_id, full_data[r][w].var_ip, full_data[r][w].var_sm, full_data[r][w].var_gw, full_data[r][w].var_cont, full_data[r][w].var_addr)
 
-                    this.downloadTemplate(m_template)
+                // console.log(project_variables)
+                let processedTemplate = this.makeTemplate(this.templateContent, project_variables)
+
+                // in case of template node ids is only one.
+              }else if(temp_type.trim() == "single"){
+                for(let w in full_data[r]){
+
+                  // in case of template node id is matched with dataset node id, 
+                  if(full_data[r][w][3] == ext_data.node_id.trim()){
+                    console.log(full_data[r][w][3])
+                    let dataset_variables = arr[r].variables
+                    let template_variables = ext_data.variables
+                    let row = {}
+
+                    // checking if template variables exist in dataset, and take the variables.
+                    for(let q in template_variables){
+                      for(let m in dataset_variables){
+                        if(template_variables[q].trim() == dataset_variables[m].trim()){
+                          let index = Number(m) + 2
+                          let key = dataset_variables[m].trim()
+                          row[key] = full_data[r][w][index]
+                        }
+                      }
+                      console.log(row)
+                    }
+                    project_variables.push(row)
                   }
                 }
+                // console.log(project_variables)
+                let processedTemplate = this.makeTemplate(this.templateContent, project_variables)
               }
             }
           }
@@ -408,7 +450,10 @@
           let t_template = m_template
           let keys = Object.keys(variables[r])
           for(let k in keys){
-            t_template = t_template.replace(keys[k], variables[r][keys[k]])
+            while(t_template.indexOf(keys[k])>-1){
+              // t_template = t_template.replace(keys[k], "+--+"+variables[r][keys[k]])   /* for testing */
+              t_template = t_template.replace(keys[k], variables[r][keys[k]])
+            }
           }
           processedTemplate.push(t_template)
         }
