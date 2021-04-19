@@ -133,7 +133,6 @@ export default new Vuex.Store({
         })
         .then(({ data }) => {
           commit("setUserSavedTemplates", data.getUserSavedTemplates);
-          console.log("this ismy data:", data)
         })
         .catch(err => {
           console.error(err);
@@ -261,16 +260,15 @@ export default new Vuex.Store({
           update: (cache, { data: { saveTemplates } }) => {
 
             // First read the query you want to update
-            const data = cache.readQuery({ query: GET_SAVED_TEMPLATES });
-            console.log("this is my data:", data)
+            // const data = cache.readQuery({ query: GET_USER_SAVED_TEMPLATES });
 
             // Create updated data
-            data.getPosts.unshift(saveTemplates);
+            // data.getPosts.unshift(saveTemplates);
             // Write updated data back to query
-            cache.writeQuery({
-              query: GET_SAVED_TEMPLATES,
-              data
-            });
+            // cache.writeQuery({
+            //   query: GET_USER_SAVED_TEMPLATES,
+            //   data
+            // });
           },
           // optimistic response ensures data is added immediately as we specified for the update function
           optimisticResponse: {

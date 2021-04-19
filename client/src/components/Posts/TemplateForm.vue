@@ -262,6 +262,7 @@
     created() {
       this.getUserPosts();
       this.getUserTemplates();
+      this.getUserSavedTemplates();
     },
     methods: {
 /////////////////// ----- start the prcess of the template ------ ////////////
@@ -559,12 +560,17 @@
           userId: this.user._id
         })
       },
+      getUserSavedTemplates() {
+        this.$store.dispatch("getUserSavedTemplates", {
+          userId: this.user._id
+        })
+      },
       deleteTemplate(templateId) {
         const deleteTemplate = window.confirm(
           "Are you sure you want to delete this post?"
         );
         if (deleteTemplate) {
-          this.$store.dispatch("deleteUserSavedTemplate", {
+          this.$store.dispatch("deleteUserTemplate", {
             templateId: templateId
           });
         }

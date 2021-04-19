@@ -207,7 +207,7 @@
                 Close
               </v-btn>
     
-              <v-btn color="info" type="button"  @click="closeTemplate">
+              <v-btn color="info" type="button"  @click="downloadTemplates">
                       <span slot="loader" class="custom-loader">
                         <v-icon light>cached</v-icon>
                       </span>
@@ -246,6 +246,7 @@
         csvHeader:[],
         templateContent:[],
         templateTitle:'',
+        templateID:'',
         tab: null,
         items: [
           'Appetizers', 'Entrees',
@@ -294,9 +295,9 @@
         this.editTemplateDialog = false;
       },
       template_view(id, editTemplateDialog=true){
+        this.templateID = id
         let templates = this.userSavedTemplates;
         for(let row in templates){
-          console.log(id, templates[row]._id)
           if(id == templates[row]._id){
               this.templateTitle = templates[row].title
               let temp_row = {}
@@ -399,6 +400,48 @@
       openEditPost(post, editPostDialog = true) {
         this.editPostDialog = editPostDialog;
         this.postToEdit = post;
+      },
+      downloadTemplates(){
+        let templates = this.userSavedTemplates;
+        let id = this.templateID
+        for(let row in templates){
+          if(id == templates[row]._id){
+              this.templateTitle = templates[row].title
+              let tempArray = new Array()
+              var zip = new JSZip();
+              for(let i in templates[row].templates){
+                // for getting timestamp
+                let d = new Date(); 
+                let timestamp = d.getFullYear() + ""
+                  + (d.getMonth()+1) + ""
+                  + d.getDate() + ""
+                  + d.getHours() + ""  
+                  + d.getMinutes() + "" 
+                  + d.getSeconds() + ""
+                  + d.getMilliseconds()
+                
+                // download the templates
+                const blob = new Blob([templates[row].templates[i]], { type: 'text/cfg' }) //text/plain //application/pdf
+                zip.file(`file-${i}.cfg`, blob);
+                // const link = document.createElement('a')
+                // link.href = URL.createObjectURL(blob)
+                // link.download = m_template["node_id"]+ "_" +timestamp + ".txt"
+                // link.click()
+                // URL.revokeObjectURL(link.href)
+
+                tempArray.push(templates[row].templates[i])
+              }
+
+              zip.generateAsync({type:"blob"}).then(function (blob) { // 1) generate the zip file
+                  saveAs(blob, "hello.zip");                          // 2) trigger the download
+              }, function (err) {
+                  console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+              });
+
+              console.log(tempArray)
+              break;
+          } 
+        }
       }
     }
   };

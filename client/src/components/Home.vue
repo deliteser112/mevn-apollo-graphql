@@ -1,6 +1,7 @@
 <template>
   <v-container text-xs-center>
     <v-layout row>
+      <h1 class="home-process">Template Processing....</h1>
       <!-- <v-dialog v-model="loading" persistent fullscreen style="width:100%!important">
         <v-container fill-height>
           <v-layout row justify-center align-center>
@@ -47,6 +48,10 @@
   };
 </script>
 <style scoped>
+  .home-process{
+    margin-top:100px;
+  }
+
   .carousel_title {
     position: absolute;
     background-color: rgba(0, 0, 0, 0.5);

@@ -10,7 +10,7 @@
 
     <!-- Add Template Form -->
     <v-layout row wrap>
-        <template-form :userId="user._id" :parent-name="$options.name"></template-form>
+        <template-form :userId="user._id" :parent-name="$options.name" style="width:100%"></template-form>
     </v-layout>
 
   </v-container>
