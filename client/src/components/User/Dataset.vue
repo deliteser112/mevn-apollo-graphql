@@ -128,42 +128,18 @@
               <thead>
                 <tr>
                   <th></th>
-                  <th class="text-left">
-                    Project_ID
-                  </th>
-                  <th class="text-left">
-                    Node_ID
-                  </th>
-                  <th class="text-left">
-                    $var_IP
-                  </th>
-                  <th class="text-left">
-                    $var_SM
-                  </th>
-                  <th class="text-left">
-                    $var_GW
-                  </th>
-                  <th class="text-left">
-                    $var_Address
-                  </th>
-                  <th class="text-left">
-                    $var_content
+                  <th class="text-left" v-for="(item, index) in csvHeader" :key="index">
+                    {{item}}
                   </th>
                 </tr>
               </thead>
               <tbody>
                 <tr
-                  v-for="item in csvTable"
-                  :key="item.node_id"
+                  v-for="(row,index) in csvTable"
+                  :key="index"
                 >
                   <td><input type="checkbox"></td>
-                  <td>{{ item.project_id }}</td>
-                  <td>{{ item.node_id }}</td>
-                  <td>{{ item.var_ip }}</td>
-                  <td>{{ item.var_sm }}</td>
-                  <td>{{ item.var_gw }}</td>
-                  <td>{{ item.var_addr }}</td>
-                  <td>{{ item.var_cont }}</td>
+                  <td v-for="(item, index) in row" :key="index">{{ item }}</td>
                 </tr>
               </tbody>
             <!-- </template> -->
@@ -255,6 +231,7 @@
         postId:'',
         templateId:'',
         csvTable:[],
+        csvHeader:[],
         templateContent:'',
         templateTitle:'',
         tab: null,
@@ -312,28 +289,48 @@
         console.log(this.templateContent, this.templateTitle)
         this.editTemplateDialog = editTemplateDialog;
       },
-      async open(id, editPostDialog=true){
-        this.postId = id
-        console.log('calling');
+      open(id, editPostDialog=true){
+        let datasets = this.userPosts;
+        let values = new Array()
+        let variables = new Array()
+        for(let row in datasets){
+          if(id == datasets[row]._id){
+              values = datasets[row].categories
+              variables = datasets[row].variables
+              break;
+          }
+        }
+        
+        this.csvHeader = variables
+        let allArr = new Array()
+        for(let i = 0; i < values.length; i += variables.length){
+          let rowArr = new Array()
+          for(let j = 0; j < variables.length; j++) rowArr.push(values[i+j])
+          allArr.push(rowArr)
+        }
+        console.log(allArr)
+        this.csvTable = allArr
+        // this.postId = id
+        // console.log('calling');
 
-        const result = await this.apolloFnc();
-        this.csvTable = result
+        // const result = await this.apolloFnc();
+        // this.csvTable = result
         this.editPostDialog = editPostDialog;
       },
-      apolloFnc(){
-        return new Promise(resolve => {
-          setTimeout(() => {
-            let rowObj = {}
-            let allArr = new Array()
-            let tempArr = this.getPost.categories
-            for(let i = 0; i < tempArr.length; i+=7){
-              rowObj = {'project_id':tempArr[i], 'node_id':tempArr[i+1], 'var_ip':tempArr[i+2], 'var_sm':tempArr[i+3], 'var_gw':tempArr[i+4], 'var_addr':tempArr[i+5], 'var_cont':tempArr[i+6]}
-              allArr.push(rowObj)
-            }
-            resolve(allArr);
-          }, 100);
-        });
-      },
+      // apolloFnc(){
+      //   return new Promise(resolve => {
+      //     setTimeout(() => {
+      //       let rowObj = {}
+      //       let allArr = new Array()
+      //       let tempArr = this.getPost.categories
+      //       for(let i = 0; i < tempArr.length; i+=7){
+      //         rowObj = {'project_id':tempArr[i], 'node_id':tempArr[i+1], 'var_ip':tempArr[i+2], 'var_sm':tempArr[i+3], 'var_gw':tempArr[i+4], 'var_addr':tempArr[i+5], 'var_cont':tempArr[i+6]}
+      //         allArr.push(rowObj)
+      //       }
+      //       resolve(allArr);
+      //     }, 100);
+      //   });
+      // },
       getUserTemplates() {
         this.$store.dispatch("getUserTemplates", {
           userId: this.user._id

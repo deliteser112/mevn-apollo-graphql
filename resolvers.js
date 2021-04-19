@@ -108,13 +108,14 @@ module.exports = {
   Mutation: {
     addPost: async (
       _,
-      { title, imageUrl, categories, description, userId },
+      { title, imageUrl, categories, variables, description, userId },
       { Post }
     ) => {
       const newPost = await new Post({
         title,
         imageUrl,
         categories,
+        variables,
         description,
         userId,
       }).save();
@@ -136,13 +137,13 @@ module.exports = {
     },
     updateUserPost: async (
       _,
-      { postId, userId, title, imageUrl, categories, description },
+      { postId, userId, title, imageUrl, categories, variables, description },
       { Post }
     ) => {
       const post = await Post.findOneAndUpdate(
         // Find post by postId and createdBy
         { _id: postId, userId: userId },
-        { $set: { title, imageUrl, categories, description } },
+        { $set: { title, imageUrl, categories, variables, description } },
         { new: true }
       );
       return post;

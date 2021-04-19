@@ -23,13 +23,17 @@
               Submit
             </v-btn>
 
-            <v-btn :loading="loading" v-if="isCSV" color="info" type="submit"  @click="addRow">
+            <v-btn :loading="loading" v-if="isCSV" color="info" type="button"  @click="addRow">
               <v-icon light>add</v-icon>
               Add row
             </v-btn>
-            <v-btn :loading="loading" v-if="isCSV" color="info" type="submit"  @click="deleteRows">
+            <v-btn :loading="loading" v-if="isCSV" color="info" type="button"  @click="deleteRows">
               <v-icon light>delete</v-icon>
               Delete row
+            </v-btn>
+            <v-btn :loading="loading" v-if="isCSV" color="info" type="button"  @click="importAgain">
+              <v-icon light>slow_motion_video</v-icon>
+              Import again
             </v-btn>
           </v-flex>
         </v-layout>
@@ -83,6 +87,7 @@
             title: "",
             imageUrl: "",
             categories: [],
+            variables: [],
             description: "",
           }
         }
@@ -140,6 +145,7 @@
     methods: {
       submitForm() {
         if (this.$refs.form.validate()) {
+          console.log(this.saveDataSet().variables, this.saveDataSet().values)
           EventBus.$emit('submitPostForm',
           {
             parentName: this.parentName,
@@ -148,7 +154,8 @@
               userId: this.userId,
               title: this.title,
               imageUrl: "https://cdn.pixabay.com/photo/2013/07/12/17/22/database-152091_960_720.png",
-              categories: this.saveDataSet(),
+              categories: this.saveDataSet().values,
+              variables: this.saveDataSet().variables,
               description: "no description"
             }
           });
@@ -189,16 +196,21 @@
       saveDataSet(){
         let element = this.$refs.ref_table
         let data = element.querySelectorAll(".input-cell");
+
+        let res = {}
         let rowObj = {}
         let allArr = new Array()
         let linerArr = new Array()
-        for(let i = 0; i < data.length; i+=7){
-          rowObj = {'project_id':data[i].value, 'node_id':data[i+1].value, 'var_ip':data[i+2].value, 'var_sm':data[i+3].value, 'var_gw':data[i+4].value, 'var_addr':data[i+5].value, 'var_cont':data[i+6].value}
-          allArr.push(rowObj)
-        }
 
+        // for(let i = 0; i < data.length; i+=7){
+        //   rowObj = {'project_id':data[i].value, 'node_id':data[i+1].value, 'var_ip':data[i+2].value, 'var_sm':data[i+3].value, 'var_gw':data[i+4].value, 'var_addr':data[i+5].value, 'var_cont':data[i+6].value}
+        //   allArr.push(rowObj)
+        // }
+
+        res["variables"] = this.parse_header
         for(let i = 0; i < data.length; i++) linerArr.push(data[i].value)
-        return linerArr
+        res["values"] = linerArr
+        return res
       },
       addPost(post) {
         this.$store.dispatch('addPost', post);
@@ -256,6 +268,9 @@
         } else {
           alert('FileReader are not supported in this browser.');
         }
+      },
+      importAgain(){
+        location.reload()
       }
     }
     

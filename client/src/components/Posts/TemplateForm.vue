@@ -28,10 +28,7 @@
               Save template
             </v-btn>
 
-            <v-btn :loading="loading" v-if="isTemplate" color="info" type="button"  @click="selectDataset">
-              <v-icon light>format_list_bulleted</v-icon>
-              Select dataset
-            </v-btn>
+            
             <v-btn :loading="loading" v-if="isTemplate" color="info" type="button"  @click="importAgain">
               <v-icon light>cached</v-icon>
               Import again
@@ -41,11 +38,40 @@
 
         <v-layout row>
           <v-flex xs12 class="left-padding">
-            <textarea v-model="text" class="text-area"></textarea>
+            <textarea v-model="text" class="text-area" v-if="isTemplate"></textarea>
           </v-flex>
         </v-layout>
                 
   </v-form>
+
+  <!-- DataSets Created By user -->
+  <v-container v-if="!userTemplates.length">
+    <v-layout row wrap>
+      <v-flex xs12>
+        <h2>You have no templates currently. Go and add some!</h2>
+      </v-flex>
+    </v-layout>
+  </v-container>
+
+  <v-container class="mt-3" v-else>
+    <v-flex xs12>
+      <h2 class="font-weight-light">Imported templates
+        <span class="font-weight-regular">({{userTemplates.length}})</span>
+      </h2>
+    </v-flex>
+    <v-layout row wrap style="justify-content:left;">
+      <v-flex xs12 sm6 v-for="template in userTemplates" :key="template._id">
+        <v-card class="mt-3 ml-1 mr-2" hover>
+          <v-btn @click="deleteTemplate(template._id)" color="error" floating fab small dark>
+            <v-icon>delete</v-icon>
+          </v-btn>
+
+          <v-img :src="template.imageUrl" @click="template_view(template._id)"></v-img>
+          <v-card-text>{{template.title}}</v-card-text>
+        </v-card>
+      </v-flex>
+    </v-layout>
+  </v-container>
 
   <!-- View Process Dialog -->
     <v-dialog xs12 sm6 offset-sm3 persistent v-model="processDialog" class="dialog-width">
@@ -86,10 +112,6 @@
                       <v-list-tile-action-text>Project ID</v-list-tile-action-text>
                       <v-list-tile-text>{{ item.project_id }}</v-list-tile-text>
                     </v-list-tile-action>              
-                    <v-list-tile-action id="age" class="pr-2">
-                      <v-list-tile-action-text>Range</v-list-tile-action-text>
-                      <v-list-tile-text>{{ item.node_id_range }}</v-list-tile-text>
-                    </v-list-tile-action>
                   </v-list-tile>
                     <v-divider v-if="index + 1 < item.length"></v-divider>
                     </div>
@@ -116,6 +138,43 @@
             </v-flex>
           </v-layout>
 
+        </v-container>
+      </v-card>
+    </v-dialog>
+
+    <!-- View Template Dialog -->
+    <v-dialog xs12 sm6 offset-sm3 persistent v-model="editTemplateDialog" style="width:100px">
+      <v-card>
+        <v-card-title class="headline grey lighten-2">Template ({{templateTitle}})</v-card-title>
+        <v-container>
+
+          <v-layout row>
+            <v-flex xs12>
+                <textarea v-model="templateContent" class="text-area"></textarea>
+            </v-flex>
+          </v-layout>
+
+          <v-layout row>
+            <v-flex xs12>
+              <v-btn color="info" type="button"  @click="closeTemplate">
+                      <span slot="loader" class="custom-loader">
+                        <v-icon light>cached</v-icon>
+                      </span>
+                Close
+              </v-btn>
+              <v-btn color="info" type="button"  @click="closeTemplate">
+                      <span slot="loader" class="custom-loader">
+                        <v-icon light>cached</v-icon>
+                      </span>
+                Update
+              </v-btn>
+              <v-btn :loading="loading" color="info" type="button"  @click="selectDataset">
+                <v-icon light>format_list_bulleted</v-icon>
+                Select dataset
+              </v-btn>
+            </v-flex>
+          </v-layout>
+          
         </v-container>
       </v-card>
     </v-dialog>
@@ -161,6 +220,9 @@
         text:"",
         processDialog:false,
         allDataset:[],
+        templateContent:'',
+        templateTitle:'',
+        editTemplateDialog: false,
         // adding template
         isFormValid: true,
         templateId: null,
@@ -188,7 +250,7 @@
       };
     },
     computed: {
-      ...mapState(['user', 'userPosts', 'error', 'loading','postCategories']),
+      ...mapState(['user', 'userPosts', "userTemplates", 'error', 'loading','postCategories']),
       selection() {
         return this.allDataset.filter(item => {
           if (item.selected === true) {
@@ -199,11 +261,13 @@
     },
     created() {
       this.getUserPosts();
+      this.getUserTemplates();
     },
     methods: {
-      processData(){
-        let ext_data = this.extractID(this.text)
 
+/////////////////// ----- start the prcess of the template ------ ////////////
+      processData(){
+        let ext_data = this.extractID(this.templateContent)
         let full_data = this.getData(this.userPosts)
         let selected_id = new Array() // selected id of dataset
         
@@ -212,67 +276,40 @@
             selected_id.push(this.selection[r]._id)
         else{
           for(let r in full_data){
-            selected_id.push(full_data[r][0]._id)
+            selected_id.push(full_data[r][0][0])
           }
         }
 
         let temp_type = ext_data.type
-
+        console.log(full_data)
         for(let r in full_data){
           for(let c in selected_id){
-            if(full_data[r][0]._id == selected_id[c] && full_data[r][0].project_id == ext_data.project_id){
+            let f_project_id = full_data[r][0][2].trim()
+            let e_project_id = ext_data.project_id.trim()
+            if(full_data[r][0][0] == selected_id[c] && !f_project_id.localeCompare(e_project_id)){
               if(temp_type == "any"){
                 for(let w in full_data[r]){
-                  console.log(full_data[r][w].project_id, full_data[r][w].node_id, full_data[r][w].var_ip, full_data[r][w].var_sm, full_data[r][w].var_gw, full_data[r][w].var_cont, full_data[r][w].var_addr)
-                  let m_template = {}
+                  console.log(full_data[r][w])
 
-                  m_template["project_id"] = full_data[r][w].project_id
-                  m_template["node_id"] = full_data[r][w].node_id
-                  m_template["var_ip"] = full_data[r][w].var_ip
-                  m_template["var_sm"] = full_data[r][w].var_sm
-                  m_template["var_gw"] = full_data[r][w].var_gw
-                  m_template["var_content"] = full_data[r][w].var_cont
-                  m_template["var_addr"] = full_data[r][w].var_addr
-
-                  this.downloadTemplate(m_template)
+                  // this.downloadTemplate(m_template)
                }
               }else if(temp_type == "multiple"){
+              console.log("here is temp_type:", temp_type)
+
                 let node_ids = new Array()
                 node_ids = ext_data.node_id
                 for(let w in full_data[r]){
                   for(let q in node_ids){
                     if(full_data[r][w].node_id == node_ids[q]){
 
-                      console.log(full_data[r][w].project_id, full_data[r][w].node_id, full_data[r][w].var_ip, full_data[r][w].var_sm, full_data[r][w].var_gw, full_data[r][w].var_cont, full_data[r][w].var_addr)
-                      
-                      let m_template = {}
-
-                      m_template["project_id"] = full_data[r][w].project_id
-                      m_template["node_id"] = full_data[r][w].node_id
-                      m_template["var_ip"] = full_data[r][w].var_ip
-                      m_template["var_sm"] = full_data[r][w].var_sm
-                      m_template["var_gw"] = full_data[r][w].var_gw
-                      m_template["var_content"] = full_data[r][w].var_cont
-                      m_template["var_addr"] = full_data[r][w].var_addr
-
                       this.downloadTemplate(m_template)
-                    } 
+                    }
                   }
                 }
               }else if(temp_type == "single"){
                 for(let w in full_data[r]){
                   if(full_data[r][w].node_id == ext_data.node_id){
                     console.log(full_data[r][w].project_id, full_data[r][w].node_id, full_data[r][w].var_ip, full_data[r][w].var_sm, full_data[r][w].var_gw, full_data[r][w].var_cont, full_data[r][w].var_addr)
-                    
-                    let m_template = {}
-
-                    m_template["project_id"] = full_data[r][w].project_id
-                    m_template["node_id"] = full_data[r][w].node_id
-                    m_template["var_ip"] = full_data[r][w].var_ip
-                    m_template["var_sm"] = full_data[r][w].var_sm
-                    m_template["var_gw"] = full_data[r][w].var_gw
-                    m_template["var_content"] = full_data[r][w].var_cont
-                    m_template["var_addr"] = full_data[r][w].var_addr
 
                     this.downloadTemplate(m_template)
                   }
@@ -281,9 +318,55 @@
             }
           }
         } 
+      },
+      extractID(text){
+        let temp_string = text
+        while(temp_string.indexOf("\n")>-1){
+          temp_string = temp_string.replace('\n',' ')
+        }
 
-        
-        
+        while(temp_string.indexOf('  ')>-1){
+          temp_string = temp_string.replace('  ',' ')
+        }
+        temp_string = temp_string.split(' ')
+
+        let res = {}
+        let variables = new Array()
+        for(let i = 0; i < temp_string.length; i++){
+          if(temp_string[i] == "project_id:") res["project_id"] = temp_string[i+1]
+          if(temp_string[i] == "node_id:"){
+            
+            if(temp_string[i+1].indexOf(',') > 1){
+              res["type"] = "multiple"
+              let j = i+1
+              let node_ids = new Array()
+              
+              while(temp_string[j].indexOf(',')>1){
+                temp_string[j] = temp_string[j].replace(',','')
+                node_ids.push(temp_string[j])
+                j++
+              }
+              node_ids.push(temp_string[j])
+              res["node_id"] = node_ids
+              // console.log(temp_string[i+1])
+            }else if(temp_string[i+1].indexOf('*') > -1){
+              res["type"] = "any"
+            }else{
+              res["node_id"] = temp_string[i+1]
+              res["type"] = "single"
+            }
+          }
+
+          if(temp_string[i].indexOf('$var_')>-1){
+            let val = temp_string[i]
+            if(val.indexOf('.')) val = val.replace('.','')
+            if(val.indexOf(',')) val = val.replace(',','')
+            if(val.indexOf(':')) val = val.replace(':','')
+            variables.push(val)
+          }
+        }
+        res["variables"] = variables
+        return res
       },
       downloadTemplate(m_template){
         let res_template = this.makeTemplate(m_template)
@@ -307,7 +390,7 @@
         URL.revokeObjectURL(link.href)
       },
       makeTemplate(m_template){
-        console.log(m_template)
+        // console.log(m_template)
         let s_template = ""
         s_template += " Template:\n"
         s_template += "---\n"
@@ -327,75 +410,51 @@
         return s_template
       },
       selectDataset(){
-        let rowObj = {}
-        let pData = new Array()
-        let full_data = this.getData(this.userPosts)
-        
-        for(let r in full_data){
-          let _id = full_data[r][0]._id
-          let ds_nm = full_data[r][0].dataset_name
-          let pj_id = full_data[r][0].project_id
-          let nd_id_rng = full_data[r][0].node_id + " ~ " + full_data[r][full_data[r].length-1].node_id
-          rowObj = {'_id':_id, 'dataset_name': ds_nm, 'project_id': pj_id, 'node_id_range': nd_id_rng, 'selected':false}
-          pData.push(rowObj)
+        if(this.templateContent.indexOf('project_id') > -1 && this.templateContent.indexOf('node_id') > -1){
+          let rowObj = {}
+          let pData = new Array()
+          let full_data = this.getData(this.userPosts)
+          
+          for(let r in full_data){
+            let _id = full_data[r][0][0]
+            let ds_nm = full_data[r][0][1]
+            let pj_id = full_data[r][0][2]
+            rowObj = {'_id':_id, 'dataset_name': ds_nm, 'project_id': pj_id, 'selected':false}
+            pData.push(rowObj)
+          }
+          
+          this.allDataset = pData
+          this.processDialog = true;
+        }else{
+          alert("Project ID or Node ID is not exist!")
         }
         
-        this.allDataset = pData
-        this.processDialog = true;
       },
       getData(data){
         let res = new Array()
-        let rowObj = {}
+
         for(let r in data){
           let tempArr = data[r].categories
+          let variableArr = data[r].variables
           let allArr = new Array()
-          for(let i = 0; i < tempArr.length; i+=7){
-            rowObj = {'_id':data[r]._id,'dataset_name':data[r].title, 'project_id':tempArr[i], 'node_id':tempArr[i+1], 'var_ip':tempArr[i+2], 'var_sm':tempArr[i+3], 'var_gw':tempArr[i+4], 'var_addr':tempArr[i+5], 'var_cont':tempArr[i+6]}
-            allArr.push(rowObj)
+          for(let i = 0; i < tempArr.length; i+=variableArr.length){
+            let rows = new Array()
+            rows.push(data[r]._id)
+            rows.push(data[r].title)
+            for(let j = 0; j < variableArr.length; j++) {
+              rows.push(tempArr[i+j])
+            }
+            allArr.push(rows)
           }
           res.push(allArr)
         }
+
         return res
       },
-      extractID(text){
-        let temp_string = text
-        while(temp_string.indexOf("\n")>-1){
-          temp_string = temp_string.replace('\n',' ')
-        }
+      
+//////////////////////// ----- end process ----- //////////////////
 
-        while(temp_string.indexOf('  ')>-1){
-          temp_string = temp_string.replace('  ',' ')
-        }
-        temp_string = temp_string.split(' ')
 
-        let res = {}
-        for(let i = 0; i < temp_string.length; i++){
-          if(temp_string[i] == "project-id:") res["project_id"] = temp_string[i+1]
-          if(temp_string[i] == "node-id:"){
-            
-            if(temp_string[i+1].indexOf(',') > 1){
-              res["type"] = "multiple"
-              let j = i+1
-              let node_ids = new Array()
-              
-              while(temp_string[j].indexOf(',')>1){
-                temp_string[j] = temp_string[j].replace(',','')
-                node_ids.push(temp_string[j])
-                j++
-              }
-              node_ids.push(temp_string[j])
-              res["node_id"] = node_ids
-              // console.log(temp_string[i+1])
-            }else if(temp_string[i+1] == "ANY"){
-              res["type"] = "any"
-            }else{
-              res["node_id"] = temp_string[i+1]
-              res["type"] = "single"
-            }
-          }
-        }
-        return res
-      },
       submitForm() {
         if (this.$refs.form.validate()) {
           EventBus.$emit('submitPostForm',
@@ -434,6 +493,35 @@
         this.$store.dispatch("getUserPosts", {
           userId: this.user._id
         })
+      },
+      getUserTemplates() {
+        this.$store.dispatch("getUserTemplates", {
+          userId: this.user._id
+        })
+      },
+      deleteTemplate(templateId) {
+        const deleteTemplate = window.confirm(
+          "Are you sure you want to delete this post?"
+        );
+        if (deleteTemplate) {
+          this.$store.dispatch("deleteUserTemplate", {
+            templateId: templateId
+          });
+        }
+      },
+      closeTemplate(){
+        this.editTemplateDialog = false;
+      },
+      template_view(id, editTemplateDialog=true){
+        let templates = this.userTemplates;
+        for(let row in templates){
+          if(id == templates[row]._id){
+              this.templateContent = templates[row].content
+              this.templateTitle = templates[row].title
+              break;
+          } 
+        } 
+        this.editTemplateDialog = editTemplateDialog;
       },
       closeProcess(){
         this.processDialog = false

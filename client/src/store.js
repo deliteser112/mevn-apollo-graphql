@@ -114,7 +114,6 @@ export default new Vuex.Store({
           // console.log(data.getUserTemplates);
         })
         .catch(err => {
-          console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
           console.error(err);
         });
     },
@@ -147,15 +146,18 @@ export default new Vuex.Store({
           mutation: ADD_POST,
           variables: payload,
           update: (cache, { data: { addPost } }) => {
+
             // First read the query you want to update
-            const data = cache.readQuery({ query: GET_POSTS });
-            // Create updated data
+            const data = cache.readQuery({ query: GET_POSTS });            // Create updated data
+            console.log("here is addPost:", data)
+            
             data.getPosts.unshift(addPost);
             // Write updated data back to query
             cache.writeQuery({
               query: GET_POSTS,
               data
             });
+
           },
           // optimistic response ensures data is added immediately as we specified for the update function
           optimisticResponse: {
@@ -179,6 +181,7 @@ export default new Vuex.Store({
         })
         .then(({ data }) => {
           //console.log(data.addPost);
+
         })
         .catch(err => {
           console.error(err);

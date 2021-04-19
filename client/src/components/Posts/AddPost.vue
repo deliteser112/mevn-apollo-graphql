@@ -44,6 +44,7 @@
         if (parentName !== this.$options.name) return;
         let createdPost = JSON.parse(JSON.stringify(post));
         delete createdPost.postId;
+        console.log("this is my data:", createdPost)
         let objAllData = this.getPosts;
         let titleArr = new Array()
         let double = false

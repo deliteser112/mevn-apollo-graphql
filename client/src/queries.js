@@ -33,6 +33,7 @@ export const GET_POST = gql`
           title
           imageUrl
           categories
+          variables
           description
           likes
           createdDate
@@ -79,6 +80,7 @@ export const ADD_POST = gql`
       $title: String!,
       $imageUrl:String!,
       $categories: [String]!,
+      $variables: [String]!,
       $description: String!,
       $userId:ID!
     ) {
@@ -86,6 +88,7 @@ export const ADD_POST = gql`
         title:$title
         imageUrl:$imageUrl
         categories:$categories
+        variables:$variables
         description:$description
         userId:$userId
       ){
@@ -93,6 +96,7 @@ export const ADD_POST = gql`
         title
         imageUrl
         categories
+        variables
         description
       }
     }
@@ -138,6 +142,7 @@ export const INFINITE_SCROLL_POSTS = gql`
           title
           imageUrl
           categories
+          variables
           description
           likes
           createdDate
@@ -194,6 +199,7 @@ export const GET_USER_POSTS = gql`
       imageUrl
       description
       categories
+      variables
       createdDate
       likes
     }
@@ -221,6 +227,7 @@ export const UPDATE_USER_POST = gql`
     $title: String!
     $imageUrl: String!
     $categories: [String]!
+    $variables: [String]!
     $description: String!
   ) {
     updateUserPost(
@@ -229,6 +236,7 @@ export const UPDATE_USER_POST = gql`
       title: $title
       imageUrl: $imageUrl
       categories: $categories
+      variables: $variables
       description: $description
     ) {
       _id
@@ -236,6 +244,7 @@ export const UPDATE_USER_POST = gql`
       imageUrl
       description
       categories
+      variables
       createdDate
       likes
       userId {

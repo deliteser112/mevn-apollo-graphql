@@ -9,7 +9,7 @@
     </v-layout>
 
     <!-- Add Template Form -->
-    <v-layout row wrap class="template-ops">
+    <v-layout row wrap>
         <template-form :userId="user._id" :parent-name="$options.name"></template-form>
     </v-layout>
 
@@ -76,13 +76,13 @@
 .layout{
   justify-content: center;
 }
-
+/* 
 @media only screen and (min-width: 959px){
   .template-ops{
       max-width:600px;
       margin-left: 50%;
       transform: translate(-50%, 10px);
   }
-}
+} */
 
 </style>
