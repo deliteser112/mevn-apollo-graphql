@@ -297,7 +297,7 @@
                 let processedTemplate = this.makeTemplate(this.templateContent, project_variables)
                 let saveTemplates = this.configTemplate(processedTemplate, e_project_id, p_node_ids)
 
-                // this.storeTemplates(saveTemplates)
+                setTimeout(() => this.storeTemplates(saveTemplates), 500);
 
                // in case of template node ids are several.
               }else if(temp_type == "multiple"){
@@ -334,7 +334,7 @@
                 let processedTemplate = this.makeTemplate(this.templateContent, project_variables)
                 let saveTemplates = this.configTemplate(processedTemplate, e_project_id, p_node_ids)
 
-                this.storeTemplates(saveTemplates)
+                setTimeout(() => this.storeTemplates(saveTemplates), 500);
 
                 // in case of template node ids is only one.
               }else if(temp_type.trim() == "single"){
@@ -365,7 +365,7 @@
                 let processedTemplate = this.makeTemplate(this.templateContent, project_variables)
                 let saveTemplates = this.configTemplate(processedTemplate, e_project_id, p_node_ids)
 
-                this.storeTemplates(saveTemplates)
+                setTimeout(() => this.storeTemplates(saveTemplates), 500);
               }
             }
           }

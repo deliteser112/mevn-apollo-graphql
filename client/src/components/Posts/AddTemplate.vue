@@ -59,8 +59,8 @@
         if(double){
           alert("This dataset already exists!")
         }else{
-          this.addTemplate(createdTemplate);
-          location.reload()
+          // setTimeout(this.addTemplate(createdTemplate), 5000);
+          setTimeout(() => this.addTemplate(createdTemplate), 500);
         }
       });
     },
@@ -68,6 +68,7 @@
       addTemplate(template) {
         this.$store.dispatch('addTemplate', template);
         this.$router.push("/post/addtemplate");
+        location.reload()
       },
     }
   };

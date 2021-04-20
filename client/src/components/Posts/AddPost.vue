@@ -59,8 +59,7 @@
         if(double){
           alert("This dataset already exists!")
         }else{
-          this.addPost(createdPost);
-          location.reload()
+          setTimeout(() => this.addPost(createdPost), 500);
         }
       });
     },
@@ -68,6 +67,7 @@
       addPost(post) {
         this.$store.dispatch('addPost', post);
         this.$router.push("/");
+        location.reload()
       },
     }
   };
