@@ -34,7 +34,7 @@ const UserSchema = new mongoose.Schema({
 
 // add user avatar
 UserSchema.pre('save', function(next) {
-    this.avatar = `https://gravatar.com/avatar/${md5(this.username)}?d=identicon`;
+    this.avatar = `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSRdkbq94femIoLAMtceCNg8WHG45ohMIRBVsICS_9S9JbC0Iz2vQIo8q6Er_MH9NLRpg4&usqp=CAU`;
     next();
 });
 

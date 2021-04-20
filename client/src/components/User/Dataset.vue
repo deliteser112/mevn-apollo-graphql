@@ -185,7 +185,7 @@
                     </v-list-tile-avatar>
                     <v-list-tile-content>
                       <v-list-tile-title>{{ item.node_id }}</v-list-tile-title>
-                      <v-list-tile-sub-title>{{ item.template_content }}</v-list-tile-sub-title>
+                      <!-- <v-list-tile-sub-title>{{ item.template_content }}</v-list-tile-sub-title> -->
                     </v-list-tile-content>
                     <v-list-tile-action>
                         <v-icon color="grey lighten-1">info</v-icon>
