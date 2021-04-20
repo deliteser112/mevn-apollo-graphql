@@ -285,7 +285,7 @@
                   // checking if template variables exist in dataset, and take the variables.
                   for(let q in template_variables){
                     for(let m in dataset_variables){
-                      if(template_variables[q] == dataset_variables[m]){
+                      if(template_variables[q].trim() == dataset_variables[m].trim()){
                         let index = Number(m) + 2
                         let key = dataset_variables[m].trim()
                         row[key] = full_data[r][w][index]
@@ -446,6 +446,7 @@
         for(let r in variables){
           let t_template = m_template
           let keys = Object.keys(variables[r])
+          console.log(keys)
           let exceptChar = [" ", ".", ",","\n", ":", "/", ";", "~", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "_", "+", "=", "|", "{", "}", "/"]
           for(let k in keys){
             for(let i = 0; i < exceptChar.length; i++){
@@ -454,7 +455,7 @@
               t_template = t_template.replaceAll(regex, repstr );
             }
           }
-          console.log(t_template)
+          // console.log(t_template)
           processedTemplate.push(t_template)
         }
         return processedTemplate
