@@ -60,13 +60,14 @@
           alert("This dataset already exists!")
         }else{
           this.addTemplate(createdTemplate);
+          location.reload()
         }
       });
     },
     methods:{
       addTemplate(template) {
         this.$store.dispatch('addTemplate', template);
-        this.$router.push("/");
+        this.$router.push("/post/addtemplate");
       },
     }
   };

@@ -123,8 +123,6 @@
             </v-flex>
           </v-layout>
           
-          <!-- <v-simple-table> -->
-            <!-- <template v-slot:default> -->
               <thead>
                 <tr>
                   <th></th>
@@ -142,8 +140,6 @@
                   <td v-for="(item, index) in row" :key="index">{{ item }}</td>
                 </tr>
               </tbody>
-            <!-- </template> -->
-          <!-- </v-simple-table> -->
 
           <v-layout row>
             <v-flex xs12>
@@ -201,16 +197,12 @@
           <v-layout row>
             <v-flex xs12>
               <v-btn color="info" type="button"  @click="closeTemplate">
-                      <span slot="loader" class="custom-loader">
-                        <v-icon light>cached</v-icon>
-                      </span>
+                <v-icon light>close</v-icon>
                 Close
               </v-btn>
     
               <v-btn color="info" type="button"  @click="downloadTemplates">
-                      <span slot="loader" class="custom-loader">
-                        <v-icon light>cached</v-icon>
-                      </span>
+                <v-icon light>download</v-icon>
                 Download templates
               </v-btn>
             </v-flex>
@@ -225,6 +217,8 @@
 
 <script>
   import { mapGetters } from "vuex";
+  import JsZip from 'jszip';
+  import FileSaver from 'file-saver';
   import { mapState } from "vuex";
   import PostForm from "../Posts/Form";
   import Post from "../Posts/Post";
@@ -300,15 +294,17 @@
         for(let row in templates){
           if(id == templates[row]._id){
               this.templateTitle = templates[row].title
-              let temp_row = {}
               let tempArray = new Array()
               for(let i in templates[row].templates){
+                let temp_row = {}
+                console.log(templates[row].node_ids[i])
                 temp_row["template_content"] = templates[row].templates[i]
                 temp_row["node_id"] = templates[row].node_ids[i]
                 temp_row["icon"] = "folder"
                 temp_row["iconClass"] = "grey lighten-1 white--text"
                 tempArray.push(temp_row)
               }
+              console.log(tempArray)
               this.templateContent = tempArray
               break;
           } 
@@ -337,27 +333,9 @@
         }
         console.log(allArr)
         this.csvTable = allArr
-        // this.postId = id
-        // console.log('calling');
 
-        // const result = await this.apolloFnc();
-        // this.csvTable = result
         this.editPostDialog = editPostDialog;
       },
-      // apolloFnc(){
-      //   return new Promise(resolve => {
-      //     setTimeout(() => {
-      //       let rowObj = {}
-      //       let allArr = new Array()
-      //       let tempArr = this.getPost.categories
-      //       for(let i = 0; i < tempArr.length; i+=7){
-      //         rowObj = {'project_id':tempArr[i], 'node_id':tempArr[i+1], 'var_ip':tempArr[i+2], 'var_sm':tempArr[i+3], 'var_gw':tempArr[i+4], 'var_addr':tempArr[i+5], 'var_cont':tempArr[i+6]}
-      //         allArr.push(rowObj)
-      //       }
-      //       resolve(allArr);
-      //     }, 100);
-      //   });
-      // },
       getUserTemplates() {
         this.$store.dispatch("getUserTemplates", {
           userId: this.user._id
@@ -385,6 +363,7 @@
           this.$store.dispatch("deleteUserPost", {
             postId: postId
           });
+          location.reload()
         }
       },
       deleteSavedTemplate(templateId) {
@@ -395,6 +374,7 @@
           this.$store.dispatch("deleteUserSavedTemplate", {
             templateId: templateId
           });
+          location.reload()
         }
       },
       openEditPost(post, editPostDialog = true) {
@@ -408,8 +388,10 @@
           if(id == templates[row]._id){
               this.templateTitle = templates[row].title
               let tempArray = new Array()
-              var zip = new JSZip();
+              const zip = JsZip();
               for(let i in templates[row].templates){
+                console.log(templates[row])
+
                 // for getting timestamp
                 let d = new Date(); 
                 let timestamp = d.getFullYear() + ""
@@ -422,23 +404,24 @@
                 
                 // download the templates
                 const blob = new Blob([templates[row].templates[i]], { type: 'text/cfg' }) //text/plain //application/pdf
-                zip.file(`file-${i}.cfg`, blob);
-                // const link = document.createElement('a')
-                // link.href = URL.createObjectURL(blob)
-                // link.download = m_template["node_id"]+ "_" +timestamp + ".txt"
-                // link.click()
-                // URL.revokeObjectURL(link.href)
+                zip.file(`${templates[row].node_ids[i]}_${timestamp}.cfg`, blob);
 
                 tempArray.push(templates[row].templates[i])
               }
 
-              zip.generateAsync({type:"blob"}).then(function (blob) { // 1) generate the zip file
-                  saveAs(blob, "hello.zip");                          // 2) trigger the download
-              }, function (err) {
-                  console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+              zip.generateAsync({type: 'blob'}).then(zipFile => {
+                // for getting timestamp
+                const d = new Date(); 
+                const timestamp = d.getFullYear() + ""
+                  + (d.getMonth()+1) + ""
+                  + d.getDate() + ""
+                  + d.getHours() + ""  
+                  + d.getMinutes() + "" 
+                  + d.getSeconds() + ""
+                  + d.getMilliseconds()
+                const fileName = `${this.templateTitle}.zip`;
+                return FileSaver.saveAs(zipFile, fileName);
               });
-
-              console.log(tempArray)
               break;
           } 
         }

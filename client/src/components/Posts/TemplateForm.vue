@@ -78,19 +78,6 @@
       <v-card>
         <v-card-title class="headline grey lighten-2">Select the dataset</v-card-title>
         <v-container>
-<!-- 
-          <v-layout row v-for="item in allDataset" :key="item._id">
-            <v-flex xs4 sm12>
-              <div>{{item.dataset_name}}</div>
-            </v-flex>
-            <v-flex xs4 sm12>
-              <div>{{item.project_id}}</div>
-            </v-flex>
-            <v-flex xs4 sm12>
-              <div>{{item.node_id_range}}</div>
-            </v-flex>
-          </v-layout> -->
-
           <v-layout row >
             <v-flex xs12 sm12 md12 ma-12>
               <v-card>
@@ -157,15 +144,11 @@
           <v-layout row>
             <v-flex xs12>
               <v-btn color="info" type="button"  @click="closeTemplate">
-                      <span slot="loader" class="custom-loader">
-                        <v-icon light>cached</v-icon>
-                      </span>
+                <v-icon light>close</v-icon>
                 Close
               </v-btn>
               <v-btn color="info" type="button"  @click="closeTemplate">
-                      <span slot="loader" class="custom-loader">
-                        <v-icon light>cached</v-icon>
-                      </span>
+                <v-icon light>update</v-icon>
                 Update
               </v-btn>
               <v-btn :loading="loading" color="info" type="button"  @click="selectDataset">
@@ -312,7 +295,7 @@
                 let processedTemplate = this.makeTemplate(this.templateContent, project_variables)
                 let saveTemplates = this.configTemplate(processedTemplate, e_project_id, p_node_ids)
 
-                this.storeTemplates(saveTemplates)
+                // this.storeTemplates(saveTemplates)
 
                // in case of template node ids are several.
               }else if(temp_type == "multiple"){
@@ -461,11 +444,12 @@
           let t_template = m_template
           let keys = Object.keys(variables[r])
           for(let k in keys){
-            while(t_template.indexOf(keys[k])>-1){
-              // t_template = t_template.replace(keys[k], "+--+"+variables[r][keys[k]])   /* for testing */
-              t_template = t_template.replace(keys[k], variables[r][keys[k]])
-            }
+            const regex = `/${keys[k]}/g`
+            console.log(regex)
+            const repstr = `+--+${variables[r][keys[k]]}`
+            t_template = t_template.replace(regex, repstr)   /* for testing */
           }
+          console.log(t_template)
           processedTemplate.push(t_template)
         }
         return processedTemplate
@@ -514,7 +498,6 @@
       },
       
 //////////////////////// ----- end process ----- //////////////////
-
 
       submitForm() {
         if (this.$refs.form.validate()) {
@@ -573,6 +556,7 @@
           this.$store.dispatch("deleteUserTemplate", {
             templateId: templateId
           });
+          location.reload()
         }
       },
       closeTemplate(){
@@ -604,6 +588,7 @@
       storeTemplates(template) {
         this.$store.dispatch('saveTemplates', template);
         this.$router.push("/");
+        location.reload()
       },
       configTemplate(templates, project_id, node_ids){
         // for getting timestamp

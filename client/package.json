@@ -12,6 +12,8 @@
     "apollo-boost": "^0.1.22",
     "axios": "^0.21.1",
     "core-js": "^2.6.12",
+    "file-saver": "^2.0.5",
+    "jszip": "^3.6.0",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
     "papaparse": "^5.0.0",

@@ -60,6 +60,7 @@
           alert("This dataset already exists!")
         }else{
           this.addPost(createdPost);
+          location.reload()
         }
       });
     },

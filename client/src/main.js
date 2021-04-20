@@ -10,6 +10,9 @@ import VueApollo from "vue-apollo";
 
 // global error component
 import FormAlert from './components/System/FormAlert';
+import JSZip from 'jszip'
+
+Vue.use(JSZip)
 
 Vue.component('form-alert', FormAlert);
 
