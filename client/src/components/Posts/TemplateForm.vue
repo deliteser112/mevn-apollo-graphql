@@ -451,7 +451,7 @@
           for(let i = 0; i < exceptChar.length; i++){
             for(let k in keys){
               const regex = `${keys[k]}${exceptChar[i]}`
-              const repstr = `+--+${variables[r][keys[k]]}${exceptChar[i]}`
+              const repstr = `${variables[r][keys[k]]}${exceptChar[i]}`
               t_template = t_template.replaceAll(regex, repstr );
             }
           }
