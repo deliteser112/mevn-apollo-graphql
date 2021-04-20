@@ -4,8 +4,6 @@ import Home from "./components/Home.vue";
 
 import AddPost from './components/Posts/AddPost.vue'
 import AddTemplate from './components/Posts/AddTemplate.vue'
-import Posts from './components/Posts/Posts.vue'
-import Post from './components/Posts/Post.vue'
 
 import Dataset from './components/User/Dataset.vue'
 import Login from './components/Auth/Login.vue'
@@ -24,17 +22,6 @@ export default new Router({
       name: "home",
       component: Dataset,
       beforeEnter: AuthGuard
-    },
-    {
-      path: "/posts",
-      name: "Posts",
-      component: Posts
-    },
-    {
-      path: "/posts/:postId",
-      name: "Post",
-      component: Post,
-      props: true
     },
     {
       path: "/post/addpost",

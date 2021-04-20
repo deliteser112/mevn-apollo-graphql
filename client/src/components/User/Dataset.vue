@@ -223,14 +223,13 @@
   import FileSaver from 'file-saver';
   import { mapState } from "vuex";
   import PostForm from "../Posts/Form";
-  import Post from "../Posts/Post";
   import { EventBus } from "@/event";
   import {
     GET_POST,
   } from "../../queries";
   export default {
     name: "Dataset",
-    components: { Post, PostForm },
+    components: { PostForm },
     data() {
       return {
         editPostDialog: false,
