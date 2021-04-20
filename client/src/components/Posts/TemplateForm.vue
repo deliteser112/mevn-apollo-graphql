@@ -446,7 +446,7 @@
         for(let r in variables){
           let t_template = m_template
           let keys = Object.keys(variables[r])
-          let exceptChar = [" ", ".", ",", ":", "/", ";", "~", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "_", "+", "=", "|", "{", "}", "/"]
+          let exceptChar = [" ", ".", ",","\n", ":", "/", ";", "~", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "_", "+", "=", "|", "{", "}", "/"]
           for(let k in keys){
             for(let i = 0; i < exceptChar.length; i++){
               const regex = `${keys[k]}${exceptChar[i]}`
