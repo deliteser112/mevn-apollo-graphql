@@ -265,11 +265,13 @@
         }
         /// --- main processing section --- ///
         let temp_type = ext_data.type
+        let dataExists = false
         for(let r in full_data){
           for(let c in selected_id){
             let f_project_id = full_data[r][0][2].trim()
             let e_project_id = ext_data.project_id.trim()
             if(full_data[r][0][0] == selected_id[c] && !f_project_id.localeCompare(e_project_id)){
+              dataExists = true
               let project_variables = new Array()
               let p_node_ids = new Array()
               // in case of template type is any
@@ -367,7 +369,8 @@
               }
             }
           }
-        } 
+        }
+        if(!dataExists) alert("The data is not exist!")
       },
       extractID(text){
         let temp_string = text

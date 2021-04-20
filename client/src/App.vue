@@ -151,6 +151,7 @@
       },
       onLogoutUser() {
         this.$store.dispatch('logoutUser');
+        location.reload()
       },
       handleSearchPosts() {
         this.$store.dispatch('searchPosts', { searchTerm: this.searchTerm });
