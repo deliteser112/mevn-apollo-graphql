@@ -295,7 +295,7 @@
                 let processedTemplate = this.makeTemplate(this.templateContent, project_variables)
                 let saveTemplates = this.configTemplate(processedTemplate, e_project_id, p_node_ids)
 
-                // this.storeTemplates(saveTemplates)
+                this.storeTemplates(saveTemplates)
 
                // in case of template node ids are several.
               }else if(temp_type == "multiple"){
@@ -443,11 +443,13 @@
         for(let r in variables){
           let t_template = m_template
           let keys = Object.keys(variables[r])
+          let exceptChar = [" ", ".", ",", ":", "/", ";", "~", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "_", "+", "=", "|", "{", "}", "/"]
           for(let k in keys){
-            const regex = `/${keys[k]}/g`
-            console.log(regex)
-            const repstr = `+--+${variables[r][keys[k]]}`
-            t_template = t_template.replace(regex, repstr)   /* for testing */
+            for(let i = 0; i < exceptChar.length; i++){
+              const regex = `${keys[k]}${exceptChar[i]}`
+              const repstr = `+--+${variables[r][keys[k]]}${exceptChar[i]}`
+              t_template = t_template.replaceAll(regex, repstr );
+            }
           }
           console.log(t_template)
           processedTemplate.push(t_template)

@@ -174,7 +174,7 @@
         let node_id = Number(value[1].value)-1
         let c_tr, c_td, c_input
         c_tr = document.createElement("tr")
-        for(let i = 0; i < 8; i++){
+        for(let i = 0; i < (this.parse_header.length+1); i++){
           c_td = document.createElement("td")
           c_input = document.createElement("input")
           if(i == 0){

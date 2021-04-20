@@ -131,13 +131,15 @@
                   </th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="table_content" ref="ref_table">
                 <tr
                   v-for="(row,index) in csvTable"
                   :key="index"
                 >
                   <td><input type="checkbox"></td>
-                  <td v-for="(item, index) in row" :key="index">{{ item }}</td>
+                  <td v-for="(item, index) in row" :key="index">
+                    <input type="text" class="input-cell" :value="item"/>
+                  </td>
                 </tr>
               </tbody>
 
@@ -277,7 +279,29 @@
         console.log("this is post:", this.userSavedTemplates)
       },
       addRow(){
-        console.log("add row")
+        let tbl_data = this.$refs.ref_table
+        let value = tbl_data.querySelectorAll(".input-cell");
+        let project_id = value[0].value
+        let node_id = Number(value[1].value)-1
+        let c_tr, c_td, c_input
+        c_tr = document.createElement("tr")
+        for(let i = 0; i < (this.csvHeader.length+1); i++){
+          c_td = document.createElement("td")
+          c_input = document.createElement("input")
+          if(i == 0){
+            c_input.setAttribute('type','checkbox')
+            c_input.setAttribute('onClick','isChecked()')
+          }else{
+            c_input.setAttribute('type','text')
+            c_input.setAttribute('class', 'input-cell')
+          }
+          if(i == 1) c_input.setAttribute('value', project_id)
+          if(i == 2) c_input.setAttribute('value', node_id+tbl_data.rows.length+1)
+          c_td.appendChild(c_input)
+          c_tr.appendChild(c_td)
+        }
+        
+        tbl_data.appendChild(c_tr)
       },
       deleteRows(){
         console.log("delete row")
@@ -304,7 +328,6 @@
                 temp_row["iconClass"] = "grey lighten-1 white--text"
                 tempArray.push(temp_row)
               }
-              console.log(tempArray)
               this.templateContent = tempArray
               break;
           } 
