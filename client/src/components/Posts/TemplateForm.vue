@@ -276,7 +276,6 @@
               let p_node_ids = new Array()
               // in case of template type is any
               if(temp_type == "any"){
-                console.log("here is any")
                 for(let w in full_data[r]){
                   let dataset_variables = arr[r].variables
                   let template_variables = ext_data.variables
@@ -302,7 +301,6 @@
 
                // in case of template node ids are several.
               }else if(temp_type == "multiple"){
-                console.log("here is multiple")
                 let node_ids = new Array()
 
                 // node ids in template
@@ -344,7 +342,6 @@
 
                   // in case of template node id is matched with dataset node id, 
                   if(full_data[r][w][3] == ext_data.node_id.trim()){
-                    console.log(full_data[r][w][3])
                     let dataset_variables = arr[r].variables
                     let template_variables = ext_data.variables
                     let row = {}
@@ -362,7 +359,6 @@
                     project_variables.push(row)
                   }
                 }
-                console.log("this is my value:", project_variables)
                 let processedTemplate = this.makeTemplate(this.templateContent, project_variables)
                 let saveTemplates = this.configTemplate(processedTemplate, e_project_id, p_node_ids)
 
@@ -459,7 +455,6 @@
               t_template = t_template.replaceAll(regex, repstr );
             }
           }
-          console.log("this is my value:", t_template.match(/project_id:(.*)/))
 
           let t_str_p = t_template.match(/project_id:(.*)/)
           if(t_str_p != null){
