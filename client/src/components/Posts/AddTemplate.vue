@@ -59,8 +59,7 @@
         if(double){
           alert("This dataset already exists!")
         }else{
-          // setTimeout(this.addTemplate(createdTemplate), 5000);
-          setTimeout(() => this.addTemplate(createdTemplate), 500);
+          this.addTemplate(createdTemplate)
         }
       });
     },

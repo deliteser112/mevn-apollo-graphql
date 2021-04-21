@@ -59,7 +59,7 @@
         if(double){
           alert("This dataset already exists!")
         }else{
-          setTimeout(() => this.addPost(createdPost), 500);
+          this.addPost(createdPost)
         }
       });
     },

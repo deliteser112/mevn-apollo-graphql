@@ -276,6 +276,7 @@
               let p_node_ids = new Array()
               // in case of template type is any
               if(temp_type == "any"){
+                console.log("here is any")
                 for(let w in full_data[r]){
                   let dataset_variables = arr[r].variables
                   let template_variables = ext_data.variables
@@ -297,7 +298,7 @@
                 let processedTemplate = this.makeTemplate(this.templateContent, project_variables)
                 let saveTemplates = this.configTemplate(processedTemplate, e_project_id, p_node_ids)
 
-                setTimeout(() => this.storeTemplates(saveTemplates), 500);
+                this.storeTemplates(saveTemplates)
 
                // in case of template node ids are several.
               }else if(temp_type == "multiple"){
@@ -334,7 +335,7 @@
                 let processedTemplate = this.makeTemplate(this.templateContent, project_variables)
                 let saveTemplates = this.configTemplate(processedTemplate, e_project_id, p_node_ids)
 
-                setTimeout(() => this.storeTemplates(saveTemplates), 500);
+                this.storeTemplates(saveTemplates)
 
                 // in case of template node ids is only one.
               }else if(temp_type.trim() == "single"){
@@ -365,7 +366,7 @@
                 let processedTemplate = this.makeTemplate(this.templateContent, project_variables)
                 let saveTemplates = this.configTemplate(processedTemplate, e_project_id, p_node_ids)
 
-                setTimeout(() => this.storeTemplates(saveTemplates), 500);
+                this.storeTemplates(saveTemplates)
               }
             }
           }
@@ -374,13 +375,14 @@
       },
       extractID(text){
         let temp_string = text
-        while(temp_string.indexOf("\n")>-1){
-          temp_string = temp_string.replace('\n',' ')
-        }
 
+        while(temp_string.indexOf('\n')>-1){
+          temp_string = temp_string.replace('\n', ' ')
+        }
         while(temp_string.indexOf('  ')>-1){
           temp_string = temp_string.replace('  ',' ')
         }
+
         temp_string = temp_string.split(' ')
 
         let res = {}
@@ -442,11 +444,13 @@
         URL.revokeObjectURL(link.href)
       },
       makeTemplate(m_template, variables){
+        
         let processedTemplate = new Array()
         for(let r in variables){
           let t_template = m_template
+
           let keys = Object.keys(variables[r])
-          console.log(keys)
+          // console.log(keys)
           let exceptChar = [" ", ".", ",","\n", ":", "/", ";", "~", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "_", "+", "=", "|", "{", "}", "/", ""]
           for(let i = 0; i < exceptChar.length; i++){
             for(let k in keys){
@@ -455,7 +459,20 @@
               t_template = t_template.replaceAll(regex, repstr );
             }
           }
-          console.log(t_template)
+          console.log("this is my value:", t_template.match(/project_id:(.*)/))
+
+          let t_str_p = t_template.match(/project_id:(.*)/)
+          if(t_str_p != null){
+            let r_project_id = "project_id:"+t_str_p[1];
+            t_template = t_template.replace(r_project_id, "")
+          }
+          
+          let t_str_n = t_template.match(/node_id:(.*)/)
+          if(t_str_n != null){
+            let r_node_id = "node_id:"+t_str_n[1];
+            t_template = t_template.replace(r_node_id, "")
+          }
+
           processedTemplate.push(t_template)
         }
         return processedTemplate
