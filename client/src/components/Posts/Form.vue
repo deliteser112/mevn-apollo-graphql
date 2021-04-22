@@ -13,7 +13,7 @@
           <v-flex xs12 class="left-padding">
             <div class="import-icon" v-if="!isCSV">
               <input type="file" id="csv_file" name="csv_file" class="form-control file-input-type" @change="loadCSV($event)">
-              <img src="https://4.bp.blogspot.com/-RvcP073l-D4/XEnytR0HqyI/AAAAAAAAACg/VZVoarvnCGc1TKpSlliQ60EnujJiCm1OwCLcBGAs/s1600/import-csv-to-database.png" class="cover-image"/>
+              <img src="../../../assets/import-csv-to-database.jpg" class="cover-image"/>
             </div>
             
             <v-btn :loading="loading" :disabled="!isCSV || loading" color="info" type="submit"  @click="submitForm">
@@ -58,7 +58,8 @@
                     <tr v-for="csv in parse_csv">
                       <td><input type="checkbox" @click="isChecked"></td>
                       <td v-for="key in parse_header">
-                        <input type="text" :value="csv[key]" class="input-cell"/>
+                        <!-- <input type="text" :value="csv[key]" class="input-cell" /> -->
+                        <div class="input-cell" contenteditable="true">{{csv[key]}}</div>
                       </td>
                     </tr>
                   </tbody>
@@ -153,7 +154,7 @@
               postId: this.postId,
               userId: this.userId,
               title: this.title,
-              imageUrl: "https://cdn.pixabay.com/photo/2013/07/12/17/22/database-152091_960_720.png",
+              imageUrl: "../../../assets/dataset-icon.jpg",
               categories: this.saveDataSet().values,
               variables: this.saveDataSet().variables,
               description: "no description"
@@ -208,7 +209,7 @@
         // }
 
         res["variables"] = this.parse_header
-        for(let i = 0; i < data.length; i++) linerArr.push(data[i].value)
+        for(let i = 0; i < data.length; i++) linerArr.push(data[i].innerHTML)
         res["values"] = linerArr
         return res
       },
@@ -338,9 +339,29 @@
     background-color: #dddddd;
   }
   .input-cell{
-    width:100%;
+    background: #ffffff;
+    -moz-box-sizing: border-box;
+    border: 1px solid #CBD5DD;
+    border-radius: 2px;
+    max-height: 70px;
+    max-width: 150px;
+    word-wrap: break-word;
+    margin: 0;
+    min-height: 33px;
+    overflow: auto;
+    position: relative;
+    width: 100%;
+    padding-left: 5px;
+    vertical-align: top;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
   }
+  
   .left-padding{
     padding: 20px;
+  }
+  .panel {
+    border: 0px solid #dfdfdf !important;
+    box-shadow: rgb(0 0 0 / 15%) 0 1px 0 0;
   }
 </style>

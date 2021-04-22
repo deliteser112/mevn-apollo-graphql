@@ -3,7 +3,7 @@
 
     <!-- Add Template Title -->
     <v-layout row wrap>
-      <v-flex xs12 sm6>
+      <v-flex xs12 sm8>
         <h1 class="primary--text">{{ headline }}</h1>
       </v-flex>
     </v-layout>
@@ -37,15 +37,14 @@
       }
     },
     computed: {
-      ...mapState(['user', 'error', 'loading'])
+      ...mapState(['user', 'error', 'loading', 'userTemplates'])
     },
     created() {
       EventBus.$on('submitPostForm', ({parentName, template}) => {
         if (parentName !== this.$options.name) return;
         let createdTemplate = JSON.parse(JSON.stringify(template));
         delete createdTemplate.templateId;
-        console.log("+++++++++++++", createdTemplate)
-        let objAllData = this.getTemplates;
+        let objAllData = this.userTemplates;
         let titleArr = new Array()
         let double = false
         for(let row in objAllData) titleArr.push(objAllData[row].title)

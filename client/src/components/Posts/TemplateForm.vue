@@ -3,7 +3,7 @@
   <v-form v-model="isFormValid" ref="form" @submit.prevent style="width:100%;">
       <!-- Title Input -->
       <v-layout row>
-        <v-flex xs6>
+        <v-flex xs3>
           <v-text-field :rules="titleRules" v-model="title" label="input template name" type="text" required></v-text-field>
         </v-flex>
       </v-layout>
@@ -12,7 +12,8 @@
          <v-flex xs12>
             <div class="import-icon" v-if="!isTemplate">
               <input type="file" ref="myFile" @change="selectedFile"  class="form-control file-input-type" >
-              <img src="https://icon-library.com/images/data-base-icon/data-base-icon-27.jpg" class="cover-image"/>
+              <!-- <img src="https://icon-library.com/images/data-base-icon/data-base-icon-27.jpg" class="cover-image"/> -->
+              <img src="../../../assets/data-base-icon-27.jpg" class="cover-image"/>
             </div>
         </v-flex>
       </v-layout>
@@ -66,7 +67,8 @@
             <v-icon>delete</v-icon>
           </v-btn>
 
-          <v-img :src="template.imageUrl" @click="template_view(template._id)"></v-img>
+          <!-- <v-img :src="template.imageUrl" @click="template_view(template._id)"></v-img> -->
+          <div class="v-template-background" @click="template_view(template._id)"></div>
           <v-card-text>{{template.title}}</v-card-text>
         </v-card>
       </v-flex>
@@ -691,9 +693,7 @@
   tr:nth-child(even) {
     background-color: #dddddd;
   }
-  .input-cell{
-    width:100%;
-  }
+  
   .left-padding{
     padding: 20px;
   }

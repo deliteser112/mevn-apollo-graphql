@@ -37,19 +37,18 @@
       }
     },
     computed: {
-      ...mapState(['user', 'error', 'loading'])
+      ...mapState(['user', 'error', 'loading', "userPosts"])
     },
     created() {
       EventBus.$on('submitPostForm', ({parentName, post}) => {
         if (parentName !== this.$options.name) return;
         let createdPost = JSON.parse(JSON.stringify(post));
         delete createdPost.postId;
-        console.log("this is my data:", createdPost)
-        let objAllData = this.getPosts;
+        let objAllData = this.userPosts;
+        // console.log("userData:", this.userPosts, objAllData)
         let titleArr = new Array()
         let double = false
         for(let row in objAllData) titleArr.push(objAllData[row].title)
-        console.log(titleArr)
         for(let i = 0; i < titleArr.length; i++){
           if(titleArr[i]==createdPost.title){
             double = true

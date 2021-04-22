@@ -11,6 +11,10 @@ const config = {
           include: /node_modules/,
           type: 'javascript/auto',
         },
+        {
+          test: /\.svg$/,
+          use: ['babel-loader', 'vue-svg-loader'],
+        }
       ],
     },
   },

@@ -57,7 +57,10 @@
                       <v-icon>delete</v-icon>
                     </v-btn>
 
-                    <v-img :src="post.imageUrl" @click="open(post._id)"></v-img>
+                    <!-- <v-img :src="post.imageUrl" @click="open(post._id)"></v-img> -->
+                    <!-- <v-img src="../../../assets/data-base-icon-27.jpg" @click="open(post._id)"></v-img> -->
+                    <!-- <img src="../../../assets/dataset-icon.jpg" @click="open(post._id)" style="width:100px;height:auto;"/> -->
+                    <div class="v-dataset-background" @click="open(post._id)"></div>
                     <v-card-text>{{post.title}}</v-card-text>
                   </v-card>
                 </v-flex>
@@ -92,7 +95,8 @@
                       <v-icon>delete</v-icon>
                     </v-btn>
 
-                    <v-img :src="template.imageUrl" @click="template_view(template._id)"></v-img>
+                    <!-- <v-img :src="template.imageUrl" @click="template_view(template._id)"></v-img> -->
+                    <div class="v-template-background" @click="template_view(template._id)"></div>
                     <v-card-text>{{template.title}}</v-card-text>
                   </v-card>
                 </v-flex>
@@ -138,7 +142,8 @@
                 >
                   <td><input type="checkbox"></td>
                   <td v-for="(item, index) in row" :key="index">
-                    <input type="text" class="input-cell" :value="item"/>
+                    <!-- <input type="text" class="input-cell" :value="item" contenteditable="true"/> -->
+                    <div class="input-cell" contenteditable="true">{{item}}</div>
                   </td>
                 </tr>
               </tbody>
@@ -456,16 +461,29 @@
     width: auto;
 }
 
+.v-dataset-background{
+    background-image: url(../../../assets/dataset-icon.jpg);
+    width: 100%;
+    height: 180px;
+    background-size: 100% 100%;
+}
+
+.v-template-background{
+    background-image: url(../../../assets/template-icon.jpg);
+    width: 100%;
+    height: 180px;
+    background-size: 100% 100%;
+}
+
 @media (min-width: 600px){
   .flex.sm6 {
       -ms-flex-preferred-size: 50%;
-      flex-basis: 20%;
+      flex-basis: 200px;
       -webkit-box-flex: 0;
       -ms-flex-positive: 0;
       flex-grow: 0;
       max-width: 50%;
   }
 }
-
 
 </style>
