@@ -61,7 +61,7 @@
       </h2>
     </v-flex>
     <v-layout row wrap style="justify-content:left;">
-      <v-flex xs12 sm6 v-for="template in userTemplates" :key="template._id">
+      <v-flex xs12 v-for="template in userTemplates" :key="template._id" class="grid-view-cus">
         <v-card class="mt-3 ml-1 mr-2" hover>
           <v-btn @click="deleteTemplate(template._id)" color="error" floating fab small dark>
             <v-icon>delete</v-icon>

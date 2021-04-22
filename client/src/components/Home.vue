@@ -10,37 +10,97 @@
       </v-dialog>
     </v-layout>
 <!-- https://res.cloudinary.com/cschroeder/image/upload/v1542293711/Icons/users.png -->
-    <login-form v-if="!login && !loading"></login-form>
+    <!-- <login-form v-if="!login && !loading"></login-form> -->
 
 
     <!-- ---------------- dashboard ------------- -->
     
-    <v-layout row>
-      <v-card
-        class="mx-auto"
-        max-width="344"
-        outlined
-      >
-        <v-list-item three-line>
-          <v-list-item-content>
-            <div class="overline mb-4">OVERLINE</div>
-            <v-list-item-title class="headline mb-1">Headline 5</v-list-item-title>
-            <v-list-item-subtitle>Greyhound divisely hello coldly fonwderfully</v-list-item-subtitle>
-          </v-list-item-content>
+    <v-container class="mt-3">
+      <v-flex xs12>
+        <!-- <h2 class="font-weight-light">Your templates </h2> -->
+      </v-flex>
+      <v-layout row wrap style="justify-content:left;">
+        
+        <v-flex xs12 sm6 md4>
+          <v-card class="mt-3 ml-1 mr-2" hover>
+            <v-img
+              src="https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1353&q=80"
+              height="200px"
+            >
+            </v-img>
 
-          <v-list-item-avatar
-            tile
-            size="80"
-            color="grey"
-          ></v-list-item-avatar>
-        </v-list-item>
+            <v-card-title primary-title>
+              <div>
+                <div class="headline">You have <v-chip class="headline"> {{datasets}} </v-chip> datasets</div>
+                <span class="grey--text">You can see your datasets in here.</span>
+              </div>
+            </v-card-title>
 
-        <v-card-actions>
-          <v-btn text>Button</v-btn>
-          <v-btn text>Button</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-layout>
+            <v-card-actions>
+              <v-btn flat @click="gotoInventory">View</v-btn>
+              <v-btn flat color="purple" @click="gotoDataset">Add Dataset</v-btn>
+              <v-spacer></v-spacer>
+            </v-card-actions>
+          </v-card>
+        </v-flex>
+
+        <v-flex xs12 sm6 md4>
+          <v-card class="mt-3 ml-1 mr-2" hover>
+            <v-img
+              src="https://images.unsplash.com/photo-1550438496-8c6e269e7886?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80"
+              height="200px"
+            >
+            </v-img>
+
+            <v-card-title primary-title>
+              <div>
+                <div class="headline">You have <v-chip class="headline"> {{templates}} </v-chip> templates</div>
+                <span class="grey--text">You can see your templates in here.</span>
+              </div>
+            </v-card-title>
+
+            <v-card-actions>
+              <v-btn flat @click="gotoTemplate">View</v-btn>
+              <v-btn flat color="purple" @click="gotoTemplate">Add Template</v-btn>
+              <v-spacer></v-spacer>
+            </v-card-actions>
+          </v-card>
+        </v-flex>
+
+        <v-flex xs12 sm6 md4>
+          <v-card class="mt-3 ml-1 mr-2" hover>
+            <v-img
+              src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1302&q=80"
+              height="200px"
+            >
+            </v-img>
+
+            <v-card-title primary-title>
+              <div>
+                <div class="headline">You have <v-chip class="headline"> {{processed}} </v-chip> baseline config</div>
+                <span class="grey--text">You can see your processed template in here.</span>
+              </div>
+            </v-card-title>
+
+            <v-card-actions>
+              <v-btn flat @click="gotoInventory">View</v-btn>
+              <v-spacer></v-spacer>
+            </v-card-actions>
+          </v-card>
+        </v-flex>
+
+      </v-layout>
+      <div style="margin-bottom:20px;"></div>
+      <v-layout row>
+        <v-btn fab dark  ma-10 large color="cyan" @click="gotoDataset">
+          <v-icon dark>play_arrow</v-icon>
+        </v-btn>
+      </v-layout>
+      <v-layout row>
+        <span class="grey--text">You can start the process by click this button.</span>
+      </v-layout>
+      
+    </v-container>
 
     <!-- -------------- end dashboard ------------- -->
   </v-container>
@@ -55,7 +115,13 @@
     components: { LoginForm },
     data() {
       return {
-        loginStatus: false
+        temp:10,
+        datasets:0,
+        templates:0,
+        processed:0,
+        items:[3,2,1],
+        loginStatus: false,
+        card_text: 'Lorem ipsum dolor sit amet, brute iriure accusata ne mea. Eos suavitate referrentur ad, te duo agam libris qualisque, utroque quaestio accommodare no qui. Et percipit laboramus usu, no invidunt verterem nominati mel. Dolorem ancillae an mei, ut putant invenire splendide mel, ea nec propriae adipisci. Ignota salutandi accusamus in sed, et per malis fuisset, qui id ludus appareat.'
       }
     },
     created() {
@@ -63,11 +129,16 @@
     },
     computed: {
       ...mapState([
-        'user', 'posts', 'loading'
+        'user', 'posts', 'loading', 'userPosts', 'userTemplates', 'userSavedTemplates'
       ]),
       login: function(){
         return this.user
-      }
+      },
+    },
+    mounted() {
+      this.datasets = this.userPosts.length
+      this.templates = this.userTemplates.length
+      this.processed = this.userSavedTemplates.length
     },
     methods: {
       handleCarouselPosts() {
@@ -75,6 +146,15 @@
       },
       goToPost(_id){
         this.$router.push(`/posts/${_id}`);
+      },
+      gotoDataset(){
+        this.$router.push(`/post/addpost`)
+      },
+      gotoInventory(){
+        this.$router.push(`/dataset`)
+      },
+      gotoTemplate(){
+        this.$router.push(`/post/addtemplate`)
       }
     }
   };

@@ -51,7 +51,7 @@
                 </h2>
               </v-flex>
               <v-layout row wrap style="justify-content:left;">
-                <v-flex xs12 sm6 v-for="post in userPosts" :key="post._id">
+                <v-flex xs12 v-for="post in userPosts" :key="post._id" class="grid-view-cus">
                   <v-card class="mt-3 ml-1 mr-2" hover>
                     <v-btn @click="deletePost(post._id)" color="error" floating fab small dark>
                       <v-icon>delete</v-icon>
@@ -89,7 +89,7 @@
                 </h2>
               </v-flex>
               <v-layout row wrap style="justify-content:left;">
-                <v-flex xs12 sm6 v-for="template in userSavedTemplates" :key="template._id">
+                <v-flex xs12 v-for="template in userSavedTemplates" :key="template._id" class="grid-view-cus">
                   <v-card class="mt-3 ml-1 mr-2" hover>
                     <v-btn @click="deleteSavedTemplate(template._id)" color="error" floating fab small dark>
                       <v-icon>delete</v-icon>
@@ -476,13 +476,12 @@
 }
 
 @media (min-width: 600px){
-  .flex.sm6 {
-      -ms-flex-preferred-size: 50%;
-      flex-basis: 200px;
-      -webkit-box-flex: 0;
-      -ms-flex-positive: 0;
-      flex-grow: 0;
-      max-width: 50%;
+  .grid-view-cus{
+    flex-basis: 200px !important;
+    -webkit-box-flex: 0;
+    -ms-flex-positive: 0;
+    flex-grow: 0;
+    max-width: 50%;
   }
 }
 
