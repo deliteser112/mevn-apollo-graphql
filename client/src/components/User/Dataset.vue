@@ -1,6 +1,5 @@
 <template>
   <v-container class="text-xs-center">
-  <v-card color="basil">
     <!-- User Details Card -->
     <v-flex sm6 offset-sm3>
       <v-card class="white--text" color="secondary">
@@ -21,7 +20,6 @@
         </v-layout>
       </v-card>
     </v-flex>
-  </v-card>
 
   <!-- Templates Created By user -->
   <v-container v-if="!userSavedTemplates.length">
