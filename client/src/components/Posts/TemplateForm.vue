@@ -12,37 +12,33 @@
          <v-flex xs12>
             <div class="import-icon" v-if="!isTemplate">
               <input type="file" ref="myFile" @change="selectedFile"  class="form-control file-input-type" >
-              <!-- <img src="https://icon-library.com/images/data-base-icon/data-base-icon-27.jpg" class="cover-image"/> -->
               <img src="../../../assets/data-base-icon-27.jpg" class="cover-image"/>
             </div>
         </v-flex>
       </v-layout>
 
-        <v-layout row>
-          <v-flex xs12 class="left-padding">
-            <!-- <input type="file" id="csv_file" name="csv_file" class="form-control" @change="loadCSV($event)"> -->
-            
-            <v-btn :loading="loading" :disabled="!isTemplate || loading" color="info" type="submit"  @click="submitForm">
-              <span slot="loader" class="custom-loader">
-                <v-icon light>cached</v-icon>
-              </span>
-              Save template
-            </v-btn>
-
-            
-            <v-btn :loading="loading" v-if="isTemplate" color="info" type="button"  @click="importAgain">
+      <v-layout row>
+        <v-flex xs12 class="left-padding">
+          <v-btn :loading="loading" :disabled="!isTemplate || loading" color="info" type="submit"  @click="submitForm">
+            <span slot="loader" class="custom-loader">
               <v-icon light>cached</v-icon>
-              Import again
-            </v-btn>
-          </v-flex>
-        </v-layout>
+            </span>
+            Save template
+          </v-btn>
 
-        <v-layout row>
-          <v-flex xs12 class="left-padding">
-            <textarea v-model="text" class="text-area" v-if="isTemplate"></textarea>
-          </v-flex>
-        </v-layout>
-                
+          
+          <v-btn :loading="loading" v-if="isTemplate" color="info" type="button"  @click="importAgain">
+            <v-icon light>cached</v-icon>
+            Import again
+          </v-btn>
+        </v-flex>
+      </v-layout>
+
+      <v-layout row>
+        <v-flex xs12 class="left-padding">
+          <textarea v-model="text" class="text-area" v-if="isTemplate"></textarea>
+        </v-flex>
+      </v-layout>
   </v-form>
 
   <!-- DataSets Created By user -->
@@ -54,7 +50,7 @@
     </v-layout>
   </v-container>
 
-  <v-container class="mt-3" v-else>
+  <v-container class="mt-1" v-else>
     <v-flex xs12>
       <h2 class="font-weight-light">Imported templates
         <span class="font-weight-regular">({{userTemplates.length}})</span>
@@ -66,8 +62,6 @@
           <v-btn @click="deleteTemplate(template._id)" color="error" floating fab small dark>
             <v-icon>delete</v-icon>
           </v-btn>
-
-          <!-- <v-img :src="template.imageUrl" @click="template_view(template._id)"></v-img> -->
           <div class="v-template-background" @click="template_view(template._id)"></div>
           <v-card-text>{{template.title}}</v-card-text>
         </v-card>

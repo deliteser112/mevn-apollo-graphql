@@ -32,9 +32,7 @@
 
   <v-container class="mt-3" v-else>
     <v-flex xs12>
-      <h2 class="font-weight-light">Your templates
-        <span class="font-weight-regular">({{userSavedTemplates.length}})</span>
-      </h2>
+      <h2 class="font-weight-light">Processed Templates by you ({{userSavedTemplates.length}})</h2>
     </v-flex>
     <v-layout row wrap style="justify-content:left;">
       <v-flex xs12 v-for="template in userSavedTemplates" :key="template._id" class="grid-view-cus">
