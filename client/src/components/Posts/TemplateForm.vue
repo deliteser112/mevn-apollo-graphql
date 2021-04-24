@@ -557,6 +557,7 @@
         this.$store.dispatch("getUserPosts", {
           userId: this.user._id
         })
+        console.log("this is user_id:", this.user._id)
       },
       getUserTemplates() {
         this.$store.dispatch("getUserTemplates", {

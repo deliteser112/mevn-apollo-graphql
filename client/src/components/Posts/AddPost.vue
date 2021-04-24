@@ -1,5 +1,5 @@
 <template>
-  <v-container text-xs-center mt-5 pt-5>
+  <v-container text-xs-center mt-5 pt-1>
 
     <!-- Add Dataset Title -->
     <v-layout row wrap>
@@ -9,9 +9,9 @@
     </v-layout>
 
     <!-- Add Dataset Form -->
-    <v-layout row wrap>
+    <!-- <v-layout row wrap> -->
         <post-form :userId="user._id" :parent-name="$options.name"></post-form>
-    </v-layout>
+    <!-- </v-layout> -->
 
   </v-container>
 </template>

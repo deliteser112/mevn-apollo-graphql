@@ -69,6 +69,95 @@
             
           </div>
   </v-form>
+  
+    <!-- DataSets Created By user -->
+    <v-container v-if="!userPosts.length">
+      <v-layout row wrap>
+        <v-flex xs12>
+          <h2>You have no datasets currently. Go and add some!</h2>
+        </v-flex>
+      </v-layout>
+    </v-container>
+
+    <v-container class="mt-3" v-else>
+      <v-flex xs12>
+        <h2 class="font-weight-light">Your datasets
+          <span class="font-weight-regular">({{userPosts.length}})</span>
+        </h2>
+      </v-flex>
+      <v-layout row wrap style="justify-content:left;">
+        <v-flex xs12 v-for="post in userPosts" :key="post._id" class="grid-view-cus">
+          <v-card class="mt-3 ml-1 mr-2" hover>
+            <v-btn @click="deletePost(post._id)" color="error" floating fab small dark>
+              <v-icon>delete</v-icon>
+            </v-btn>
+            <div class="v-dataset-background" @click="open(post._id)"></div>
+            <v-card-text>{{post.title}}</v-card-text>
+          </v-card>
+        </v-flex>
+      </v-layout>
+    </v-container>
+
+    <!-- View Dataset Dialog -->
+    <v-dialog xs12 sm6 offset-sm3 persistent v-model="editPostDialog" style="width:100px">
+      <v-card>
+        <v-card-title class="headline grey lighten-2">DataSet</v-card-title>
+        <v-container>
+
+          <v-layout row>
+            <v-flex xs12 style="text-align:right">
+              <v-btn color="info" type="submit"  @click="addRow">
+                <v-icon light>add</v-icon>
+                Add row
+              </v-btn>
+              <v-btn color="info" type="submit"  @click="deleteRows">
+                <v-icon light>delete</v-icon>
+                Delete row
+              </v-btn>
+            </v-flex>
+          </v-layout>
+          
+              <thead>
+                <tr>
+                  <th></th>
+                  <th class="text-left" v-for="(item, index) in csvHeader" :key="index">
+                    {{item}}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(row,index) in csvTable"
+                  :key="index"
+                >
+                  <td><input type="checkbox"></td>
+                  <td v-for="(item, index) in row" :key="index">
+                    <div class="input-cell" contenteditable="true">{{item}}</div>
+                  </td>
+                </tr>
+              </tbody>
+
+          <v-layout row>
+            <v-flex xs12>
+              <v-btn color="info" type="button"  @click="closeDataset">
+                      <span slot="loader" class="custom-loader">
+                        <v-icon light>cached</v-icon>
+                      </span>
+                Close
+              </v-btn>
+              <v-btn color="info" type="button"  @click="closeDataset">
+                      <span slot="loader" class="custom-loader">
+                        <v-icon light>cached</v-icon>
+                      </span>
+                Update
+              </v-btn>
+              
+            </v-flex>
+          </v-layout>
+          
+        </v-container>
+      </v-card>
+    </v-dialog>
 </div>
 </template>
 
@@ -109,6 +198,7 @@
         // import csv
         headline: 'Import DataSet',
         isCSV: false,
+        editPostDialog: false,
         checked:[],
         channel_name: '',
         channel_fields: [],
@@ -117,6 +207,9 @@
         parse_csv: [],
         sortOrders:{},
         sortKey: '',
+
+        csvTable:[],
+        csvHeader:[],
         // adding post
         isFormValid: true,
         postId: null,
@@ -141,7 +234,10 @@
       };
     },
     computed: {
-      ...mapState(['user', 'error', 'loading','postCategories'])
+      ...mapState(['user', 'error', 'loading','postCategories', 'userPosts'])
+    },
+    created() {
+      this.getUserPosts();
     },
     methods: {
       submitForm() {
@@ -162,6 +258,7 @@
           });
         }
       },
+      
       isChecked(event){
         console.log("this is isChecked functions")
       },
@@ -272,7 +369,51 @@
       },
       importAgain(){
         location.reload()
-      }
+      },
+      open(id, editPostDialog=true){
+        let datasets = this.userPosts;
+        let values = new Array()
+        let variables = new Array()
+        for(let row in datasets){
+          if(id == datasets[row]._id){
+              values = datasets[row].categories
+              variables = datasets[row].variables
+              break;
+          }
+        }
+        
+        this.csvHeader = variables
+        let allArr = new Array()
+        for(let i = 0; i < values.length; i += variables.length){
+          let rowArr = new Array()
+          for(let j = 0; j < variables.length; j++) rowArr.push(values[i+j])
+          allArr.push(rowArr)
+        }
+        console.log(allArr)
+        this.csvTable = allArr
+
+        this.editPostDialog = editPostDialog;
+      },
+      deletePost(postId) {
+        const deletePost = window.confirm(
+          "Are you sure you want to delete this post?"
+        );
+        if (deletePost) {
+          this.$store.dispatch("deleteUserPost", {
+            postId: postId
+          });
+          location.reload()
+        }
+      },
+      getUserPosts() {
+        this.$store.dispatch("getUserPosts", {
+          userId: this.user._id
+        })
+        console.log("this is user_id:", this.user._id)
+      },
+      closeDataset(){
+        this.editPostDialog = false;
+      },
     }
     
   };

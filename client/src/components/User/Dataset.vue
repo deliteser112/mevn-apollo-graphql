@@ -6,7 +6,7 @@
       <v-card class="white--text" color="secondary">
         <v-layout>
           <v-flex xs5>
-            <v-img height="125px" contain :src="user.avatar" @click="test_console"></v-img>
+            <v-img height="125px" contain :src="user.avatar"></v-img>
           </v-flex>
           <v-flex xs7>
             <v-card-title primary-title>
@@ -21,156 +21,37 @@
         </v-layout>
       </v-card>
     </v-flex>
-
-    <v-tabs v-model="tab" grow>
-      <v-tab>
-       Datasets
-      </v-tab>
-      <v-tab>
-       Templates
-      </v-tab>
-    </v-tabs>
-
-    <v-tabs-items v-model="tab">
-      <v-tab-item >
-        <v-card flat>
-          <v-card-text>
-            <!-- DataSets Created By user -->
-            <v-container v-if="!userPosts.length">
-              <v-layout row wrap>
-                <v-flex xs12>
-                  <h2>You have no datasets currently. Go and add some!</h2>
-                </v-flex>
-              </v-layout>
-            </v-container>
-
-            <v-container class="mt-3" v-else>
-              <v-flex xs12>
-                <h2 class="font-weight-light">Your datasets
-                  <span class="font-weight-regular">({{userPosts.length}})</span>
-                </h2>
-              </v-flex>
-              <v-layout row wrap style="justify-content:left;">
-                <v-flex xs12 v-for="post in userPosts" :key="post._id" class="grid-view-cus">
-                  <v-card class="mt-3 ml-1 mr-2" hover>
-                    <v-btn @click="deletePost(post._id)" color="error" floating fab small dark>
-                      <v-icon>delete</v-icon>
-                    </v-btn>
-
-                    <!-- <v-img :src="post.imageUrl" @click="open(post._id)"></v-img> -->
-                    <!-- <v-img src="../../../assets/data-base-icon-27.jpg" @click="open(post._id)"></v-img> -->
-                    <!-- <img src="../../../assets/dataset-icon.jpg" @click="open(post._id)" style="width:100px;height:auto;"/> -->
-                    <div class="v-dataset-background" @click="open(post._id)"></div>
-                    <v-card-text>{{post.title}}</v-card-text>
-                  </v-card>
-                </v-flex>
-              </v-layout>
-            </v-container>
-
-          </v-card-text>
-        </v-card>
-      </v-tab-item>
-       <v-tab-item >
-        <v-card flat>
-          <v-card-text>
-            <!-- DataSets Created By user -->
-            <v-container v-if="!userSavedTemplates.length">
-              <v-layout row wrap>
-                <v-flex xs12>
-                  <h2>You have no templates currently. Go and add some!</h2>
-                </v-flex>
-              </v-layout>
-            </v-container>
-
-            <v-container class="mt-3" v-else>
-              <v-flex xs12>
-                <h2 class="font-weight-light">Your templates
-                  <span class="font-weight-regular">({{userSavedTemplates.length}})</span>
-                </h2>
-              </v-flex>
-              <v-layout row wrap style="justify-content:left;">
-                <v-flex xs12 v-for="template in userSavedTemplates" :key="template._id" class="grid-view-cus">
-                  <v-card class="mt-3 ml-1 mr-2" hover>
-                    <v-btn @click="deleteSavedTemplate(template._id)" color="error" floating fab small dark>
-                      <v-icon>delete</v-icon>
-                    </v-btn>
-
-                    <!-- <v-img :src="template.imageUrl" @click="template_view(template._id)"></v-img> -->
-                    <div class="v-template-background" @click="template_view(template._id)"></div>
-                    <v-card-text>{{template.title}}</v-card-text>
-                  </v-card>
-                </v-flex>
-              </v-layout>
-            </v-container>
-          </v-card-text>
-        </v-card>
-      </v-tab-item>
-    </v-tabs-items>
   </v-card>
 
-    <!-- View Dataset Dialog -->
-    <v-dialog xs12 sm6 offset-sm3 persistent v-model="editPostDialog" style="width:100px">
-      <v-card>
-        <v-card-title class="headline grey lighten-2">DataSet</v-card-title>
-        <v-container>
+  <!-- Templates Created By user -->
+  <v-container v-if="!userSavedTemplates.length">
+    <v-layout row wrap>
+      <v-flex xs12>
+        <h2>You have no templates currently. Go and add some!</h2>
+      </v-flex>
+    </v-layout>
+  </v-container>
 
-          <v-layout row>
-            <v-flex xs12 style="text-align:right">
-              <v-btn color="info" type="submit"  @click="addRow">
-                <v-icon light>add</v-icon>
-                Add row
-              </v-btn>
-              <v-btn color="info" type="submit"  @click="deleteRows">
-                <v-icon light>delete</v-icon>
-                Delete row
-              </v-btn>
-            </v-flex>
-          </v-layout>
-          
-              <thead>
-                <tr>
-                  <th></th>
-                  <th class="text-left" v-for="(item, index) in csvHeader" :key="index">
-                    {{item}}
-                  </th>
-                </tr>
-              </thead>
-              <tbody id="table_content" ref="ref_table">
-                <tr
-                  v-for="(row,index) in csvTable"
-                  :key="index"
-                >
-                  <td><input type="checkbox"></td>
-                  <td v-for="(item, index) in row" :key="index">
-                    <!-- <input type="text" class="input-cell" :value="item" contenteditable="true"/> -->
-                    <div class="input-cell" contenteditable="true">{{item}}</div>
-                  </td>
-                </tr>
-              </tbody>
+  <v-container class="mt-3" v-else>
+    <v-flex xs12>
+      <h2 class="font-weight-light">Your templates
+        <span class="font-weight-regular">({{userSavedTemplates.length}})</span>
+      </h2>
+    </v-flex>
+    <v-layout row wrap style="justify-content:left;">
+      <v-flex xs12 v-for="template in userSavedTemplates" :key="template._id" class="grid-view-cus">
+        <v-card class="mt-3 ml-1 mr-2" hover>
+          <v-btn @click="deleteSavedTemplate(template._id)" color="error" floating fab small dark>
+            <v-icon>delete</v-icon>
+          </v-btn>
 
-          <v-layout row>
-            <v-flex xs12>
-              <v-btn color="info" type="button"  @click="closeDataset">
-                      <span slot="loader" class="custom-loader">
-                        <v-icon light>cached</v-icon>
-                      </span>
-                Close
-              </v-btn>
-              <v-btn color="info" type="button"  @click="closeDataset">
-                      <span slot="loader" class="custom-loader">
-                        <v-icon light>cached</v-icon>
-                      </span>
-                Update
-              </v-btn>
-              
-            </v-flex>
-          </v-layout>
-          
-        </v-container>
-      </v-card>
-    </v-dialog>
-
-
+          <!-- <v-img :src="template.imageUrl" @click="template_view(template._id)"></v-img> -->
+          <div class="v-template-background" @click="template_view(template._id)"></div>
+          <v-card-text>{{template.title}}</v-card-text>
+        </v-card>
+      </v-flex>
+    </v-layout>
+  </v-container>
 
     <!-- View Template Dialog -->
     <v-dialog xs6 sm6 offset-sm3 persistent v-model="editTemplateDialog" >
@@ -218,56 +99,33 @@
         </v-container>
       </v-card>
     </v-dialog>
-
   </v-container>
 </template>
 
 <script>
-  import { mapGetters } from "vuex";
   import JsZip from 'jszip';
   import FileSaver from 'file-saver';
   import { mapState } from "vuex";
   import PostForm from "../Posts/Form";
   import { EventBus } from "@/event";
-  import {
-    GET_POST,
-  } from "../../queries";
   export default {
     name: "Dataset",
     components: { PostForm },
     data() {
       return {
-        editPostDialog: false,
         editTemplateDialog: false,
-        postToEdit: {},
-        postId:'',
         templateId:'',
         csvTable:[],
         csvHeader:[],
         templateContent:[],
         templateTitle:'',
         templateID:'',
-        tab: null,
-        items: [
-          'Appetizers', 'Entrees',
-        ],
-        text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
       };
     },
     computed: {
-      ...mapGetters(["userFavorites"]),
       ...mapState(["user", "userPosts", "userTemplates", "userSavedTemplates"])
     },
-    apollo: {
-      getPost: {
-        query: GET_POST,
-        variables() {
-          return {
-            postId: this.postId
-          };
-        }
-      }
-    },
+   
     created() {
       this.getUserPosts();
       this.getUserTemplates();
@@ -279,40 +137,6 @@
       })
     },
     methods: {
-      test_console(){
-        console.log("this is post:", this.userSavedTemplates)
-      },
-      addRow(){
-        let tbl_data = this.$refs.ref_table
-        let value = tbl_data.querySelectorAll(".input-cell");
-        let project_id = value[0].value
-        let node_id = Number(value[1].value)-1
-        let c_tr, c_td, c_input
-        c_tr = document.createElement("tr")
-        for(let i = 0; i < (this.csvHeader.length+1); i++){
-          c_td = document.createElement("td")
-          c_input = document.createElement("input")
-          if(i == 0){
-            c_input.setAttribute('type','checkbox')
-            c_input.setAttribute('onClick','isChecked()')
-          }else{
-            c_input.setAttribute('type','text')
-            c_input.setAttribute('class', 'input-cell')
-          }
-          if(i == 1) c_input.setAttribute('value', project_id)
-          if(i == 2) c_input.setAttribute('value', node_id+tbl_data.rows.length+1)
-          c_td.appendChild(c_input)
-          c_tr.appendChild(c_td)
-        }
-        
-        tbl_data.appendChild(c_tr)
-      },
-      deleteRows(){
-        console.log("delete row")
-      },
-      closeDataset(){
-        this.editPostDialog = false;
-      },
       closeTemplate(){
         this.editTemplateDialog = false;
       },
@@ -339,30 +163,6 @@
         this.editTemplateDialog = editTemplateDialog;
       },
 
-      open(id, editPostDialog=true){
-        let datasets = this.userPosts;
-        let values = new Array()
-        let variables = new Array()
-        for(let row in datasets){
-          if(id == datasets[row]._id){
-              values = datasets[row].categories
-              variables = datasets[row].variables
-              break;
-          }
-        }
-        
-        this.csvHeader = variables
-        let allArr = new Array()
-        for(let i = 0; i < values.length; i += variables.length){
-          let rowArr = new Array()
-          for(let j = 0; j < variables.length; j++) rowArr.push(values[i+j])
-          allArr.push(rowArr)
-        }
-        console.log(allArr)
-        this.csvTable = allArr
-
-        this.editPostDialog = editPostDialog;
-      },
       getUserTemplates() {
         this.$store.dispatch("getUserTemplates", {
           userId: this.user._id
@@ -380,19 +180,9 @@
       },
       updatePost(post) {
         this.$store.dispatch("updateUserPost", JSON.parse(JSON.stringify(post)));
-        this.editPostDialog = false;
+        this.editTemplateDialog = false;
       },
-      deletePost(postId) {
-        const deletePost = window.confirm(
-          "Are you sure you want to delete this post?"
-        );
-        if (deletePost) {
-          this.$store.dispatch("deleteUserPost", {
-            postId: postId
-          });
-          location.reload()
-        }
-      },
+     
       deleteSavedTemplate(templateId) {
         const deleteSavedTemplate = window.confirm(
           "Are you sure you want to delete this post?"
@@ -403,10 +193,6 @@
           });
           location.reload()
         }
-      },
-      openEditPost(post, editPostDialog = true) {
-        this.editPostDialog = editPostDialog;
-        this.postToEdit = post;
       },
       downloadTemplates(){
         let templates = this.userSavedTemplates;

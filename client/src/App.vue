@@ -127,8 +127,8 @@
         ];
         if (this.user) {
           items = [
-            { icon: 'summarize', title: 'Import Template', link: '/post/addtemplate' },
             { icon: 'storage', title: 'Import DataSet', link: '/post/addpost' },
+            { icon: 'summarize', title: 'Import Template', link: '/post/addtemplate' },
           ];
         }
         return items;
@@ -140,8 +140,8 @@
         ];
         if (this.user) {
           items = [
-            { icon: 'summarize', title: 'Import Template', link: '/post/addtemplate' },
             { icon: 'storage', title: 'Import DataSet', link: '/post/addpost' },
+            { icon: 'summarize', title: 'Import Template', link: '/post/addtemplate' },
             { icon: 'account_box', title: 'Inventory', link: '/dataset' },
           ];
         }
