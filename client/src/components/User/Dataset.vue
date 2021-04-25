@@ -253,7 +253,7 @@
 .v-template-background{
     background-image: url(../../../assets/template-icon.jpg);
     width: 100%;
-    height: 180px;
+    height: 265px;
     background-size: 100% 100%;
 }
 
@@ -264,6 +264,13 @@
     -ms-flex-positive: 0;
     flex-grow: 0;
     max-width: 50%;
+  }
+
+  .v-template-background{
+    background-image: url(../../../assets/template-icon.jpg);
+    width: 100%;
+    height: 180px;
+    background-size: 100% 100%;
   }
 }
 
