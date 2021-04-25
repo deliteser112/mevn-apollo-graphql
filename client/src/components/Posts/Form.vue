@@ -23,14 +23,14 @@
               Submit
             </v-btn>
 
-            <v-btn :loading="loading" v-if="isCSV" color="info" type="button"  @click="addRow">
+            <v-btn :loading="loading" v-if="isCSV" color="info" type="button"  @click="addAddRow">
               <v-icon light>add</v-icon>
               Add row
             </v-btn>
-            <v-btn :loading="loading" v-if="isCSV" color="info" type="button"  @click="deleteRows">
+            <!-- <v-btn :loading="loading" v-if="isCSV" color="info" type="button"  @click="deleteRows">
               <v-icon light>delete</v-icon>
               Delete row
-            </v-btn>
+            </v-btn> -->
             <v-btn :loading="loading" v-if="isCSV" color="info" type="button"  @click="importAgain">
               <v-icon light>slow_motion_video</v-icon>
               Import again
@@ -106,55 +106,60 @@
 
           <v-layout row>
             <v-flex xs12 style="text-align:right">
-              <v-btn color="info" type="submit"  @click="addRow">
+              <v-btn color="info" type="submit"  @click="updateAddRow">
                 <v-icon light>add</v-icon>
                 Add row
               </v-btn>
-              <v-btn color="info" type="submit"  @click="deleteRows">
+              <!-- <v-btn color="info" type="submit"  @click="deleteRows">
                 <v-icon light>delete</v-icon>
                 Delete row
-              </v-btn>
+              </v-btn> -->
             </v-flex>
           </v-layout>
-          
-              <thead>
-                <tr>
-                  <th></th>
-                  <th class="text-left" v-for="(item, index) in csvHeader" :key="index">
-                    {{item}}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="(row,index) in csvTable"
-                  :key="index"
-                >
-                  <td><input type="checkbox"></td>
-                  <td v-for="(item, index) in row" :key="index">
-                    <div class="input-cell" contenteditable="true">{{item}}</div>
-                  </td>
-                </tr>
-              </tbody>
 
-          <v-layout row>
-            <v-flex xs12>
-              <v-btn color="info" type="button"  @click="closeDataset">
-                      <span slot="loader" class="custom-loader">
-                        <v-icon light>cached</v-icon>
-                      </span>
-                Close
-              </v-btn>
-              <v-btn color="info" type="button"  @click="closeDataset">
-                      <span slot="loader" class="custom-loader">
-                        <v-icon light>cached</v-icon>
-                      </span>
-                Update
-              </v-btn>
-              
-            </v-flex>
-          </v-layout>
-          
+          <v-form v-model="isFormValid" ref="updateform" @submit.prevent>
+            <v-layout row>
+              <v-flex xs12>
+                <thead ref="ref_update_header">
+                  <tr>
+                    <th></th>
+                    <th class="text-left" v-for="(item, index) in csvHeader" :key="index">
+                      {{item}}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody ref="ref_update_table">
+                  <tr
+                    v-for="(row,index) in csvTable"
+                    :key="index"
+                  >
+                    <td><input type="checkbox"></td>
+                    <td v-for="(item, index) in row" :key="index">
+                      <div class="update-input-cell" contenteditable="true">{{item}}</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </v-flex>
+            </v-layout>
+
+            <v-layout row>
+              <v-flex xs12>
+                <v-btn color="info" type="button"  @click="closeDataset">
+                        <span slot="loader" class="custom-loader">
+                          <v-icon light>cached</v-icon>
+                        </span>
+                  Close
+                </v-btn>
+                <v-btn color="info" type="submit"  @click="submitUpdateForm">
+                        <span slot="loader" class="custom-loader">
+                          <v-icon light>cached</v-icon>
+                        </span>
+                  Update
+                </v-btn>
+                
+              </v-flex>
+            </v-layout>
+          </v-form>
         </v-container>
       </v-card>
     </v-dialog>
@@ -210,6 +215,12 @@
 
         csvTable:[],
         csvHeader:[],
+
+        //update post
+        
+        update_title:"",
+        update_variables:[],
+
         // adding post
         isFormValid: true,
         postId: null,
@@ -242,7 +253,6 @@
     methods: {
       submitForm() {
         if (this.$refs.form.validate()) {
-          console.log(this.saveDataSet().variables, this.saveDataSet().values)
           EventBus.$emit('submitPostForm',
           {
             parentName: this.parentName,
@@ -258,6 +268,25 @@
           });
         }
       },
+
+      submitUpdateForm() {
+        if (this.$refs.updateform.validate()) {
+          console.log(this.getDataset().variables)
+          EventBus.$emit('submitUpdatePostForm',
+          {
+            parentName: this.parentName,
+            post: {
+              postId: this.postId,
+              userId: this.userId,
+              title: this.getDataset().title,
+              imageUrl: "../../../assets/dataset-icon.jpg",
+              categories: this.getDataset().values,
+              variables: this.getDataset().variables,
+              description: "no description"
+            }
+          });
+        }
+      },
       
       isChecked(event){
         console.log("this is isChecked functions")
@@ -265,26 +294,58 @@
       deleteRows(){
         let tbl_data = this.$refs.ref_table
       },
-      addRow(){
+      addAddRow(){
         let tbl_data = this.$refs.ref_table
         let value = tbl_data.querySelectorAll(".input-cell");
-        let project_id = value[0].value
-        let node_id = Number(value[1].value)-1
-        let c_tr, c_td, c_input
+        let project_id = value[0].innerHTML
+
+        console.log("this is testing value:", value, project_id)
+        let c_tr, c_td, c_div, c_input, c_text
         c_tr = document.createElement("tr")
+        c_input = document.createElement("input");
+        c_input.setAttribute("type", "checkbox");
+        c_text = document.createTextNode(project_id.trim())
+
         for(let i = 0; i < (this.parse_header.length+1); i++){
           c_td = document.createElement("td")
-          c_input = document.createElement("input")
+          c_div = document.createElement("div")
           if(i == 0){
-            c_input.setAttribute('type','checkbox')
-            c_input.setAttribute('onClick','isChecked()')
+            c_div.appendChild(c_input)
           }else{
-            c_input.setAttribute('type','text')
-            c_input.setAttribute('class', 'input-cell')
+            c_div.setAttribute('class', 'input-cell')
+            c_div.setAttribute('contenteditable', 'true')
           }
-          if(i == 1) c_input.setAttribute('value', project_id)
-          if(i == 2) c_input.setAttribute('value', node_id+tbl_data.rows.length+1)
-          c_td.appendChild(c_input)
+          if(i == 1) c_div.appendChild(c_text)
+          c_td.appendChild(c_div)
+          c_tr.appendChild(c_td)
+        }
+        
+        tbl_data.appendChild(c_tr)
+      },
+
+      updateAddRow(){
+        let tbl_data = this.$refs.ref_update_table
+        let value = tbl_data.querySelectorAll(".update-input-cell");
+        let project_id = value[0].innerHTML
+
+        console.log("this is testing value:", value, project_id)
+        let c_tr, c_td, c_div, c_input, c_text
+        c_tr = document.createElement("tr")
+        c_input = document.createElement("input");
+        c_input.setAttribute("type", "checkbox");
+        c_text = document.createTextNode(project_id.trim())
+
+        for(let i = 0; i < (this.update_variables.length+1); i++){
+          c_td = document.createElement("td")
+          c_div = document.createElement("div")
+          if(i == 0){
+            c_div.appendChild(c_input)
+          }else{
+            c_div.setAttribute('class', 'update-input-cell')
+            c_div.setAttribute('contenteditable', 'true')
+          }
+          if(i == 1) c_div.appendChild(c_text)
+          c_td.appendChild(c_div)
           c_tr.appendChild(c_td)
         }
         
@@ -296,18 +357,31 @@
         let data = element.querySelectorAll(".input-cell");
 
         let res = {}
-        let rowObj = {}
-        let allArr = new Array()
         let linerArr = new Array()
-
-        // for(let i = 0; i < data.length; i+=7){
-        //   rowObj = {'project_id':data[i].value, 'node_id':data[i+1].value, 'var_ip':data[i+2].value, 'var_sm':data[i+3].value, 'var_gw':data[i+4].value, 'var_addr':data[i+5].value, 'var_cont':data[i+6].value}
-        //   allArr.push(rowObj)
-        // }
 
         res["variables"] = this.parse_header
         for(let i = 0; i < data.length; i++) linerArr.push(data[i].innerHTML)
         res["values"] = linerArr
+        return res
+      },
+      getDataset(){
+        let datasets = this.userPosts;
+
+        let element = this.$refs.ref_update_table
+        let header = this.$refs.ref_update_header
+        let data = element.querySelectorAll(".update-input-cell");
+        let variables = header.querySelectorAll(".text-left")
+
+        let res = {}
+        let linerArr = new Array()
+        let variablesArr = new Array()
+
+        for(let i = 0; i < variables.length; i++) variablesArr.push(variables[i].innerHTML.trim())
+
+        res["variables"] = variablesArr
+        for(let i = 0; i < data.length; i++) linerArr.push(data[i].innerHTML)
+        res["values"] = linerArr
+        res["title"] = this.update_title
         return res
       },
       addPost(post) {
@@ -368,17 +442,22 @@
         }
       },
       importAgain(){
-        location.reload()
+        this.isCSV = false
+        this.parse_csv = []
+        this.parse_header = []
       },
       open(id, editPostDialog=true){
+        this.postId = id
         let datasets = this.userPosts;
         let values = new Array()
         let variables = new Array()
         for(let row in datasets){
           if(id == datasets[row]._id){
-              values = datasets[row].categories
-              variables = datasets[row].variables
-              break;
+            this.update_title = datasets[row].title
+            this.update_variables = datasets[row].variables
+            values = datasets[row].categories
+            variables = datasets[row].variables
+            break;
           }
         }
         
@@ -389,7 +468,6 @@
           for(let j = 0; j < variables.length; j++) rowArr.push(values[i+j])
           allArr.push(rowArr)
         }
-        console.log(allArr)
         this.csvTable = allArr
 
         this.editPostDialog = editPostDialog;
@@ -497,7 +575,24 @@
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
   }
-  
+  .update-input-cell{
+    background: #ffffff;
+    -moz-box-sizing: border-box;
+    border: 1px solid #CBD5DD;
+    border-radius: 2px;
+    max-height: 70px;
+    max-width: 150px;
+    word-wrap: break-word;
+    margin: 0;
+    min-height: 33px;
+    overflow: auto;
+    position: relative;
+    width: 100%;
+    padding-left: 5px;
+    vertical-align: top;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+  }
   .left-padding{
     padding: 20px;
   }

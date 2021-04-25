@@ -15,9 +15,8 @@
 
     <!-- ---------------- dashboard ------------- -->
     
-    <!-- <v-container class="mt-3"> -->
+    <v-container class="mt-3">
       <v-flex xs12>
-        <!-- <h2 class="font-weight-light">Your templates </h2> -->
       </v-flex>
       <v-layout row wrap style="justify-content:left;">
         
@@ -34,7 +33,7 @@
             </v-card-title>
 
             <v-card-actions>
-              <v-btn flat @click="gotoInventory" style="text-transform: capitalize;">View/Add Datasets</v-btn>
+              <v-btn flat @click="gotoDataset" style="text-transform: capitalize;">View/Add Datasets</v-btn>
               <v-spacer></v-spacer>
             </v-card-actions>
           </v-card>
@@ -89,7 +88,7 @@
         <span class="grey--text">You can start the process by click this button.</span>
       </v-layout>
       
-    <!-- </v-container> -->
+    </v-container>
 
     <!-- -------------- end dashboard ------------- -->
   </v-container>

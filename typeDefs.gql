@@ -113,6 +113,7 @@ type Mutation {
     title: String!
     imageUrl: String!
     categories: [String]!
+    variables: [String]!
     description: String!
   ): Post!
   deleteUserPost(postId: ID!): Post!

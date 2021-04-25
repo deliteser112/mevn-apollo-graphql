@@ -9,9 +9,7 @@
     </v-layout>
 
     <!-- Add Dataset Form -->
-    <!-- <v-layout row wrap> -->
-        <post-form :userId="user._id" :parent-name="$options.name"></post-form>
-    <!-- </v-layout> -->
+    <post-form :userId="user._id" :parent-name="$options.name"></post-form>
 
   </v-container>
 </template>
@@ -41,6 +39,7 @@
     },
     created() {
       EventBus.$on('submitPostForm', ({parentName, post}) => {
+        console.log(post)
         if (parentName !== this.$options.name) return;
         let createdPost = JSON.parse(JSON.stringify(post));
         delete createdPost.postId;
@@ -61,12 +60,23 @@
           this.addPost(createdPost)
         }
       });
+
+      EventBus.$on('submitUpdatePostForm', ({parentName, post}) => {
+        if (parentName !== this.$options.name) return;
+        console.log(post)
+        this.updatePost(post);
+      })
     },
     methods:{
       addPost(post) {
         this.$store.dispatch('addPost', post);
-        this.$router.push("/");
+        this.$router.push("/post/addpost");
         location.reload()
+      },
+      updatePost(post) {
+        this.$store.dispatch("updateUserPost", JSON.parse(JSON.stringify(post)));
+        // location.reload()
+        // this.editTemplateDialog = false;
       },
     }
   };

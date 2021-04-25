@@ -143,10 +143,7 @@
                 <v-icon light>close</v-icon>
                 Close
               </v-btn>
-              <v-btn color="info" type="button"  @click="closeTemplate">
-                <v-icon light>update</v-icon>
-                Update
-              </v-btn>
+              
               <v-btn :loading="loading" color="info" type="button"  @click="selectDataset">
                 <v-icon light>format_list_bulleted</v-icon>
                 Select dataset
