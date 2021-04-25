@@ -1,11 +1,10 @@
 <template>
 <div>
   <v-form v-model="isFormValid" ref="form" @submit.prevent>
-
       <!-- Title Input -->
       <v-layout row>
         <v-flex xs6>
-          <v-text-field :rules="titleRules" v-model="title" class="margin-top" label="Dataset name" type="text" required></v-text-field>
+          <v-text-field :rules="titleRules" v-model="title" label="Dataset Name" type="text" required></v-text-field>
         </v-flex>
       </v-layout>
 
@@ -41,7 +40,7 @@
           <div class="container">
             <div class="panel panel-sm">
               <div class="panel-body">
-                <table v-if="parse_csv">
+                <table v-if="isCSV">
                   <thead>
                     <tr>
                      <th></th>

@@ -75,7 +75,7 @@
       },
       updatePost(post) {
         this.$store.dispatch("updateUserPost", JSON.parse(JSON.stringify(post)));
-        // location.reload()
+        location.reload()
         // this.editTemplateDialog = false;
       },
     }

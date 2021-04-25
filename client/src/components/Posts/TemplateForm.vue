@@ -1,10 +1,10 @@
 <template>
-<div v-cloak>
-  <v-form v-model="isFormValid" ref="form" @submit.prevent style="width:100%;">
+<div>
+  <v-form v-model="isFormValid" ref="form" @submit.prevent>
       <!-- Title Input -->
       <v-layout row>
-        <v-flex xs3>
-          <v-text-field :rules="titleRules" v-model="title" label="input template name" type="text" required></v-text-field>
+        <v-flex xs6>
+          <v-text-field :rules="titleRules" v-model="title" class="margin-top" label="Template Name" type="text" required></v-text-field>
         </v-flex>
       </v-layout>
 
@@ -599,7 +599,7 @@
       },
       storeTemplates(template) {
         this.$store.dispatch('saveTemplates', template);
-        this.$router.push("/");
+        this.$router.push("/dataset");
         location.reload()
       },
       configTemplate(templates, project_id, node_ids){

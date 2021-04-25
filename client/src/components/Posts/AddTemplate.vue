@@ -1,5 +1,5 @@
 <template>
-  <v-container text-xs-center mt-5 pt-5>
+  <v-container text-xs-center pt-5>
 
     <!-- Add Template Title -->
     <v-layout row wrap>
