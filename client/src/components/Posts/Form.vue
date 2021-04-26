@@ -101,7 +101,7 @@
     <v-dialog xs12 sm6 offset-sm3 persistent v-model="editPostDialog" style="width:100px">
       <v-card>
         <v-card-title class="headline grey lighten-2">DataSet</v-card-title>
-        <v-container>
+        <v-container style="overflow-x:auto;">
 
           <v-layout row>
             <v-flex xs12 style="text-align:right">
@@ -359,7 +359,7 @@
         let linerArr = new Array()
 
         res["variables"] = this.parse_header
-        for(let i = 0; i < data.length; i++) linerArr.push(data[i].innerHTML)
+        for(let i = 0; i < data.length; i++) linerArr.push(data[i].innerHTML.trim())
         res["values"] = linerArr
         return res
       },
@@ -378,7 +378,7 @@
         for(let i = 0; i < variables.length; i++) variablesArr.push(variables[i].innerHTML.trim())
 
         res["variables"] = variablesArr
-        for(let i = 0; i < data.length; i++) linerArr.push(data[i].innerHTML)
+        for(let i = 0; i < data.length; i++) linerArr.push(data[i].innerHTML.trim())
         res["values"] = linerArr
         res["title"] = this.update_title
         return res

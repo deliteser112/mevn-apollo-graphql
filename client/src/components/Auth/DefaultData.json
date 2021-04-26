@@ -1,0 +1,34 @@
+{
+  "sampleDatasets": [
+      {
+        "categories": ["test1","1001","101.1.1.1","255.0.0.0","10.1.1.254","CologneStr1","Michael","test1","1002","102.1.1.2","255.255.224.0","10.1.1.254","Newstreet1","Michael","test1","1003","103.1.1.8","255.0.0.0","10.1.1.254","Newstreet1","Peter","test1","1004","172.16.2.2","255.255.224.0","172.16.2.254","CologneStr1","Michael","test1","1005","153.1.1.1","255.0.0.0","10.1.1.254","Newstreet1","Peter","test1","1006","233.1.1.2","255.0.0.0","10.1.1.254","Newstreet1","Michael","test1","1007","30.1.1.2","255.255.224.0","10.1.1.254","CologneStr1","Peter","test1","1008","241.1.1.8","255.0.0.0","10.1.1.254","Newstreet1","Peter","test1","1009","172.16.2.2","255.255.224.0","172.16.2.254","CologneStr1","Michael"],
+        "description": "no description",
+        "imageUrl": "../../../assets/dataset-icon.jpg",
+        "title": "Default_Dataset",
+        "variables":["project_id","node_id","$var_IP","$var_SM","$var_GW","$var_address","$var_contact"]
+      }
+  ],
+  "sampleTemplates": [
+    {
+      "_id":"template_101",
+      "content": " Template:\n---\n- project_id: test1\n  node_id: *\n\n\n  tasks:\n \n  - IP of Node: $var_IP \n    \n - SM of Node: $var_SM\n    \n - GW of Node: $var_GW \n \n - Name of Node: $var_address\n    \n - Node is located at location: $var_contact\n \n \n For questions please call us at : +49111111111\n \n  \n    \n",
+      "description": "no description",
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrBE7meLSJg_1PE9w2EQzKKG6lqDwuAQ0xMPejJzekaPjl8raNuYw_QCmRwBfYaWM6ny8&usqp=CAU",
+      "title": "Default_Template_1"
+    },
+    {
+      "_id":"template_102",
+      "content": "Template:\n---\n- project_id: test2\n  node_id: 2001, 2003, 2004\n\n\n  tasks:\n \n  - IP of Node: $var_IP \n    \n - SM of Node: $var_SM\n    \n - GW of Node: $var_GW \n \n - Name of Node: $var_hostname\n    \n \n Node is located at location: $location\n \n \n For questions please call us at : +49111111111\n \n  \n    \n",
+      "description": "no description",
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrBE7meLSJg_1PE9w2EQzKKG6lqDwuAQ0xMPejJzekaPjl8raNuYw_QCmRwBfYaWM6ny8&usqp=CAU",
+      "title": "Default_Template_2"
+    },
+    {
+      "_id":"template_103",
+      "content": " Template:\n---\n- project_id: test3\n  node_id: 3005 \n\n\n  tasks:\n \n  - IP of Node: $var_IP \n    \n - SM of Node: $var_SM\n    \n - GW of Node: $var_GW \n \n - Name of Node: $var_address\n    \n \n Node is located at location: $var_contact\n \n \n For questions please call us at : +49111111111\n \n  \n    \n",
+      "description": "no description",
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrBE7meLSJg_1PE9w2EQzKKG6lqDwuAQ0xMPejJzekaPjl8raNuYw_QCmRwBfYaWM6ny8&usqp=CAU",
+      "title": "Default_Template_3"
+    }
+  ]
+}

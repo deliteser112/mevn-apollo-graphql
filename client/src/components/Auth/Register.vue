@@ -81,11 +81,15 @@
 
 <script>
   import { mapState } from 'vuex';
+  import default_data from './DefaultData.json'
 
   export default {
     name: "Register",
     data() {
       return {
+        /////
+        myJson:default_data,
+        ////
         headline: 'Register',
         isFormValid: true,
         username: '',
@@ -126,6 +130,10 @@
             email: this.email,
             password: this.password
           })
+
+          console.log("this is my user:", this.user)
+          
+          console.log("here is register", this.myJson.dataset[0].categories)
         }
       }
     }
