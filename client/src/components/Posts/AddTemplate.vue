@@ -103,7 +103,7 @@
           alert("This dataset already exists!")
         }else{
           console.log(createdTemplate)
-          // this.addTemplate(createdTemplate)
+          this.addTemplate(createdTemplate)
         }
       });
     },

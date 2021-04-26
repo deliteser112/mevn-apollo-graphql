@@ -130,10 +130,6 @@
             email: this.email,
             password: this.password
           })
-
-          console.log("this is my user:", this.user)
-          
-          console.log("here is register", this.myJson.dataset[0].categories)
         }
       }
     }
