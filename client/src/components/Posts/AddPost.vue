@@ -70,7 +70,8 @@
     methods:{
       addPost(post) {
         this.$store.dispatch('addPost', post);
-        this.$router.push("/post/addpost");
+        const path = `/post/addpost`
+        if (this.$route.path !== path) this.$router.push(path)
         location.reload()
       },
       updatePost(post) {

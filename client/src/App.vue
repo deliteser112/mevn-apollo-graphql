@@ -38,17 +38,13 @@
                       single-line
                       hide-details></v-text-field>
 
-        <v-card dark v-if="searchResults.length" id="search__card">
+        <v-card v-if="searchResults.length" id="search__card">
           <v-list>
             <v-list-tile v-for="result in searchResults" :key="result._id" @click="goToSearchResult(result._id)">
               <v-list-tile-title>
                 {{ result.title }}
-                <span class="font-weight-thin">{{ formatDescription(result.description) }}</span>
               </v-list-tile-title>
-              <v-list-tile-action v-if="checkIfIsUserFavoritesPost(result._id)">
-                <v-icon>favorite</v-icon>
-              </v-list-tile-action>
-
+              
             </v-list-tile>
           </v-list>
         </v-card>

@@ -65,7 +65,8 @@
     methods:{
       addTemplate(template) {
         this.$store.dispatch('addTemplate', template);
-        this.$router.push("/post/addtemplate");
+        const path = `/post/addtemplate`
+        if (this.$route.path !== path) this.$router.push(path)
         location.reload()
       },
     }

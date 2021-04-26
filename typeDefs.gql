@@ -10,7 +10,7 @@ type User {
 
 type Post {
   _id: ID
-  title: String!
+  title: String! @unique
   imageUrl: String
   categories: [String]!
   variables: [String]!
@@ -23,7 +23,7 @@ type Post {
 
 type Template {
   _id: ID
-  title: String!
+  title: String! @unique
   imageUrl: String
   content: String!
   description: String
