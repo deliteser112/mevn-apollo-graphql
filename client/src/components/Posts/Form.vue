@@ -22,14 +22,14 @@
               Submit
             </v-btn>
 
-            <v-btn :loading="loading" v-if="isCSV" color="info" type="button"  @click="addAddRow">
+            <v-btn v-if="isCSV" color="info" type="button"  @click="addAddRow">
               <v-icon light>add</v-icon>
               Add row
             </v-btn>
-            <!-- <v-btn :loading="loading" v-if="isCSV" color="info" type="button"  @click="deleteRows">
+            <v-btn v-if="isCSV" color="info" type="button"  @click="deleteRows">
               <v-icon light>delete</v-icon>
               Delete row
-            </v-btn> -->
+            </v-btn>
             <v-btn :loading="loading" v-if="isCSV" color="info" type="button"  @click="importAgain">
               <v-icon light>slow_motion_video</v-icon>
               Import again
@@ -44,8 +44,9 @@
                   <thead>
                     <tr>
                      <th></th>
-                      <th v-for="key in parse_header"
+                      <th v-for="(key, h_index) in parse_header"
                           @click="sortBy(key)"
+                          :key="h_index"
                           :class="{ active: sortKey == key }">
                         {{ key | capitalize }}
                         <span class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'">
@@ -54,10 +55,9 @@
                     </tr>
                   </thead>
                   <tbody id="table_content" ref="ref_table">
-                    <tr v-for="csv in parse_csv">
-                      <td><input type="checkbox" @click="isChecked"></td>
-                      <td v-for="key in parse_header">
-                        <!-- <input type="text" :value="csv[key]" class="input-cell" /> -->
+                    <tr v-for="(csv, index) in parse_csv" :key="index" :id="index">
+                      <td><input type="checkbox" :data-value="index"></td>
+                      <td v-for="(key, c_index) in parse_header" :key="c_index">
                         <div class="input-cell" contenteditable="true">{{csv[key]}}</div>
                       </td>
                     </tr>
@@ -109,10 +109,10 @@
                 <v-icon light>add</v-icon>
                 Add row
               </v-btn>
-              <!-- <v-btn color="info" type="submit"  @click="deleteRows">
+              <v-btn color="info" type="submit"  @click="updateDeleteRows">
                 <v-icon light>delete</v-icon>
                 Delete row
-              </v-btn> -->
+              </v-btn>
             </v-flex>
           </v-layout>
 
@@ -131,8 +131,9 @@
                   <tr
                     v-for="(row,index) in csvTable"
                     :key="index"
+                    :id="index"
                   >
-                    <td><input type="checkbox"></td>
+                    <td><input type="checkbox" :data-value="index"></td>
                     <td v-for="(item, index) in row" :key="index">
                       <div class="update-input-cell" contenteditable="true">{{item}}</div>
                     </td>
@@ -285,29 +286,57 @@
           });
         }
       },
-      
-      isChecked(event){
-        console.log("this is isChecked functions")
-      },
+  
       deleteRows(){
         let tbl_data = this.$refs.ref_table
+        const checkboxes = tbl_data.querySelectorAll(`input[type="checkbox"]:checked`);
+
+        console.log(checkboxes)
+        let checkedArr = new Array()
+        for(let i = 0; i < checkboxes.length; i++){
+          checkedArr.push(checkboxes[i].getAttribute('data-value'))
+        }
+
+        for(let i = 0; i < checkedArr.length; i++){
+          let el = document.getElementById(checkedArr[i]);
+          console.log(el)
+          el.remove(); // Removes the div with the 'div-02' id
+        }
+      },
+      updateDeleteRows(){
+        let tbl_data = this.$refs.ref_update_table
+        const checkboxes = tbl_data.querySelectorAll(`input[type="checkbox"]:checked`);
+
+        let checkedArr = new Array()
+        for(let i = 0; i < checkboxes.length; i++){
+          checkedArr.push(checkboxes[i].getAttribute('data-value'))
+        }
+
+        for(let i = 0; i < checkedArr.length; i++){
+          let el = document.getElementById(checkedArr[i]);
+          console.log(el)
+          el.remove(); // Removes the div with the 'div-02' id
+        }
       },
       addAddRow(){
         let tbl_data = this.$refs.ref_table
         let value = tbl_data.querySelectorAll(".input-cell");
+        let val_len = this.parse_header.length
+        let data_val = value.length/val_len
         let project_id = value[0].innerHTML
 
-        console.log("this is testing value:", value, project_id)
         let c_tr, c_td, c_div, c_input, c_text
         c_tr = document.createElement("tr")
+        c_tr.setAttribute("id", data_val)
         c_input = document.createElement("input");
         c_input.setAttribute("type", "checkbox");
         c_text = document.createTextNode(project_id.trim())
 
-        for(let i = 0; i < (this.parse_header.length+1); i++){
+        for(let i = 0; i < (val_len+1); i++){
           c_td = document.createElement("td")
           c_div = document.createElement("div")
           if(i == 0){
+            c_input.setAttribute('data-value', data_val)
             c_div.appendChild(c_input)
           }else{
             c_div.setAttribute('class', 'input-cell')
@@ -324,19 +353,22 @@
       updateAddRow(){
         let tbl_data = this.$refs.ref_update_table
         let value = tbl_data.querySelectorAll(".update-input-cell");
+        let val_len = this.update_variables.length
+        let data_val = value.length/val_len
         let project_id = value[0].innerHTML
 
-        console.log("this is testing value:", value, project_id)
         let c_tr, c_td, c_div, c_input, c_text
         c_tr = document.createElement("tr")
+        c_tr.setAttribute("id", data_val)
         c_input = document.createElement("input");
         c_input.setAttribute("type", "checkbox");
         c_text = document.createTextNode(project_id.trim())
 
-        for(let i = 0; i < (this.update_variables.length+1); i++){
+        for(let i = 0; i < (val_len+1); i++){
           c_td = document.createElement("td")
           c_div = document.createElement("div")
           if(i == 0){
+            c_input.setAttribute('data-value', data_val)
             c_div.appendChild(c_input)
           }else{
             c_div.setAttribute('class', 'update-input-cell')
@@ -485,7 +517,6 @@
         this.$store.dispatch("getUserPosts", {
           userId: this.user._id
         })
-        console.log("this is user_id:", this.user._id)
       },
       closeDataset(){
         this.editPostDialog = false;
