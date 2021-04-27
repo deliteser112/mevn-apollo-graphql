@@ -312,6 +312,38 @@ export const UPDATE_USER_POST = gql`
   }
 `;
 
+export const UPDATE_USER_TEMPLATE = gql`
+  mutation(
+    $templateId: ID!
+    $userId: ID!
+    $title: String!
+    $imageUrl: String!
+    $content: String!
+    $description: String!
+  ) {
+    updateUserTemplate(
+      templateId: $templateId
+      userId: $userId
+      title: $title
+      imageUrl: $imageUrl
+      content: $content
+      description: $description
+    ) {
+      _id
+      title
+      imageUrl
+      description
+      content
+      createdDate
+      likes
+      userId {
+        _id
+        avatar
+      }
+    }
+  }
+`;
+
 export const DELETE_USER_POST = gql`
   mutation($postId: ID!) {
     deleteUserPost(postId: $postId) {

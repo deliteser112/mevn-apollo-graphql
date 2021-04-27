@@ -116,6 +116,15 @@ type Mutation {
     variables: [String]!
     description: String!
   ): Post!
+
+  updateUserTemplate(
+    templateId: ID!
+    userId: ID!
+    title: String!
+    imageUrl: String!
+    content: String!
+    description: String!
+  ): Template!
   deleteUserPost(postId: ID!): Post!
   deleteUserTemplate(templateId: ID!): Template!
   deleteUserSavedTemplate(templateId: ID!): Process!

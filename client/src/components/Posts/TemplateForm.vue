@@ -41,7 +41,7 @@
       </v-layout>
   </v-form>
 
-  <!-- DataSets Created By user -->
+  <!-- Templates Created By user -->
   <v-container v-if="!userTemplates.length">
     <v-layout row wrap>
       <v-flex xs12>
@@ -111,6 +111,7 @@
                       </span>
                 Close
               </v-btn>
+              
               <v-btn color="info" type="button"  @click="processData">
                       <span slot="loader" class="custom-loader">
                         <v-icon light>cached</v-icon>
@@ -130,27 +131,32 @@
       <v-card>
         <v-card-title class="headline grey lighten-2">Template ({{templateTitle}})</v-card-title>
         <v-container>
+          <v-form v-model="isFormValid" ref="updateform" @submit.prevent>
+            <v-layout row>
+              <v-flex xs12>
+                  <textarea v-model="templateContent" class="text-area"></textarea>
+              </v-flex>
+            </v-layout>
 
-          <v-layout row>
-            <v-flex xs12>
-                <textarea v-model="templateContent" class="text-area"></textarea>
-            </v-flex>
-          </v-layout>
-
-          <v-layout row>
-            <v-flex xs12>
-              <v-btn color="info" type="button"  @click="closeTemplate">
-                <v-icon light>close</v-icon>
-                Close
-              </v-btn>
-              
-              <v-btn :loading="loading" color="info" type="button"  @click="selectDataset">
-                <v-icon light>format_list_bulleted</v-icon>
-                Select dataset
-              </v-btn>
-            </v-flex>
-          </v-layout>
-          
+            <v-layout row>
+              <v-flex xs12>
+                <v-btn color="info" type="button"  @click="closeTemplate">
+                  <v-icon light>close</v-icon>
+                  Close
+                </v-btn>
+                <v-btn color="info" type="submit"  @click="submitUpdateForm">
+                  <span slot="loader" class="custom-loader">
+                    <v-icon light>cached</v-icon>
+                  </span>
+                  Update template
+                </v-btn>
+                <v-btn :loading="loading" color="info" type="button"  @click="selectDataset">
+                  <v-icon light>format_list_bulleted</v-icon>
+                  Select dataset
+                </v-btn>
+              </v-flex>
+            </v-layout>
+          </v-form>
         </v-container>
       </v-card>
     </v-dialog>
@@ -512,7 +518,7 @@
 
       submitForm() {
         if (this.$refs.form.validate()) {
-          EventBus.$emit('submitPostForm',
+          EventBus.$emit('submitTemplateForm',
           {
             parentName: this.parentName,
             template: {
@@ -526,14 +532,28 @@
           });
         }
       },
+
+      submitUpdateForm() {
+        if (this.$refs.updateform.validate()) {
+          EventBus.$emit('submitUpdateTemplateForm',
+          {
+            parentName: this.parentName,
+            template: {
+              templateId: this.templateId,
+              userId: this.userId,
+              title: this.templateTitle,
+              imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrBE7meLSJg_1PE9w2EQzKKG6lqDwuAQ0xMPejJzekaPjl8raNuYw_QCmRwBfYaWM6ny8&usqp=CAU",
+              content: this.templateContent,
+              description: "no description"
+            }
+          });
+        }
+      },
+
       selectedFile() {
-        // console.log('selected a file');
-        // console.log(this.$refs.myFile.files[0]);
-        
         let file = this.$refs.myFile.files[0];
         if(!file || file.type !== 'text/plain') return;
         
-        // Credit: https://stackoverflow.com/a/754398/52160
         let reader = new FileReader();
         reader.readAsText(file, "UTF-8");
         reader.onload =  evt => {
@@ -548,7 +568,6 @@
         this.$store.dispatch("getUserPosts", {
           userId: this.user._id
         })
-        console.log("this is user_id:", this.user._id)
       },
       getUserTemplates() {
         this.$store.dispatch("getUserTemplates", {
@@ -575,6 +594,7 @@
         this.editTemplateDialog = false;
       },
       template_view(id, editTemplateDialog=true){
+        this.templateId = id
         let templates = this.userTemplates;
         for(let row in templates){
           if(id == templates[row]._id){

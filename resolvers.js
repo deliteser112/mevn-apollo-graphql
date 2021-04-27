@@ -175,6 +175,21 @@ module.exports = {
       );
       return post;
     },
+
+    updateUserTemplate: async (
+      _,
+      { templateId, userId, title, imageUrl, content, description },
+      { Template }
+    ) => {
+      const template = await Template.findOneAndUpdate(
+        // Find post by postId and createdBy
+        { _id: templateId, userId: userId },
+        { $set: { title, imageUrl, content, description } },
+        { new: true }
+      );
+      return template;
+    },
+
     deleteUserPost: async (_, { postId }, { Post }) => {
       const post = await Post.findOneAndRemove({ _id: postId });
       return post;

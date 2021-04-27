@@ -84,7 +84,7 @@
       ...mapState(['user', 'error', 'loading', 'userTemplates', 'sampleTemplates'])
     },
     created() {
-      EventBus.$on('submitPostForm', ({parentName, template}) => {
+      EventBus.$on('submitTemplateForm', ({parentName, template}) => {
         if (parentName !== this.$options.name) return;
         let createdTemplate = JSON.parse(JSON.stringify(template));
         delete createdTemplate.templateId;
@@ -102,10 +102,15 @@
         if(double){
           alert("This dataset already exists!")
         }else{
-          console.log(createdTemplate)
           this.addTemplate(createdTemplate)
         }
       });
+
+      EventBus.$on('submitUpdateTemplateForm', ({parentName, template}) => {
+        if (parentName !== this.$options.name) return;
+        console.log(template)
+        this.updateTemplate(template);
+      })
     },
 
     methods:{
@@ -113,6 +118,10 @@
         this.$store.dispatch('addTemplate', template);
         const path = `/post/addtemplate`
         if (this.$route.path !== path) this.$router.push(path)
+        location.reload()
+      },
+      updateTemplate(template) {
+        this.$store.dispatch("updateUserTemplate", JSON.parse(JSON.stringify(template)));
         location.reload()
       },
       sample_template_view(id, viewSampleTemplateDialog=true){

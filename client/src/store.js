@@ -11,6 +11,7 @@ import {
   ADD_TEMPLATE,
   SAVE_TEMPLATES,
   UPDATE_USER_POST,
+  UPDATE_USER_TEMPLATE,
   DELETE_USER_POST,
   DELETE_USER_TEMPLATE,
   DELETE_USER_SAVED_TEMPLATE,
@@ -302,6 +303,28 @@ export default new Vuex.Store({
             ...state.userPosts.slice(index + 1)
           ];
           commit("setUserPosts", userPosts);
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    },
+    updateUserTemplate: ({ state, commit }, payload) => {
+      apolloClient
+        .mutate({
+          mutation: UPDATE_USER_TEMPLATE,
+          variables: payload
+        })
+        .then(({ data }) => {
+          const index = state.userTemplates.findIndex(
+            post => post._id === data.updateUserTemplate._id
+          );
+          // update list of all userPosts
+          const userTemplates = [
+            ...state.userTemplates.slice(0, index),
+            data.updateUserTemplate,
+            ...state.userTemplates.slice(index + 1)
+          ];
+          commit("setUserTemplates", userTemplates);
         })
         .catch(err => {
           console.error(err);

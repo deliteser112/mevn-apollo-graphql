@@ -270,7 +270,6 @@
 
       submitUpdateForm() {
         if (this.$refs.updateform.validate()) {
-          console.log(this.getDataset().variables)
           EventBus.$emit('submitUpdatePostForm',
           {
             parentName: this.parentName,
