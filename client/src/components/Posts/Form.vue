@@ -37,7 +37,7 @@
           </v-flex>
         </v-layout>
 
-          <div class="container">
+          <div class="container" style="overflow-x:auto">
             <div class="panel panel-sm">
               <div class="panel-body">
                 <table v-if="isCSV">
@@ -390,7 +390,13 @@
         let linerArr = new Array()
 
         res["variables"] = this.parse_header
-        for(let i = 0; i < data.length; i++) linerArr.push(data[i].innerHTML.trim())
+        for(let i = 0; i < data.length; i++){
+          let tp_cell = data[i].innerHTML.trim()
+          tp_cell = tp_cell.replaceAll('<div>', ' ')
+          tp_cell = tp_cell.replaceAll('</div>', ' ')
+          tp_cell = tp_cell.trim()
+          linerArr.push(tp_cell)
+        }
         res["values"] = linerArr
         return res
       },
@@ -409,7 +415,13 @@
         for(let i = 0; i < variables.length; i++) variablesArr.push(variables[i].innerHTML.trim())
 
         res["variables"] = variablesArr
-        for(let i = 0; i < data.length; i++) linerArr.push(data[i].innerHTML.trim())
+        for(let i = 0; i < data.length; i++){
+          let tp_cell = data[i].innerHTML.trim()
+          tp_cell = tp_cell.replaceAll('<div>', ' ')
+          tp_cell = tp_cell.replaceAll('</div>', ' ')
+          tp_cell = tp_cell.trim()
+          linerArr.push(tp_cell)
+        }
         res["values"] = linerArr
         res["title"] = this.update_title
         return res

@@ -22,6 +22,9 @@ Vue.use(VueApollo);
 // with token for auth routes
 export const defaultClient = new ApolloClient({
   uri: "http://localhost:4000/graphql",
+
+  // for hosting  ------->
+  // uri: "http://172.25.5.101:4000/graphql",
   fetchOptions: {
     credentials: 'include'
   },

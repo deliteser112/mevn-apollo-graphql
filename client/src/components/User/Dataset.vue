@@ -1,7 +1,7 @@
 <template>
   <v-container class="text-xs-center">
     <!-- User Details Card -->
-    <v-flex sm6 offset-sm3>
+    <!-- <v-flex sm6 offset-sm3>
       <v-card class="white--text" color="secondary">
         <v-layout>
           <v-flex xs5>
@@ -12,14 +12,13 @@
               <div>
                 <div class="headline">{{user.username}}</div>
                 <div>Joined {{user.joinDate}}</div>
-                <!-- <div class="hidden-xs-only font-weight-thin">{{user.favorites.length}} popular</div> -->
                 <div class="hidden-xs-only font-weight-thin">{{userPosts.length}} datasets and {{userTemplates.length}} templates Added</div>
               </div>
             </v-card-title>
           </v-flex>
         </v-layout>
       </v-card>
-    </v-flex>
+    </v-flex> -->
 
   <!-- Templates Created By user -->
   <v-container v-if="!userSavedTemplates.length">
