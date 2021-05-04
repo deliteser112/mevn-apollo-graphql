@@ -202,24 +202,6 @@ module.exports = {
       const template = await Process.findOneAndRemove({ _id: templateId });
       return template;
     },
-    addPostMessage: async (_, { messageBody, userId, postId }, { Post }) => {
-      const newMessage = {
-        messageBody,
-        messageUser: userId
-      };
-      const post = await Post.findOneAndUpdate(
-        // find post by id
-        { _id: postId },
-        // prepend (push) new message to beginning of messages array
-        { $push: { messages: { $each: [newMessage], $position: 0 } } },
-        // return fresh document after update
-        { new: true }
-      ).populate({
-        path: "messages.messageUser",
-        model: "User"
-      });
-      return post.messages[0];
-    },
     /**
      * User likes one particular post, post gets added to this User´s favorites posts
      * @param _
@@ -229,38 +211,7 @@ module.exports = {
      * @param User
      * @returns {Promise<{likes: number, favorites: Array}>}
      */
-    likePost: async (_, { postId, username }, { Post, User }) => {
-      const post = await Post.findOneAndUpdate(
-        { _id: postId },
-        { $inc: { likes: 1 } },
-        { new: true }
-      );
-      const user = await User.findOneAndUpdate(
-        { username },
-        { $addToSet: { favorites: postId } },
-        { new: true }
-      ).populate({
-        path: 'favorites',
-        model: 'Post'
-      });
-      return { likes: post.likes, favorites: user.favorites }
-    },
-    unlikePost: async (_, { postId, username }, { Post, User }) => {
-      const post = await Post.findOneAndUpdate(
-        { _id: postId },
-        { $inc: { likes: -1 } },
-        { new: true }
-      );
-      const user = await User.findOneAndUpdate(
-        { username },
-        { $pull: { favorites: postId } },
-        { new: true }
-      ).populate({
-        path: 'favorites',
-        model: 'Post'
-      });
-      return { likes: post.likes, favorites: user.favorites }
-    },
+
     loginUser: async (_, { email, password }, { User }) => {
       const user = await User.findOne({ email }).populate({
         path: 'favorites',

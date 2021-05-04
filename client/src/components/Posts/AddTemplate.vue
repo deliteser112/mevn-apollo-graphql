@@ -76,6 +76,38 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <!-- wizard dialog -->
+    <v-dialog xs12 sm6 offset-sm3 persistent v-model="alertWizardDialog">
+      <v-card>
+        <v-toolbar
+          color="primary"
+          dark
+        >Template Process</v-toolbar>
+        <v-card-text>
+          <v-icon light style="width: 100%; font-size: 100px; color:rgb(4, 170, 109)">{{alertType}}</v-icon>
+          <div class="font-weigh title" style="padding:20px;">{{alertContent}}</div>
+        </v-card-text>
+        <v-card-actions class="justify-end">
+          <v-btn
+            v-if="isDataset"
+            text
+            @click="closeWizardAlert"
+          >Cancel</v-btn>
+          <v-btn
+            v-if="isDataset"
+            text
+            @click="gotoInventory"
+          >Go to Inventory</v-btn>
+          <v-btn
+            v-if="!isDataset"
+            text
+            @click="closeWizardAlert"
+          >Got it</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
   </v-container>
 </template>
 
@@ -95,8 +127,11 @@
         viewSampleTemplateDialog:false,
         templateContent: "",
         templateTitle: "",
+        isDataset:true,
         alertDialog:false,
-        alertContent:""
+        alertContent:"",
+        alertType:"",
+        alertWizardDialog:false,
       };
     },
     apollo: {
@@ -137,8 +172,39 @@
         this.updateTemplate(template);
       })
     },
-
+    mounted() {
+      this.asyncCall()
+    },
     methods:{
+      async asyncCall() {
+        console.log('calling');
+        const result = await this.resolveAfterSeconds();
+        if(result == 'resolved'){
+          if(this.userTemplates.length == 0){
+            console.log("this is 0000")
+            this.isDataset = false
+            this.alertType = "check"
+            this.alertContent = "You can import the template file to store into the database."
+            this.alertWizardDialog = true
+          }else if(this.userTemplates.length == 1){
+            this.isDataset = true
+            this.alertType = "add_task"
+            this.alertContent = "Will you move into Inventory to see the processed template?"
+            this.alertWizardDialog = true
+          }
+        }
+        console.log(result);
+      },
+      resolveAfterSeconds() {
+        return new Promise(resolve => {
+          setTimeout(() => {
+            resolve('resolved');
+          }, 1000);
+        });
+      },
+      gotoInventory(){
+        this.$router.push(`/dataset`)
+      },
       addTemplate(template) {
         this.$store.dispatch('addTemplate', template);
         const path = `/post/addtemplate`
@@ -166,6 +232,10 @@
       closeAlert(){
         this.alertDialog = false
       },
+      closeWizardAlert(){
+        this.alertWizardDialog = false
+      },
+      
     }
   };
 </script>

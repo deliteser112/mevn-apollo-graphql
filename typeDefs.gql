@@ -5,7 +5,6 @@ type User {
   password: String!
   avatar: String
   joinDate: String
-  favorites: [Post]
 }
 
 type Post {
@@ -16,9 +15,7 @@ type Post {
   variables: [String]!
   description: String
   createdDate: String
-  likes: Int
   userId: User!
-  messages: [Message]
 }
 
 type Template {
@@ -28,9 +25,7 @@ type Template {
   content: String!
   description: String
   createdDate: String
-  likes: Int
   userId: User!
-  messages: [Message]
 }
 
 type Process {
@@ -41,19 +36,6 @@ type Process {
   node_ids: [String]
   createdDate: String
   userId: User!
-}
-
-type LikesFaves {
-  likes: Int
-  favorites: [Post]
-
-}
-
-type Message {
-  _id: ID
-  messageBody: String!
-  messageDate: String
-  messageUser: User!
 }
 
 type PostsPage {
@@ -128,9 +110,6 @@ type Mutation {
   deleteUserPost(postId: ID!): Post!
   deleteUserTemplate(templateId: ID!): Template!
   deleteUserSavedTemplate(templateId: ID!): Process!
-  addPostMessage(messageBody: String!, userId: ID!, postId: ID!): Message!
-  likePost(postId: ID!, username: String!): LikesFaves
-  unlikePost(postId: ID!, username: String!): LikesFaves
   registerUser(username: String!, email: String!, password: String!): Token!
   loginUser(email: String!, password: String!): LoggedInUser!
 }

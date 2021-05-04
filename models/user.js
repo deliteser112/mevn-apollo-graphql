@@ -24,11 +24,6 @@ const UserSchema = new mongoose.Schema({
     joinDate: {
         type: Date,
         default: Date.now()
-    },
-    favorites: {
-        type: [mongoose.Schema.Types.ObjectId],
-        required: true,
-        ref: 'Post'
     }
 });
 

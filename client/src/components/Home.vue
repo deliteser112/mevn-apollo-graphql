@@ -9,10 +9,6 @@
         </v-container>
       </v-dialog>
     </v-layout>
-<!-- https://res.cloudinary.com/cschroeder/image/upload/v1542293711/Icons/users.png -->
-    <!-- <login-form v-if="!login && !loading"></login-form> -->
-  
-  
 
     <!-- ---------------- dashboard ------------- -->
     
@@ -81,7 +77,7 @@
       </v-layout>
       <div style="margin-bottom:20px;"></div>
       <v-layout row>
-        <v-btn fab dark  ma-10 large color="cyan" @click="gotoDataset">
+        <v-btn fab dark  ma-10 large color="cyan" @click="goToProcessing">
           <v-icon dark>play_arrow</v-icon>
         </v-btn>
       </v-layout>
@@ -91,6 +87,32 @@
       
     </v-container>
     <!-- -------------- end dashboard ------------- -->
+
+    <!-- alert -->
+    <v-dialog xs12 sm6 offset-sm3 persistent v-model="alertDialog" 
+        transition="dialog-top-transition"
+        max-width="600">
+      <v-card>
+        <v-toolbar
+          color="primary"
+          dark
+        >Template Process</v-toolbar>
+        <v-card-text>
+          <v-icon light style="width: 100%; font-size: 100px; color:rgb(4, 170, 109)">{{alertType}}</v-icon>
+          <div class="font-weigh title" style="padding:20px;">{{alertContent}}</div>
+        </v-card-text>
+        <v-card-actions class="justify-end">
+          <v-btn
+            text
+            @click="closeAlert"
+          >Cancel</v-btn>
+          <v-btn
+            text
+            @click="gotoDataset"
+          >Go to Dataset</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -101,6 +123,14 @@
   export default {
     name: "home",
     components: { LoginForm },
+    
+    data() {
+      return{
+        alertDialog: false,
+        alertContent:"",
+        alertType: "",
+      }
+    },
     created() {
       this.handleCarouselPosts();
     },
@@ -121,8 +151,14 @@
       handleCarouselPosts() {
         this.$store.dispatch('getPosts');
       },
-      goToPost(_id){
-        this.$router.push(`/posts/${_id}`);
+      goToProcessing(){
+        if(this.userPosts.length > 1){
+          this.gotoDataset()
+        }else{
+          this.alertContent = "Will you start the data processing for a template?"
+          this.alertType = "task_alt"
+          this.alertDialog = true
+        }
       },
       gotoDataset(){
         this.$router.push(`/post/addpost`)
@@ -150,6 +186,9 @@
         this.$store.dispatch("getUserSavedTemplates", {
           userId: this.user._id
         })
+      },
+      closeAlert(){
+        this.alertDialog = false
       },
     }
   };

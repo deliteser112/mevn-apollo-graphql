@@ -1,24 +1,5 @@
 <template>
   <v-container class="text-xs-center">
-    <!-- User Details Card -->
-    <!-- <v-flex sm6 offset-sm3>
-      <v-card class="white--text" color="secondary">
-        <v-layout>
-          <v-flex xs5>
-            <v-img height="125px" contain :src="user.avatar"></v-img>
-          </v-flex>
-          <v-flex xs7>
-            <v-card-title primary-title>
-              <div>
-                <div class="headline">{{user.username}}</div>
-                <div>Joined {{user.joinDate}}</div>
-                <div class="hidden-xs-only font-weight-thin">{{userPosts.length}} datasets and {{userTemplates.length}} templates Added</div>
-              </div>
-            </v-card-title>
-          </v-flex>
-        </v-layout>
-      </v-card>
-    </v-flex> -->
 
   <!-- Templates Created By user -->
   <v-container v-if="!userSavedTemplates.length">
@@ -40,7 +21,6 @@
             <v-icon>delete</v-icon>
           </v-btn>
 
-          <!-- <v-img :src="template.imageUrl" @click="template_view(template._id)"></v-img> -->
           <div class="v-template-background" @click="template_view(template._id)"></div>
           <v-card-text>{{template.title}}</v-card-text>
         </v-card>
@@ -60,7 +40,7 @@
                 
                 <v-list two-line subheader>
                   
-                  <v-list-tile v-for="(item, index) in templateContent" v-bind:key="index" avatar @click="">
+                  <v-list-tile v-for="(item, index) in templateContent" v-bind:key="index" avatar @click="hello">
                     <v-list-tile-avatar>
                       <v-icon v-bind:class="[item.iconClass]">{{ item.icon }}</v-icon>
                     </v-list-tile-avatar>
@@ -188,6 +168,9 @@
           });
           location.reload()
         }
+      },
+      hello(){
+        console.log("hello")
       },
       downloadTemplates(){
         let templates = this.userSavedTemplates;

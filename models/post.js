@@ -24,10 +24,7 @@ const PostSchema = new mongoose.Schema({
     type: Date,
     default: Date.now()
   },
-  likes: {
-    type: Number,
-    default: 0
-  },
+
   /**
    * property('userId') === path
    * ref('User') === model
@@ -37,21 +34,6 @@ const PostSchema = new mongoose.Schema({
     required: true,
     ref: 'User'
   },
-  messages: [{
-    messageBody: {
-      type: String,
-      required: true,
-    },
-    messageDate: {
-      type: Date,
-      default: Date.now()
-    },
-    messageUser: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      ref: 'User'
-    }
-  }]
 
 });
 

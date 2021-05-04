@@ -60,7 +60,6 @@
         <v-btn flat to="/dataset" v-if="user">
           <v-icon class="hidden-sm-only" left>inventory</v-icon>
           <v-badge right color="blue darken-2" :class="{ 'bounce': badgeAnimated }">
-            <span slot="badge" v-if="userFavorites.length">{{userFavorites.length}}</span>
             <span class="hidden-xs-only">Inventory</span>
           </v-badge>
         </v-btn>
@@ -113,9 +112,6 @@
     },
     computed: {
       ...mapState(['user', 'authError', 'searchResults']),
-      userFavorites() {
-        return this.$store.getters.userFavorites;
-      },
       horizontalNavbar() {
         let items = [
           { icon: 'create', title: 'Register', link: '/register' },
@@ -145,13 +141,6 @@
       }
     },
     watch: {
-      userFavorites(value) {
-        // if user favorites value changed at all
-        if (value) {
-          this.badgeAnimated = true;
-          setTimeout(() => (this.badgeAnimated = false), 1000);
-        }
-      },
       user(newValue, oldValue) {
         if (oldValue === null) {
           this.authSnackbar = true;
@@ -182,9 +171,6 @@
       formatDescription(desc){
         return desc.length > 20 ? `${desc.slice(0,20)}` : desc;
       },
-      checkIfIsUserFavoritesPost(id){
-        return this.userFavorites && this.userFavorites.some(fave => fave._id === id)
-      }
     }
   }
 </script>

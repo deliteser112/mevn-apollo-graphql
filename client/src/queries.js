@@ -45,18 +45,7 @@ export const GET_POST = gql`
           categories
           variables
           description
-          likes
           createdDate
-          messages {
-            _id
-            messageBody
-            messageDate
-            messageUser {
-              _id
-              username
-              avatar
-            }
-          }
       }
     }
     `;
@@ -69,18 +58,7 @@ export const GET_TEMPLATE = gql`
           imageUrl
           content
           description
-          likes
           createdDate
-          messages {
-            _id
-            messageBody
-            messageDate
-            messageUser {
-              _id
-              username
-              avatar
-            }
-          }
       }
     }
     `;
@@ -166,7 +144,6 @@ export const ADD_POST = gql`
         title
         description
         imageUrl
-        likes
       }
     }
   `;
@@ -188,11 +165,7 @@ export const INFINITE_SCROLL_POSTS = gql`
           categories
           variables
           description
-          likes
           createdDate
-          messages {
-            _id
-          }
           userId {
             _id
             username
@@ -220,11 +193,7 @@ export const INFINITE_SCROLL_POSTS = gql`
           imageUrl
           content
           description
-          likes
           createdDate
-          messages {
-            _id
-          }
           userId {
             _id
             username
@@ -245,7 +214,6 @@ export const GET_USER_POSTS = gql`
       categories
       variables
       createdDate
-      likes
     }
   }
 `;
@@ -259,7 +227,6 @@ export const GET_USER_TEMPLATES = gql`
       description
       content
       createdDate
-      likes
     }
   }
 `;
@@ -303,7 +270,6 @@ export const UPDATE_USER_POST = gql`
       categories
       variables
       createdDate
-      likes
       userId {
         _id
         avatar
@@ -335,7 +301,6 @@ export const UPDATE_USER_TEMPLATE = gql`
       description
       content
       createdDate
-      likes
       userId {
         _id
         avatar
@@ -381,11 +346,6 @@ export const LOGIN_USER = gql`
           username
           email
           avatar
-         favorites {
-              _id
-              title
-              imageUrl
-            }
         }
       }
     }
@@ -410,11 +370,6 @@ export const GET_CURRENT_USER = gql`
         username
         email
         avatar
-        favorites {
-            _id
-            title
-            imageUrl
-        }
         joinDate
       }
     }
