@@ -54,6 +54,28 @@
         </v-container>
       </v-card>
     </v-dialog>
+
+    <!-- alert -->
+    <v-dialog xs12 sm6 offset-sm3 persistent v-model="alertDialog" 
+        transition="dialog-top-transition"
+        max-width="600">
+      <v-card>
+        <v-toolbar
+          color="primary"
+          dark
+        >Template Process</v-toolbar>
+        <v-card-text>
+          <v-icon light style="width: 100%; font-size: 100px; color:rgb(237, 86, 27)">error_outline</v-icon>
+          <div class="font-weight-thin display-1" style="padding:20px;">{{alertContent}}</div>
+        </v-card-text>
+        <v-card-actions class="justify-end">
+          <v-btn
+            text
+            @click="closeAlert"
+          >Close</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -72,7 +94,9 @@
         headline: 'Import Template',
         viewSampleTemplateDialog:false,
         templateContent: "",
-        templateTitle: ""
+        templateTitle: "",
+        alertDialog:false,
+        alertContent:""
       };
     },
     apollo: {
@@ -100,7 +124,8 @@
           } 
         }
         if(double){
-          alert("This dataset already exists!")
+          this.alertDialog = true
+          this.alertContent = "This dataset already exists!"
         }else{
           this.addTemplate(createdTemplate)
         }
@@ -137,7 +162,10 @@
       },
       closeSampleViewDialog(){
         this.viewSampleTemplateDialog = false
-      }
+      },
+      closeAlert(){
+        this.alertDialog = false
+      },
     }
   };
 </script>

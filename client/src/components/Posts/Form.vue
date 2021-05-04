@@ -56,7 +56,7 @@
                   </thead>
                   <tbody id="table_content" ref="ref_table">
                     <tr v-for="(csv, index) in parse_csv" :key="index" :id="index">
-                      <td><input type="checkbox" :data-value="index"></td>
+                      <td style="text-align:center"><input type="checkbox" :data-value="index" style="width:20px; height:20px"></td>
                       <td v-for="(key, c_index) in parse_header" :key="c_index">
                         <div class="input-cell" contenteditable="true">{{csv[key]}}</div>
                       </td>
@@ -100,7 +100,7 @@
     <!-- View Dataset Dialog -->
     <v-dialog xs12 sm6 offset-sm3 persistent v-model="editPostDialog" style="width:100px">
       <v-card>
-        <v-card-title class="headline grey lighten-2">DataSet</v-card-title>
+        <v-card-title class="headline grey lighten-2">DataSet({{update_title}})</v-card-title>
         <v-container style="overflow-x:auto;">
 
           <v-layout row>
@@ -133,7 +133,7 @@
                     :key="index"
                     :id="index"
                   >
-                    <td><input type="checkbox" :data-value="index"></td>
+                    <td style="text-align:center"><input type="checkbox" :data-value="index" style="width:20px;height:20px"></td>
                     <td v-for="(item, index) in row" :key="index">
                       <div class="update-input-cell" contenteditable="true">{{item}}</div>
                     </td>
@@ -163,7 +163,35 @@
         </v-container>
       </v-card>
     </v-dialog>
-</div>
+
+    <!-- alert -->
+    <v-dialog xs12 sm6 offset-sm3 persistent v-model="alertDialog" 
+        transition="dialog-top-transition"
+        max-width="600">
+      <v-card>
+        <v-toolbar
+          color="primary"
+          dark
+        >Template Process</v-toolbar>
+        <v-card-text>
+          <v-icon light style="width: 100%; font-size: 100px; color:rgb(237, 86, 27)">verified_user</v-icon>
+          <div class="font-weight title" style="padding:20px;">{{alertContent}}</div>
+        </v-card-text>
+        <v-card-actions class="justify-end">
+          <v-btn
+            text
+            @click="confirmAlert"
+          >Ok</v-btn>
+
+          <v-btn
+            text
+            @click="closeAlert"
+          >Cancel</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+  </div>
 </template>
 
 <script>
@@ -204,6 +232,8 @@
         headline: 'Import DataSet',
         isCSV: false,
         editPostDialog: false,
+        alertDialog: false,
+        alertContent: "",
         checked:[],
         channel_name: '',
         channel_fields: [],
@@ -336,6 +366,9 @@
           c_td = document.createElement("td")
           c_div = document.createElement("div")
           if(i == 0){
+            c_td.style.textAlign = 'center'
+            c_input.style.width = '20px'
+            c_input.style.height = '20px'
             c_input.setAttribute('data-value', data_val)
             c_div.appendChild(c_input)
           }else{
@@ -368,6 +401,9 @@
           c_td = document.createElement("td")
           c_div = document.createElement("div")
           if(i == 0){
+            c_td.style.textAlign = 'center'
+            c_input.style.width = '20px'
+            c_input.style.height = '20px'
             c_input.setAttribute('data-value', data_val)
             c_div.appendChild(c_input)
           }else{
@@ -515,15 +551,9 @@
         this.editPostDialog = editPostDialog;
       },
       deletePost(postId) {
-        const deletePost = window.confirm(
-          "Are you sure you want to delete this post?"
-        );
-        if (deletePost) {
-          this.$store.dispatch("deleteUserPost", {
-            postId: postId
-          });
-          location.reload()
-        }
+        this.postId = postId
+        this.alertDialog = true
+        this.alertContent = "Are you sure you want to delete this dataset?"
       },
       getUserPosts() {
         this.$store.dispatch("getUserPosts", {
@@ -533,6 +563,15 @@
       closeDataset(){
         this.editPostDialog = false;
       },
+      closeAlert(){
+        this.alertDialog = false
+      },
+      confirmAlert(){
+        this.$store.dispatch("deleteUserPost", {
+          postId: this.postId
+        });
+        location.reload()
+      }
     }
     
   };
@@ -548,6 +587,11 @@
     cursor: pointer;
     border-radius: 10px;
     box-shadow: 0 4px 8px 0 rgb(0 0 0 / 20%), 0 6px 20px 0 rgb(0 0 0 / 19%);
+  }
+
+  checkbox{
+    width: 20px !important;
+    height: 20px !important;
   }
 
   .file-input-type{
@@ -587,16 +631,18 @@
     font-family: arial, sans-serif;
     border-collapse: collapse;
     width: 100%;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19) !important;
   }
 
   td, th {
-    border: 1px solid #b7aeae;
+    border: 1px solid #ffffff;
     text-align: left;
     padding: 8px;
+    background-color: white;
   }
 
   tr:nth-child(even) {
-    background-color: #dddddd;
+    background-color: #ffffff !important;
   }
   .input-cell{
     background: #ffffff;

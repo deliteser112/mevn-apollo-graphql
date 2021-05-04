@@ -6,7 +6,7 @@ import 'vuetify/dist/vuetify.min.css'
 Vue.use(Vuetify, {
   iconfont: 'md',
   theme: {
-    primary: "#5176bb",
+    primary: "#1867c0",
     secondary: "#7f93c1",
     accent: "#c5d2b2",
     error: "#722d0e",

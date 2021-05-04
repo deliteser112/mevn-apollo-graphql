@@ -160,6 +160,33 @@
         </v-container>
       </v-card>
     </v-dialog>
+
+    <!-- alert -->
+    <v-dialog xs12 sm6 offset-sm3 persistent v-model="alertDialog" 
+        transition="dialog-top-transition"
+        max-width="600">
+      <v-card>
+        <v-toolbar
+          color="primary"
+          dark
+        >Template Process</v-toolbar>
+        <v-card-text>
+          <v-icon light style="width: 100%; font-size: 100px; color:rgb(237, 86, 27)">{{alertType}}</v-icon>
+          <div class="font-weigh headline" style="padding:20px;">{{alertContent}}</div>
+        </v-card-text>
+        <v-card-actions class="justify-end">
+          <v-btn
+            v-if="isDelete"
+            text
+            @click="confirmDelete"
+          >Ok</v-btn>
+          <v-btn
+            text
+            @click="closeAlert"
+          >Close</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 </div>
 </template>
 
@@ -200,6 +227,10 @@
         headline: 'Import Template',
         isTemplate: false,
         text:"",
+        alertDialog: false,
+        alertContent:"",
+        alertType: "",
+        isDelete: false,
         processDialog:false,
         allDataset:[],
         templateContent:'',
@@ -251,6 +282,7 @@
       processData(){
         let ext_data = this.extractID(this.templateContent)
         let full_data = this.getData(this.userPosts)
+
         let arr = this.userPosts
         let selected_id = new Array() // selected id of dataset
         
@@ -265,11 +297,17 @@
         /// --- main processing section --- ///
         let temp_type = ext_data.type
         let dataExists = false
+        let proStatus = false
+
         for(let r in full_data){
           for(let c in selected_id){
-            let f_project_id = full_data[r][0][2].trim()
+            let f_project_id = Array()
+            let f_tmp_project_id = full_data[r][0][2].trim()
             let e_project_id = ext_data.project_id.trim()
-            if(full_data[r][0][0] == selected_id[c] && !f_project_id.localeCompare(e_project_id)){
+
+            for(let m in full_data[r]) f_project_id.push(full_data[r][m][2].trim())
+
+            if(full_data[r][0][0] == selected_id[c]){
               dataExists = true
               let project_variables = new Array()
               let p_node_ids = new Array()
@@ -279,24 +317,29 @@
                   let dataset_variables = arr[r].variables
                   let template_variables = ext_data.variables
                   let row = {}
-                  p_node_ids.push(full_data[r][w][3])
-
-                  // checking if template variables exist in dataset, and take the variables.
-                  for(let q in template_variables){
-                    for(let m in dataset_variables){
-                      if(template_variables[q].trim() == dataset_variables[m].trim()){
-                        let index = Number(m) + 2
-                        let key = dataset_variables[m].trim()
-                        row[key] = full_data[r][w][index]
+                  if(full_data[r][w][2] == e_project_id){
+                    p_node_ids.push(full_data[r][w][3])
+                    // checking if template variables exist in dataset, and take the variables.
+                    for(let q in template_variables){
+                      for(let m in dataset_variables){
+                        if(template_variables[q].trim() == dataset_variables[m].trim()){
+                          let index = Number(m) + 2
+                          let key = dataset_variables[m].trim()
+                          row[key] = full_data[r][w][index]
+                        }
                       }
                     }
+                    project_variables.push(row)
                   }
-                  project_variables.push(row)
                 }
-                let processedTemplate = this.makeTemplate(this.templateContent, project_variables)
-                let saveTemplates = this.configTemplate(processedTemplate, e_project_id, p_node_ids)
 
-                this.storeTemplates(saveTemplates)
+                let processedTemplate = this.makeTemplate(this.templateContent, project_variables)
+
+                if(processedTemplate.length > 0){
+                  proStatus = true
+                  let saveTemplates = this.configTemplate(processedTemplate, e_project_id, p_node_ids)
+                  this.storeTemplates(saveTemplates)
+                }
 
                // in case of template node ids are several.
               }else if(temp_type == "multiple"){
@@ -309,7 +352,7 @@
                   for(let q in node_ids){
 
                     // in case of template node id is matched with dataset node id, 
-                    if(full_data[r][w][3] == node_ids[q].trim()){
+                    if(full_data[r][w][3] == node_ids[q].trim() && full_data[r][w][2] == e_project_id){
                       let dataset_variables = arr[r].variables
                       let template_variables = ext_data.variables
                       let row = {}
@@ -330,17 +373,22 @@
                 }
 
                 let processedTemplate = this.makeTemplate(this.templateContent, project_variables)
-                let saveTemplates = this.configTemplate(processedTemplate, e_project_id, p_node_ids)
 
-                this.storeTemplates(saveTemplates)
+                if(processedTemplate.length > 0){
+                  proStatus = true
+                  let saveTemplates = this.configTemplate(processedTemplate, e_project_id, p_node_ids)
+                  this.storeTemplates(saveTemplates)
+                }
 
                 // in case of template node ids is only one.
               }else if(temp_type.trim() == "single"){
                 p_node_ids.push(ext_data.node_id.trim())
+                console.log("here is single", p_node_ids)
+
                 for(let w in full_data[r]){
 
                   // in case of template node id is matched with dataset node id, 
-                  if(full_data[r][w][3] == ext_data.node_id.trim()){
+                  if(full_data[r][w][3] == ext_data.node_id.trim() && full_data[r][w][2] == e_project_id){
                     let dataset_variables = arr[r].variables
                     let template_variables = ext_data.variables
                     let row = {}
@@ -358,15 +406,27 @@
                     project_variables.push(row)
                   }
                 }
-                let processedTemplate = this.makeTemplate(this.templateContent, project_variables)
-                let saveTemplates = this.configTemplate(processedTemplate, e_project_id, p_node_ids)
 
-                this.storeTemplates(saveTemplates)
+                let processedTemplate = this.makeTemplate(this.templateContent, project_variables)
+                if(processedTemplate.length > 0){
+                  proStatus = true
+                  let saveTemplates = this.configTemplate(processedTemplate, e_project_id, p_node_ids)
+                  this.storeTemplates(saveTemplates)
+                }
               }
             }
           }
         }
-        if(!dataExists) alert("The data is not exist!")
+        if(!proStatus) {
+          this.alertDialog = true
+          this.alertType = "error_outline"
+          this.alertContent = "Processing Failed!"
+        }
+        if(!dataExists){
+          this.alertDialog = true
+          this.alertType = "error_outline"
+          this.alertContent = "Data is not exist!"
+        }
       },
       extractID(text){
         let temp_string = text
@@ -488,7 +548,8 @@
           this.allDataset = pData
           this.processDialog = true;
         }else{
-          alert("Project ID or Node ID is not exist!")
+          this.alertDialog = true
+          this.alertContent = "Project ID or Node ID is not exist!"
         }
         
       },
@@ -580,15 +641,17 @@
         })
       },
       deleteTemplate(templateId) {
-        const deleteTemplate = window.confirm(
-          "Are you sure you want to delete this post?"
-        );
-        if (deleteTemplate) {
+        this.isDelete = true
+        this.templateId = templateId
+        this.alertDialog = true
+        this.alertType = "verified_user"
+        this.alertContent = "Are you sure you want to delete this template?"
+      },
+      confirmDelete(){
           this.$store.dispatch("deleteUserTemplate", {
-            templateId: templateId
+            templateId: this.templateId
           });
           location.reload()
-        }
       },
       closeTemplate(){
         this.editTemplateDialog = false;
@@ -607,6 +670,9 @@
       },
       closeProcess(){
         this.processDialog = false
+      },
+      closeAlert(){
+        this.alertDialog = false
       },
       clear() {
         this.allDataset.forEach(item => {

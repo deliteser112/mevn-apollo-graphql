@@ -11,7 +11,8 @@
     </v-layout>
 <!-- https://res.cloudinary.com/cschroeder/image/upload/v1542293711/Icons/users.png -->
     <!-- <login-form v-if="!login && !loading"></login-form> -->
-
+  
+  
 
     <!-- ---------------- dashboard ------------- -->
     
@@ -89,7 +90,6 @@
       </v-layout>
       
     </v-container>
-
     <!-- -------------- end dashboard ------------- -->
   </v-container>
 </template>
@@ -101,13 +101,6 @@
   export default {
     name: "home",
     components: { LoginForm },
-    data() {
-      return {
-        items:[3,2,1],
-        loginStatus: false,
-        card_text: 'Lorem ipsum dolor sit amet, brute iriure accusata ne mea. Eos suavitate referrentur ad, te duo agam libris qualisque, utroque quaestio accommodare no qui. Et percipit laboramus usu, no invidunt verterem nominati mel. Dolorem ancillae an mei, ut putant invenire splendide mel, ea nec propriae adipisci. Ignota salutandi accusamus in sed, et per malis fuisset, qui id ludus appareat.'
-      }
-    },
     created() {
       this.handleCarouselPosts();
     },
