@@ -175,7 +175,7 @@
           this.alertDialog = true
           this.alertContent = "This dataset already exists!"
         }else{
-          console.log(createdPost)
+          console.log("hello", createdPost)
           this.addPost(createdPost)
         }
       });

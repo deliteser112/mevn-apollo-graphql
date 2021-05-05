@@ -162,7 +162,8 @@
           this.alertDialog = true
           this.alertContent = "This dataset already exists!"
         }else{
-          this.addTemplate(createdTemplate)
+          console.log(createdTemplate)
+          // this.addTemplate(createdTemplate)
         }
       });
 

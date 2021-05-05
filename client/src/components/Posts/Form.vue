@@ -428,7 +428,7 @@
         res["variables"] = this.parse_header
         for(let i = 0; i < data.length; i++){
           let tp_cell = data[i].innerHTML.trim()
-          tp_cell = tp_cell.replaceAll('<div>', ' ')
+          tp_cell = tp_cell.replaceAll('<div>', '\n ')
           tp_cell = tp_cell.replaceAll('</div>', ' ')
           tp_cell = tp_cell.trim()
           linerArr.push(tp_cell)
@@ -452,8 +452,9 @@
 
         res["variables"] = variablesArr
         for(let i = 0; i < data.length; i++){
-          let tp_cell = data[i].innerHTML.trim()
-          tp_cell = tp_cell.replaceAll('<div>', ' ')
+          let tp_cell = data[i].innerHTML.trim() //&nbsp;
+          tp_cell = tp_cell.replaceAll('<div>', '\n ')
+          tp_cell = tp_cell.replaceAll('&nbsp;', '\n ')
           tp_cell = tp_cell.replaceAll('</div>', ' ')
           tp_cell = tp_cell.trim()
           linerArr.push(tp_cell)
