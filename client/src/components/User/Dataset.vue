@@ -14,14 +14,16 @@
     <v-flex xs12>
       <h2 class="font-weight-light">Processed Templates by you ({{userSavedTemplates.length}})</h2>
     </v-flex>
-    <v-layout row wrap style="justify-content:left;">
+    <v-layout row wrap style="justify-content:left; position:relative; margin:0 auto">
       <v-flex xs12 v-for="template in userSavedTemplates" :key="template._id" class="grid-view-cus">
         <v-card class="mt-3 ml-1 mr-2" hover>
           <v-btn @click="deleteSavedTemplate(template._id)" color="error" floating fab small dark>
             <v-icon>delete</v-icon>
           </v-btn>
 
-          <div class="v-template-background" @click="template_view(template._id)"></div>
+          <span class="v-updated-badge" v-if="template.isUpdated=='1'">Updated</span>
+
+          <div class="v-template-background" @click="template_view(template._id, template.isUpdated)"></div>
           <v-card-text>{{template.title}}</v-card-text>
         </v-card>
       </v-flex>
@@ -64,9 +66,18 @@
                 Close
               </v-btn>
     
-              <v-btn color="info" type="button"  @click="downloadTemplates">
+              <v-btn color="info" type="button" v-if="!updated" @click="downloadTemplates('old')">
                 <v-icon light>download</v-icon>
-                Download templates
+                Download Templates
+              </v-btn>
+
+              <v-btn color="info" type="button" v-if="updated" @click="downloadTemplates('old')">
+                <v-icon light>download</v-icon>
+                Old Templates
+              </v-btn>
+              <v-btn color="info" type="button" v-if="updated"  @click="downloadTemplates('new')">
+                <v-icon light>download</v-icon>
+                New Templates
               </v-btn>
             </v-flex>
           </v-layout>
@@ -95,6 +106,7 @@
         templateContent:[],
         templateTitle:'',
         templateID:'',
+        updated: false,
       };
     },
     computed: {
@@ -111,14 +123,18 @@
       })
     },
     mounted() {
-      console.log(this.userSavedTemplates)
+      console.log("H:", this.userSavedTemplates)
     },
     methods: {
       closeTemplate(){
         this.editTemplateDialog = false;
       },
-      template_view(id, editTemplateDialog=true){
+      template_view(id, updated, editTemplateDialog=true){
         this.templateID = id
+        console.log(updated)
+
+        this.updated = updated=='1'?true:false
+
         let templates = this.userSavedTemplates;
         for(let row in templates){
           if(id == templates[row]._id){
@@ -174,7 +190,7 @@
       event(e){
         console.log("clicked")
       },
-      downloadTemplates(){
+      downloadTemplates(type){
         let templates = this.userSavedTemplates;
         let id = this.templateID
         for(let row in templates){
@@ -196,7 +212,8 @@
                   + d.getMilliseconds()
                 
                 // download the templates
-                const blob = new Blob([templates[row].templates[i]], { type: 'text/cfg' }) //text/plain //application/pdf
+                let template = type=='old'?[templates[row].templates[i]]:[templates[row].newTemplates[i]]
+                const blob = new Blob(template, { type: 'text/cfg' }) //text/plain //application/pdf
                 zip.file(`${templates[row].node_ids[i]}_${timestamp}.cfg`, blob);
 
                 tempArray.push(templates[row].templates[i])
@@ -223,6 +240,8 @@
   };
 </script>
 <style>
+
+
 .v-dialog {
     width: auto;
 }
@@ -239,6 +258,45 @@
     width: 100%;
     height: 265px;
     background-size: 100% 100%;
+}
+
+.v-updated-badge {
+  position: absolute;
+  background-color: #5CACEE;
+  text-align:center;
+  line-height:50px;
+  width:100px;
+  height:50px;
+  color: white;
+}
+
+.v-updated-badge:after {
+  content:"";
+  position: absolute;
+  top: 0px;
+  transform: skew(20deg);
+  right:-15px;
+  width:30px;
+  height:inherit;
+  background-color: #5CACEE;
+  border-radius: 0 4px 4px 0;
+}
+
+.v-updated-badge:before {
+  content:"";
+  position: absolute;
+  top: 7px;
+  transform: skewY(30deg);
+  left:0px;
+  width:20px;
+  height:inherit;
+  background-color: black;
+  z-index:-10;
+}
+
+.v-updated-badge {
+  top: 170px;
+  left: -8px;
 }
 
 @media (min-width: 600px){

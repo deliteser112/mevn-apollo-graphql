@@ -172,13 +172,53 @@
           dark
         >Template Process</v-toolbar>
         <v-card-text>
-          <v-icon light style="width: 100%; font-size: 100px; color:rgb(237, 86, 27)">verified_user</v-icon>
-          <div class="font-weight title" style="padding:20px;">{{alertContent}}</div>
+          <v-icon light style="width: 100%; font-size: 100px; color:rgb(237, 86, 27)" v-if="!isConfirmUpdate">verified_user</v-icon>
+
+          <div style="padding:10px 20px 10px 20px">
+            <div class="font-weight subheading">{{alertContent}}</div>
+            <div class="font-weight subheading" v-if="isConfirmUpdate">{{alertContent1}}</div>
+          </div>
+          
+          
+          <v-card v-for="(item, index) in changed_status" :key="index" style="margin-bottom:10px;">
+            <v-layout>
+              <v-flex xs4>
+                <v-img
+                  class="v-template-background-changed"
+                  contain
+                ></v-img>
+              </v-flex>
+              <v-flex xs8>
+                <v-card-title primary-title>
+                  <div>
+                    <div class="title">{{item.title}}</div>
+                    <div>Project ID: &nbsp;<b>{{item.project_id}}</b></div>
+                    <div>Node ID: &nbsp;<b>{{item.node_id}}</b></div>
+                    <div>Variable: &nbsp;<b>{{item.variable}}</b></div>
+                  </div>
+                </v-card-title>
+              </v-flex>
+            </v-layout>
+            <v-divider light></v-divider>
+            <v-card-actions class="pa-3">
+              Previous: &nbsp;<b> {{item.previous}}</b>
+              <v-spacer></v-spacer>
+              Modified: &nbsp;<b> {{item.modified}}</b>
+            </v-card-actions>
+          </v-card>
+          
         </v-card-text>
         <v-card-actions class="justify-end">
           <v-btn
+            v-if="isDelete"
             text
             @click="confirmAlert"
+          >Ok</v-btn>
+
+          <v-btn
+            v-if="isConfirmUpdate"
+            text
+            @click="confirmUpdate"
           >Ok</v-btn>
 
           <v-btn
@@ -234,6 +274,11 @@
         editPostDialog: false,
         alertDialog: false,
         alertContent: "",
+        alertContent1: "",
+        isDelete:false,
+        isConfirmUpdate:false,
+        changed_status: [],
+
         checked:[],
         channel_name: '',
         channel_fields: [],
@@ -342,11 +387,13 @@
             }
           }
 
+          let isChanged = false
           let changed_status = new Array()
           for(let i = 0; i < ids.length; i++){
             for(let j = 0; j < pcd_data.length; j++){
               let changed_row = {}
               if(ids[i].project_id == pcd_data[j].project_id && ids[i].node_id == pcd_data[j].node_id){
+                isChanged = true
                 changed_row.template_id = pcd_data[j].template_id
                 changed_row.title = pcd_data[j].title
                 changed_row.project_id = pcd_data[j].project_id
@@ -361,47 +408,46 @@
             }
           }
 
-          let processedTemplateIDs = new Array()
-          let originalTemplateIDs = new Array()
-
-          if(changed_status.length > 0){
-            processedTemplateIDs.push(changed_status[0].template_id)
-            originalTemplateIDs.push(changed_status[0].original_temp_id)
-            for(let i = 1; i < changed_status.length; i++){
-              if(changed_status[i-1].template_id == changed_status[i].template_id) continue;
-              processedTemplateIDs.push(changed_status[i].template_id)
-              originalTemplateIDs.push(changed_status[i].original_temp_id)
-            }
+          if(isChanged){
+            this.alertDialog = true
+            this.isConfirmUpdate = true
+            this.isDelete = false
+            this.changed_status = changed_status
+            this.alertContent = "  This dataset was already used for processing templates."
+            this.alertContent1 = "Would you like to continue making changes anyway?"
+          }else{
+            if (this.$refs.updateform.validate()) {
+              EventBus.$emit('submitUpdatePostForm',
+              {
+                parentName: this.parentName,
+                post: {
+                  postId: this.postId,
+                  userId: this.userId,
+                  title: this.getDataset().title,
+                  imageUrl: "../../../assets/dataset-icon.jpg",
+                  categories: this.getDataset().values,
+                  variables: this.getDataset().variables,
+                  description: "no description"
+                }
+              });
+            } 
           }
-
-          for(let i = 0; i < processedTemplateIDs.length; i++){
-            let userID = this.userId;
-            let templateID = processedTemplateIDs[i];
-            let newDataset = this.getDataset();
-            let newTemplate = this.getTempateByID(originalTemplateIDs[i]);
-            let oldTemplate = this.getProcessedTempateByID(processedTemplateIDs[i]);
-            let originalTemp = originalTemplateIDs[i]
-
-            let updateTemplate = TemplateProcess.processData(userID, templateID, newDataset, newTemplate, oldTemplate, originalTemp);
-            this.updateProcTemplate(updateTemplate)
-            console.log(updateTemplate)
-          }
-        }
-
-        if (this.$refs.updateform.validate()) {
-          EventBus.$emit('submitUpdatePostForm',
-          {
-            parentName: this.parentName,
-            post: {
-              postId: this.postId,
-              userId: this.userId,
-              title: this.getDataset().title,
-              imageUrl: "../../../assets/dataset-icon.jpg",
-              categories: this.getDataset().values,
-              variables: this.getDataset().variables,
-              description: "no description"
-            }
-          });
+        }else{
+          if (this.$refs.updateform.validate()) {
+            EventBus.$emit('submitUpdatePostForm',
+            {
+              parentName: this.parentName,
+              post: {
+                postId: this.postId,
+                userId: this.userId,
+                title: this.getDataset().title,
+                imageUrl: "../../../assets/dataset-icon.jpg",
+                categories: this.getDataset().values,
+                variables: this.getDataset().variables,
+                description: "no description"
+              }
+            });
+          } 
         }
       },
       
@@ -433,7 +479,6 @@
         let tbl_data = this.$refs.ref_table
         const checkboxes = tbl_data.querySelectorAll(`input[type="checkbox"]:checked`);
 
-        console.log(checkboxes)
         let checkedArr = new Array()
         for(let i = 0; i < checkboxes.length; i++){
           checkedArr.push(checkboxes[i].getAttribute('data-value'))
@@ -441,7 +486,6 @@
 
         for(let i = 0; i < checkedArr.length; i++){
           let el = document.getElementById(checkedArr[i]);
-          console.log(el)
           el.remove(); // Removes the div with the 'div-02' id
         }
       },
@@ -456,7 +500,6 @@
 
         for(let i = 0; i < checkedArr.length; i++){
           let el = document.getElementById(checkedArr[i]);
-          console.log(el)
           el.remove(); // Removes the div with the 'div-02' id
         }
       },
@@ -678,6 +721,8 @@
       },
       deletePost(postId) {
         this.postId = postId
+        this.isDelete = true
+        this.isConfirmUpdate = false
         this.alertDialog = true
         this.alertContent = "Are you sure you want to delete this dataset?"
       },
@@ -707,6 +752,51 @@
           postId: this.postId
         });
         location.reload()
+      },
+
+      confirmUpdate(){
+        let changed_status = this.changed_status
+
+        let processedTemplateIDs = new Array()
+        let originalTemplateIDs = new Array()
+
+        if(changed_status.length > 0){
+          processedTemplateIDs.push(changed_status[0].template_id)
+          originalTemplateIDs.push(changed_status[0].original_temp_id)
+          for(let i = 1; i < changed_status.length; i++){
+            if(changed_status[i-1].template_id == changed_status[i].template_id) continue;
+            processedTemplateIDs.push(changed_status[i].template_id)
+            originalTemplateIDs.push(changed_status[i].original_temp_id)
+          }
+        }
+
+        for(let i = 0; i < processedTemplateIDs.length; i++){
+          let userID = this.userId;
+          let templateID = processedTemplateIDs[i];
+          let newDataset = this.getDataset();
+          let newTemplate = this.getTempateByID(originalTemplateIDs[i]);
+          let oldTemplate = this.getProcessedTempateByID(processedTemplateIDs[i]);
+          let originalTemp = originalTemplateIDs[i]
+
+          let updateTemplate = TemplateProcess.processData(userID, templateID, newDataset, newTemplate, oldTemplate, originalTemp);
+          this.updateProcTemplate(updateTemplate)
+
+          if (this.$refs.updateform.validate()) {
+            EventBus.$emit('submitUpdatePostForm',
+            {
+              parentName: this.parentName,
+              post: {
+                postId: this.postId,
+                userId: this.userId,
+                title: this.getDataset().title,
+                imageUrl: "../../../assets/dataset-icon.jpg",
+                categories: this.getDataset().values,
+                variables: this.getDataset().variables,
+                description: "no description"
+              }
+            });
+          } 
+        }
       }
     }
     
@@ -822,5 +912,13 @@
   .panel {
     border: 0px solid #dfdfdf !important;
     box-shadow: rgb(0 0 0 / 15%) 0 1px 0 0;
+  }
+
+  .v-template-background-changed{
+    background-image: url(/img/template-icon.a13e7a0b.jpg);
+    margin-left: 20px;
+    width: 130px;
+    height: 130px;
+    background-size: 100% 100%;
   }
 </style>
