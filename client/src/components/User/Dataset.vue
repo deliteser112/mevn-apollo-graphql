@@ -66,7 +66,12 @@
                 Close
               </v-btn>
     
-              <v-btn color="info" type="button"  @click="downloadTemplates('old')">
+              <v-btn color="info" type="button" v-if="!updated" @click="downloadTemplates('old')">
+                <v-icon light>download</v-icon>
+                Download Templates
+              </v-btn>
+
+              <v-btn color="info" type="button" v-if="updated" @click="downloadTemplates('old')">
                 <v-icon light>download</v-icon>
                 Old Templates
               </v-btn>
