@@ -12,6 +12,16 @@ const ProcessSchema = new mongoose.Schema({
     type: [String],
     required: true,
   },
+  originalTemp: {
+    type: String
+  },
+  newTemplates: {
+    type: [String],
+    required: true,
+  },
+  isUpdated: {
+    type: String
+  },
   node_ids: {
     type: [String],
   },

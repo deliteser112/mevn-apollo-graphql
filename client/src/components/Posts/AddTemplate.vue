@@ -170,7 +170,7 @@
       EventBus.$on('submitUpdateTemplateForm', ({parentName, template}) => {
         if (parentName !== this.$options.name) return;
         console.log(template)
-        this.updateTemplate(template);
+        // this.updateTemplate(template);
       })
     },
     mounted() {

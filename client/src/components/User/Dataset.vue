@@ -40,7 +40,7 @@
                 
                 <v-list two-line subheader>
                   
-                  <v-list-tile v-for="(item, index) in templateContent" v-bind:key="index" avatar @click="hello">
+                  <v-list-tile v-for="(item, index) in templateContent" v-bind:key="index" avatar @click="event($event)">
                     <v-list-tile-avatar>
                       <v-icon v-bind:class="[item.iconClass]">{{ item.icon }}</v-icon>
                     </v-list-tile-avatar>
@@ -100,7 +100,6 @@
     computed: {
       ...mapState(["user", "userPosts", "userTemplates", "userSavedTemplates"])
     },
-   
     created() {
       this.getUserPosts();
       this.getUserTemplates();
@@ -110,6 +109,9 @@
         if (parentName !== this.$options.name) return;
         this.updatePost(post);
       })
+    },
+    mounted() {
+      console.log(this.userSavedTemplates)
     },
     methods: {
       closeTemplate(){
@@ -169,8 +171,8 @@
           location.reload()
         }
       },
-      hello(){
-        console.log("hello")
+      event(e){
+        console.log("clicked")
       },
       downloadTemplates(){
         let templates = this.userSavedTemplates;

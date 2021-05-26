@@ -162,9 +162,7 @@
     </v-dialog>
 
     <!-- alert -->
-    <v-dialog xs12 sm6 offset-sm3 persistent v-model="alertDialog" 
-        transition="dialog-top-transition"
-        max-width="600">
+    <v-dialog xs12 sm6 offset-sm3 persistent v-model="alertDialog" style="width:100px">
       <v-card>
         <v-toolbar
           color="primary"
@@ -337,7 +335,7 @@
 
                 if(processedTemplate.length > 0){
                   proStatus = true
-                  let saveTemplates = this.configTemplate(processedTemplate, e_project_id, p_node_ids)
+                  let saveTemplates = this.configTemplate(processedTemplate, this.templateId, e_project_id, p_node_ids)
                   this.storeTemplates(saveTemplates)
                 }
 
@@ -371,19 +369,18 @@
                     }
                   }
                 }
-
+                
                 let processedTemplate = this.makeTemplate(this.templateContent, project_variables)
 
                 if(processedTemplate.length > 0){
                   proStatus = true
-                  let saveTemplates = this.configTemplate(processedTemplate, e_project_id, p_node_ids)
+                  let saveTemplates = this.configTemplate(processedTemplate, this.templateId, e_project_id, p_node_ids)
                   this.storeTemplates(saveTemplates)
                 }
 
                 // in case of template node ids is only one.
               }else if(temp_type.trim() == "single"){
                 p_node_ids.push(ext_data.node_id.trim())
-                console.log("here is single", p_node_ids)
 
                 for(let w in full_data[r]){
 
@@ -410,7 +407,7 @@
                 let processedTemplate = this.makeTemplate(this.templateContent, project_variables)
                 if(processedTemplate.length > 0){
                   proStatus = true
-                  let saveTemplates = this.configTemplate(processedTemplate, e_project_id, p_node_ids)
+                  let saveTemplates = this.configTemplate(processedTemplate, this.templateId, e_project_id, p_node_ids)
                   this.storeTemplates(saveTemplates)
                 }
               }
@@ -688,7 +685,7 @@
         this.$router.push("/dataset");
         location.reload()
       },
-      configTemplate(templates, project_id, node_ids){
+      configTemplate(templates, originalTemp, project_id, node_ids){
         // for getting timestamp
         let d = new Date(); 
         let timestamp = d.getFullYear() + ""
@@ -705,6 +702,9 @@
           "title": title,
           "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrBE7meLSJg_1PE9w2EQzKKG6lqDwuAQ0xMPejJzekaPjl8raNuYw_QCmRwBfYaWM6ny8&usqp=CAU",
           "templates": templates,
+          "originalTemp": originalTemp,
+          "newTemplates": templates,
+          "isUpdated": "0",
           "node_ids": node_ids
         }
         return template

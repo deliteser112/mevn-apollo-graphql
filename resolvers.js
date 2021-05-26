@@ -148,19 +148,36 @@ module.exports = {
       }).save();
       return newTemplate;
     },
-    saveTemplates: async (
+  saveTemplates: async (
       _,
-      { title, imageUrl, templates, node_ids, userId },
+      { title, imageUrl, templates, originalTemp, newTemplates, isUpdated, node_ids, userId },
       { Process }
     ) => {
       const newSavedTemplates = await new Process({
         title,
         imageUrl,
         templates,
+        originalTemp,
+        newTemplates,
+        isUpdated,
         node_ids,
         userId,
       }).save();
       return newSavedTemplates;
+    },
+  updateProcTemplate: async (
+      _,
+      { templateId, userId, title, imageUrl, templates, originalTemp, newTemplates, isUpdated, node_ids },
+      { Process }
+    ) => {
+      const process = await Process.findOneAndUpdate(
+        // Find processedTemplate by templateId and createdBy
+        { _id: templateId, userId: userId },
+        { $set: { title, imageUrl, templates, originalTemp, newTemplates, isUpdated, node_ids } },
+        { new: true }
+      );
+      return process;
+
     },
     updateUserPost: async (
       _,

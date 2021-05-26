@@ -70,9 +70,10 @@
     </v-dialog>
 
     <!-- alert -->
-    <v-dialog xs12 sm6 offset-sm3 persistent v-model="alertDialog" 
+    <!-- <v-dialog xs12 sm6 offset-sm3 persistent v-model="alertDialog" 
         transition="dialog-top-transition"
-        max-width="600">
+        max-width="600"> -->
+    <v-dialog xs12 sm6 offset-sm3 persistent v-model="alertDialog" style="width:100px">
       <v-card>
         <v-toolbar
           color="primary"
@@ -175,14 +176,13 @@
           this.alertDialog = true
           this.alertContent = "This dataset already exists!"
         }else{
-          console.log("hello", createdPost)
           this.addPost(createdPost)
         }
       });
 
       EventBus.$on('submitUpdatePostForm', ({parentName, post}) => {
         if (parentName !== this.$options.name) return;
-        this.updatePost(post);
+        // this.updatePost(post);
       })
     },
     mounted() {

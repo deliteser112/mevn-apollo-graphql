@@ -12,6 +12,7 @@ import {
   SAVE_TEMPLATES,
   UPDATE_USER_POST,
   UPDATE_USER_TEMPLATE,
+  UPDATE_PROC_TEMPLATE, 
   DELETE_USER_POST,
   DELETE_USER_TEMPLATE,
   DELETE_USER_SAVED_TEMPLATE,
@@ -330,6 +331,31 @@ export default new Vuex.Store({
           console.error(err);
         });
     },
+
+    updateProcTemplate: ({ state, commit }, payload) => {
+      apolloClient
+        .mutate({
+          mutation: UPDATE_PROC_TEMPLATE,
+          variables: payload
+        })
+        .then(({ data }) => {
+          const index = state.userSavedTemplates.findIndex(
+            template => template._id === data.updateProcTemplate._id
+          );
+
+          // update list of all userPosts
+          const userSavedTemplates = [
+            ...state.userSavedTemplates.slice(0, index),
+            data.updateProcTemplate,
+            ...state.userSavedTemplates.slice(index + 1)
+          ];
+          commit("setUserSavedTemplates", userSavedTemplates);
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    },
+
     deleteUserPost: ({ state, commit }, payload) => {
       apolloClient
         .mutate({

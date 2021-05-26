@@ -26,7 +26,7 @@ const Process = require('./models/process.js');
  * @type {string}
  */
 const uri = process.env.MONGO_CONNECTION;
-mongoose.connect(uri, { useNewUrlParser: true })
+mongoose.connect(uri, { useNewUrlParser: true , useUnifiedTopology: true})
   .then(() => {
     console.log('Connected to db');
   })

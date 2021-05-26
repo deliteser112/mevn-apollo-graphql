@@ -165,9 +165,7 @@
     </v-dialog>
 
     <!-- alert -->
-    <v-dialog xs12 sm6 offset-sm3 persistent v-model="alertDialog" 
-        transition="dialog-top-transition"
-        max-width="600">
+    <v-dialog xs12 sm6 offset-sm3 persistent v-model="alertDialog" style="width:100px">
       <v-card>
         <v-toolbar
           color="primary"
@@ -197,6 +195,8 @@
 <script>
   import { mapState } from "vuex";
   import { EventBus } from "../../event";
+
+  import {TemplateProcess} from "./TemplateProcess.js";
 
   export default {
     name: "PostForm",
@@ -275,10 +275,12 @@
       };
     },
     computed: {
-      ...mapState(['user', 'error', 'loading','postCategories', 'userPosts'])
+      ...mapState(['user', 'error', 'loading','postCategories', 'userPosts', 'userTemplates', 'userSavedTemplates'])
     },
     created() {
       this.getUserPosts();
+      this.getUserTemplates();
+      this.getUserSavedTemplates();
     },
     methods: {
       submitForm() {
@@ -300,6 +302,92 @@
       },
 
       submitUpdateForm() {
+        let newTable = this.getTable(this.getDataset().values, this.getDataset().variables)
+        let oldTable = this.csvTable
+        let variables = this.getDataset().variables
+
+        let ids = new Array()
+
+        for(let i = 0; i < oldTable.length; i++){
+          for(let j = 2; j < oldTable[i].length; j++){
+            let id_row = {}
+            if(oldTable[i][j].trim() != newTable[i][j].trim()){
+              id_row.project_id = oldTable[i][0]
+              id_row.node_id = oldTable[i][1]
+              id_row.previous = oldTable[i][j]
+              id_row.modified = newTable[i][j]
+              id_row.variable = variables[j]
+              ids.push(id_row)
+            }
+          }
+        }
+
+        if(ids.length > 0){
+          let pcd_template = this.userSavedTemplates;
+          let pcd_data = new Array()
+          for(let i = 0; i < pcd_template.length; i++){
+            let pj_id = pcd_template[i].title.trim().split('_')[0]
+            let node_ids = pcd_template[i].node_ids
+            let temp_id = pcd_template[i]._id
+            let temp_title = pcd_template[i].title
+            let original_template = pcd_template[i].originalTemp
+            for(let j = 0; j < node_ids.length; j++){
+              let id_row = {}
+              id_row.project_id = pj_id
+              id_row.node_id = node_ids[j]
+              id_row.template_id = temp_id
+              id_row.title = temp_title
+              id_row.original_template = original_template
+              pcd_data.push(id_row)
+            }
+          }
+
+          let changed_status = new Array()
+          for(let i = 0; i < ids.length; i++){
+            for(let j = 0; j < pcd_data.length; j++){
+              let changed_row = {}
+              if(ids[i].project_id == pcd_data[j].project_id && ids[i].node_id == pcd_data[j].node_id){
+                changed_row.template_id = pcd_data[j].template_id
+                changed_row.title = pcd_data[j].title
+                changed_row.project_id = pcd_data[j].project_id
+                changed_row.node_id = pcd_data[j].node_id
+                changed_row.template_id = pcd_data[j].template_id
+                changed_row.previous = ids[i].previous
+                changed_row.modified = ids[i].modified
+                changed_row.variable = ids[i].variable
+                changed_row.original_temp_id = pcd_data[j].original_template
+                changed_status.push(changed_row)
+              }
+            }
+          }
+
+          let processedTemplateIDs = new Array()
+          let originalTemplateIDs = new Array()
+
+          if(changed_status.length > 0){
+            processedTemplateIDs.push(changed_status[0].template_id)
+            originalTemplateIDs.push(changed_status[0].original_temp_id)
+            for(let i = 1; i < changed_status.length; i++){
+              if(changed_status[i-1].template_id == changed_status[i].template_id) continue;
+              processedTemplateIDs.push(changed_status[i].template_id)
+              originalTemplateIDs.push(changed_status[i].original_temp_id)
+            }
+          }
+
+          for(let i = 0; i < processedTemplateIDs.length; i++){
+            let userID = this.userId;
+            let templateID = processedTemplateIDs[i];
+            let newDataset = this.getDataset();
+            let newTemplate = this.getTempateByID(originalTemplateIDs[i]);
+            let oldTemplate = this.getProcessedTempateByID(processedTemplateIDs[i]);
+            let originalTemp = originalTemplateIDs[i]
+
+            let updateTemplate = TemplateProcess.processData(userID, templateID, newDataset, newTemplate, oldTemplate, originalTemp);
+            this.updateProcTemplate(updateTemplate)
+            console.log(updateTemplate)
+          }
+        }
+
         if (this.$refs.updateform.validate()) {
           EventBus.$emit('submitUpdatePostForm',
           {
@@ -316,7 +404,31 @@
           });
         }
       },
-  
+      
+      updateProcTemplate(template) {
+        this.$store.dispatch('updateProcTemplate', JSON.parse(JSON.stringify(template)));
+        // this.$router.push("/dataset");
+        // location.reload()
+      },
+
+      getTempateByID(id){
+        let template = ""
+        for(let r in this.userTemplates){
+          if(id == this.userTemplates[r]._id){
+            template = this.userTemplates[r].content
+          }
+        }
+        return template
+      },
+      getProcessedTempateByID(id){
+        let template = ""
+        for(let r in this.userSavedTemplates){
+          if(id == this.userSavedTemplates[r]._id){
+            template = this.userSavedTemplates[r].templates
+          }
+        }
+        return template
+      },
       deleteRows(){
         let tbl_data = this.$refs.ref_table
         const checkboxes = tbl_data.querySelectorAll(`input[type="checkbox"]:checked`);
@@ -527,29 +639,42 @@
       },
       open(id, editPostDialog=true){
         this.postId = id
-        let datasets = this.userPosts;
+
+        let data = this.sortData(id, this.userPosts)
+        this.update_title = data['title']
+        this.update_variables = data['variable']
+        this.csvHeader = data['header']
+        this.csvTable = data['table']
+
+        this.editPostDialog = editPostDialog;
+      },
+      sortData(id, datasets){
         let values = new Array()
         let variables = new Array()
+        let res = {}
+
         for(let row in datasets){
           if(id == datasets[row]._id){
-            this.update_title = datasets[row].title
-            this.update_variables = datasets[row].variables
+            res['title']= datasets[row].title
+            res['variable'] = datasets[row].variables
             values = datasets[row].categories
             variables = datasets[row].variables
             break;
           }
         }
         
-        this.csvHeader = variables
+        res['header'] = variables
+        res['table'] = this.getTable(values, variables)
+        return res
+      },
+      getTable(values, variables){
         let allArr = new Array()
         for(let i = 0; i < values.length; i += variables.length){
           let rowArr = new Array()
           for(let j = 0; j < variables.length; j++) rowArr.push(values[i+j])
           allArr.push(rowArr)
         }
-        this.csvTable = allArr
-
-        this.editPostDialog = editPostDialog;
+        return allArr
       },
       deletePost(postId) {
         this.postId = postId
@@ -558,6 +683,16 @@
       },
       getUserPosts() {
         this.$store.dispatch("getUserPosts", {
+          userId: this.user._id
+        })
+      },
+      getUserSavedTemplates() {
+        this.$store.dispatch("getUserSavedTemplates", {
+          userId: this.user._id
+        })
+      },
+      getUserTemplates() {
+        this.$store.dispatch("getUserTemplates", {
           userId: this.user._id
         })
       },

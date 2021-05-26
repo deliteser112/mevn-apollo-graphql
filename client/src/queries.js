@@ -119,6 +119,9 @@ export const ADD_POST = gql`
       $title: String!,
       $imageUrl:String!,
       $templates: [String]!,
+      $originalTemp:String!,
+      $newTemplates: [String]!,
+      $isUpdated:String!,
       $node_ids: [String]!,
       $userId:ID!
     ) {
@@ -126,6 +129,9 @@ export const ADD_POST = gql`
         title:$title
         imageUrl:$imageUrl
         templates:$templates
+        originalTemp:$originalTemp
+        newTemplates:$newTemplates
+        isUpdated:$isUpdated
         node_ids:$node_ids
         userId:$userId
       ){
@@ -133,10 +139,13 @@ export const ADD_POST = gql`
         title
         imageUrl
         templates
+        originalTemp
+        newTemplates
+        isUpdated
         node_ids
       }
     }
-    `;
+  `;
   export const SEARCH_POSTS = gql`
     query($searchTerm: String) {
       searchPosts(searchTerm: $searchTerm) {
@@ -239,6 +248,7 @@ export const GET_USER_SAVED_TEMPLATES = gql`
       imageUrl
       node_ids
       templates
+      originalTemp
       createdDate
     }
   }
@@ -277,6 +287,45 @@ export const UPDATE_USER_POST = gql`
     }
   }
 `;
+
+export const UPDATE_PROC_TEMPLATE = gql`
+    mutation(
+      $templateId: ID!
+      $userId:ID!
+      $title: String!,
+      $imageUrl:String!,
+      $templates: [String]!,
+      $originalTemp:String!,
+      $newTemplates: [String]!,
+      $isUpdated:String!,
+      $node_ids: [String]!,
+    ) {
+      updateProcTemplate(
+        templateId: $templateId
+        userId:$userId
+        title:$title
+        imageUrl:$imageUrl
+        templates:$templates
+        originalTemp:$originalTemp
+        newTemplates:$newTemplates
+        isUpdated:$isUpdated
+        node_ids:$node_ids
+      ){
+        _id
+        title
+        imageUrl
+        templates
+        originalTemp
+        newTemplates
+        isUpdated
+        node_ids
+        userId {
+          _id
+          avatar
+        }
+      }
+    }
+  `;
 
 export const UPDATE_USER_TEMPLATE = gql`
   mutation(

@@ -33,6 +33,9 @@ type Process {
   title: String!
   imageUrl: String
   templates: [String]!
+  originalTemp: String
+  newTemplates: [String]!
+  isUpdated: String
   node_ids: [String]
   createdDate: String
   userId: User!
@@ -86,6 +89,9 @@ type Mutation {
     title: String!
     imageUrl: String!
     templates: [String]!
+    originalTemp: String!
+    newTemplates: [String]!
+    isUpdated: String!
     node_ids: [String]!
     userId: ID!
   ): Process!
@@ -107,6 +113,18 @@ type Mutation {
     content: String!
     description: String!
   ): Template!
+
+  updateProcTemplate(
+    templateId: ID!
+    userId: ID!
+    title: String!
+    imageUrl: String!
+    templates: [String]!
+    originalTemp: String!
+    newTemplates: [String]!
+    isUpdated: String!
+    node_ids: [String]!
+  ): Process!
   deleteUserPost(postId: ID!): Post!
   deleteUserTemplate(templateId: ID!): Template!
   deleteUserSavedTemplate(templateId: ID!): Process!

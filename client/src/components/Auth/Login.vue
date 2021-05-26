@@ -92,7 +92,6 @@
             password: this.password
           });
         }
-
       }
     }
   };
