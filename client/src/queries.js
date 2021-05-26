@@ -248,7 +248,9 @@ export const GET_USER_SAVED_TEMPLATES = gql`
       imageUrl
       node_ids
       templates
+      newTemplates
       originalTemp
+      isUpdated
       createdDate
     }
   }

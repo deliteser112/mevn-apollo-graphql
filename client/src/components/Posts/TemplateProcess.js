@@ -1,5 +1,6 @@
 export const TemplateProcess = {
     processData: function(userID, templateID, dataset, template, oldTemplate, originalTemp) {
+      console.log(template)
       let ext_data = this.extractID(template)
       let full_data = this.getData(dataset)
 

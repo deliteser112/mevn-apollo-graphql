@@ -182,7 +182,7 @@
 
       EventBus.$on('submitUpdatePostForm', ({parentName, post}) => {
         if (parentName !== this.$options.name) return;
-        // this.updatePost(post);
+        this.updatePost(post);
       })
     },
     mounted() {
