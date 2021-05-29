@@ -57,10 +57,10 @@
           <span class="hidden-xs-only">{{ item.title }}</span>
         </v-btn>
 
-        <v-btn flat to="/dataset" v-if="user">
-          <v-icon class="hidden-sm-only" left>inventory</v-icon>
+        <v-btn flat to="/reports" v-if="user">
+          <v-icon class="hidden-sm-only" left>report</v-icon>
           <v-badge right color="blue darken-2" :class="{ 'bounce': badgeAnimated }">
-            <span class="hidden-xs-only">Inventory</span>
+            <span class="hidden-xs-only">Reports</span>
           </v-badge>
         </v-btn>
         <v-btn flat @click="onLogoutUser" v-if="user">
@@ -121,6 +121,7 @@
           items = [
             { icon: 'storage', title: 'Import DataSet', link: '/post/addpost' },
             { icon: 'summarize', title: 'Import Template', link: '/post/addtemplate' },
+            { icon: 'inventory', title: 'Inventory', link: '/dataset' },
           ];
         }
         return items;
@@ -134,7 +135,8 @@
           items = [
             { icon: 'storage', title: 'Import DataSet', link: '/post/addpost' },
             { icon: 'summarize', title: 'Import Template', link: '/post/addtemplate' },
-            { icon: 'account_box', title: 'Inventory', link: '/dataset' },
+            { icon: 'inventory', title: 'Inventory', link: '/dataset' },
+            { icon: 'report', title: 'Reports', link: '/reports' },
           ];
         }
         return items;

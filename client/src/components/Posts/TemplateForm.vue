@@ -756,22 +756,7 @@
   .panel-body .checkbox-inline {
     padding: 15px 20px;
   }
-  table {
-    font-family: arial, sans-serif;
-    border-collapse: collapse;
-    width: 100%;
-  }
 
-  td, th {
-    border: 1px solid #b7aeae;
-    text-align: left;
-    padding: 8px;
-  }
-
-  tr:nth-child(even) {
-    background-color: #dddddd;
-  }
-  
   .left-padding{
     padding: 20px;
   }

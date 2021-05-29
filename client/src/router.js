@@ -6,6 +6,8 @@ import AddPost from './components/Posts/AddPost.vue'
 import AddTemplate from './components/Posts/AddTemplate.vue'
 
 import Dataset from './components/User/Dataset.vue'
+import Reports from './components/User/Reports.vue'
+
 import Login from './components/Auth/Login.vue'
 import Register from './components/Auth/Register.vue'
 
@@ -39,6 +41,12 @@ export default new Router({
       path: "/dataset",
       name: "Dataset",
       component: Dataset,
+      beforeEnter: AuthGuard
+    },
+    {
+      path: "/reports",
+      name: "Reports",
+      component: Reports,
       beforeEnter: AuthGuard
     },
     {
