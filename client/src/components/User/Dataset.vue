@@ -21,7 +21,7 @@
             <v-icon>delete</v-icon>
           </v-btn>
 
-          <span class="v-updated-badge" v-if="template.isUpdated=='1'">Updated</span>
+          <span class="v-updated-badge" v-if="template.isUpdated=='1'"><div class="v-updated-badge-shadow">Updated</div></span>
 
           <div class="v-template-background" @click="template_view(template._id, template.isUpdated)"></div>
           <v-card-text>{{template.title}}</v-card-text>
@@ -283,20 +283,29 @@
 }
 
 .v-updated-badge:before {
-  content:"";
-  position: absolute;
-  top: 7px;
-  transform: skewY(30deg);
-  left:0px;
-  width:20px;
-  height:inherit;
-  background-color: black;
-  z-index:-10;
+  content: "";
+    position: absolute;
+    top: 3px;
+    transform: skewY(30deg);
+    left: 0px;
+    width: 8px;
+    height: inherit;
+    background-color: #00383e;
+    z-index: 0;
 }
 
 .v-updated-badge {
   top: 170px;
   left: -8px;
+}
+
+.v-updated-badge-shadow{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #5cacee;
 }
 
 @media (min-width: 600px){
