@@ -174,7 +174,7 @@
       })
     },
     mounted() {
-      this.asyncCall()
+      // this.asyncCall()
     },
     methods:{
       async asyncCall() {

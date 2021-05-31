@@ -180,7 +180,6 @@
         this.$store.dispatch("getUserTemplates", {
           userId: this.user._id
         })
-        console.log("this is OK:", this.user._id)
       },
       getUserSavedTemplates() {
         this.$store.dispatch("getUserSavedTemplates", {

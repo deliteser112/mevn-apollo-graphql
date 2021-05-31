@@ -170,7 +170,7 @@
         >Template Process</v-toolbar>
         <v-card-text>
           <v-icon light style="width: 100%; font-size: 100px; color:rgb(237, 86, 27)">{{alertType}}</v-icon>
-          <div class="font-weigh headline" style="padding:20px;">{{alertContent}}</div>
+          <div class="font-weigh" style="padding:20px;">{{alertContent}}</div>
         </v-card-text>
         <v-card-actions class="justify-end">
           <v-btn

@@ -105,6 +105,12 @@ module.exports = {
       });
       return posts;
     },
+    getUserReports: async (_, { userId }, { Report }) => {
+      const reports = await Report.find({
+        userId: userId
+      });
+      return reports;
+    },
     getUserTemplates: async (_, { userId }, { Template }) => {
       const templates = await Template.find({
         userId: userId
@@ -133,6 +139,22 @@ module.exports = {
         userId,
       }).save();
       return newPost;
+    },
+    addReport: async (
+      _,
+      { template_name, project_id, node_id, variable, previous, modified, userId },
+      { Report }
+    ) => {
+      const newReport = await new Report({
+        template_name,
+        project_id,
+        node_id,
+        variable,
+        previous,
+        modified,
+        userId,
+      }).save();
+      return newReport;
     },
     addTemplate: async (
       _,
@@ -210,6 +232,10 @@ module.exports = {
     deleteUserPost: async (_, { postId }, { Post }) => {
       const post = await Post.findOneAndRemove({ _id: postId });
       return post;
+    },
+    deleteUserReport: async (_, { reportId }, { Report }) => {
+      const report = await Report.findOneAndRemove({ _id: reportId });
+      return report;
     },
     deleteUserTemplate: async (_, { templateId }, { Template }) => {
       const template = await Template.findOneAndRemove({ _id: templateId });

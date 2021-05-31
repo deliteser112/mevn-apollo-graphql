@@ -9,17 +9,20 @@ import {
   GET_TEMPLATES,
   ADD_POST,
   ADD_TEMPLATE,
+  ADD_REPORT,
   SAVE_TEMPLATES,
   UPDATE_USER_POST,
   UPDATE_USER_TEMPLATE,
   UPDATE_PROC_TEMPLATE, 
   DELETE_USER_POST,
+  DELETE_USER_REPORT,
   DELETE_USER_TEMPLATE,
   DELETE_USER_SAVED_TEMPLATE,
   LOGIN_USER,
   REGISTER_USER,
   GET_CURRENT_USER,
   GET_USER_POSTS,
+  GET_USER_REPORTS,
   GET_USER_TEMPLATES,
   GET_USER_SAVED_TEMPLATES,
   GET_SAVED_TEMPLATES,
@@ -38,6 +41,7 @@ export default new Vuex.Store({
     authError: null,
     searchResults: [],
     userPosts: [],
+    userReports: [],
     userTemplates: [],
     userSavedTemplates: [],
     postCategories: ['$var_ip', '$var_sm', '$var_gw', 'address', 'location'],
@@ -87,6 +91,9 @@ export default new Vuex.Store({
     },
     setUserPosts: (state, payload) => {
       state.userPosts = payload;
+    },
+    setUserReports: (state, payload) => {
+      state.userReports = payload;
     },
     setUserTemplates: (state, payload) => {
       state.userTemplates = payload;
@@ -148,6 +155,22 @@ export default new Vuex.Store({
           console.error(err);
         });
     },
+
+    getUserReports: ({ commit }, payload) => {
+      apolloClient
+        .query({
+          query: GET_USER_REPORTS,
+          variables: payload
+        })
+        .then(({ data }) => {
+          commit("setUserReports", data.getUserReports);
+          // console.log(data.getUserReports);
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    },
+
     getUserTemplates: ({ commit }, payload) => {
       apolloClient
         .query({
@@ -221,6 +244,31 @@ export default new Vuex.Store({
           console.error(err);
         });
     },
+
+    addReport: ({ commit }, payload) => {
+      apolloClient
+        .mutate({
+          mutation: ADD_REPORT,
+          variables: payload,
+
+          // optimistic response ensures data is added immediately as we specified for the update function
+          optimisticResponse: {
+            __typename: "Mutation",
+            addReport: {
+              __typename: "Report",
+              _id: -1,
+              ...payload
+            }
+          },
+        })
+        .then(({ data }) => {
+          //console.log(data.addReport);
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    },
+
     addTemplate: ({ commit }, payload) => {
       apolloClient
         .mutate({
@@ -392,6 +440,27 @@ export default new Vuex.Store({
             ...state.userTemplates.slice(index + 1)
           ];
           commit("setUserTemplates", userTemplates);
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    },
+
+    deleteUserReport: ({ state, commit }, payload) => {
+      apolloClient
+        .mutate({
+          mutation: DELETE_USER_REPORT,
+          variables: payload
+        })
+        .then(({ data }) => {
+          const index = state.userReports.findIndex(
+            report => report._id === data.deleteUserReport._id
+          );
+          const userReports = [
+            ...state.userReports.slice(0, index),
+            ...state.userReports.slice(index + 1)
+          ];
+          commit("setUserReports", userReports);
         })
         .catch(err => {
           console.error(err);

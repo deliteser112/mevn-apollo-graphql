@@ -90,6 +90,36 @@ export const ADD_POST = gql`
     }
     `;
 
+  export const ADD_REPORT = gql`
+    mutation(
+      $template_name: String!,
+      $project_id: String!,
+      $node_id: String!,
+      $variable: String!,
+      $previous: String!,
+      $modified: String!,
+      $userId:ID!
+    ) {
+      addReport(
+        template_name:$template_name
+        project_id:$project_id
+        node_id:$node_id
+        variable:$variable
+        previous:$previous
+        modified:$modified
+        userId:$userId
+      ){
+        _id
+        template_name
+        project_id
+        node_id
+        variable
+        previous
+        modified
+      }
+    }
+    `;
+
   export const ADD_TEMPLATE = gql`
     mutation(
       $title: String!,
@@ -222,6 +252,21 @@ export const GET_USER_POSTS = gql`
       description
       categories
       variables
+      createdDate
+    }
+  }
+`;
+
+export const GET_USER_REPORTS = gql`
+  query($userId: ID!) {
+    getUserReports(userId: $userId) {
+      _id
+      template_name
+      project_id
+      node_id
+      variable
+      previous
+      modified
       createdDate
     }
   }
@@ -371,6 +416,14 @@ export const DELETE_USER_POST = gql`
 export const DELETE_USER_TEMPLATE = gql`
   mutation($templateId: ID!) {
     deleteUserTemplate (templateId: $templateId) {
+      _id
+    }
+  }
+`;
+
+export const DELETE_USER_REPORT = gql`
+  mutation($reportId: ID!) {
+    deleteUserReport (reportId: $reportId) {
       _id
     }
   }

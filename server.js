@@ -8,17 +8,11 @@ const filePath = path.join(__dirname, 'typeDefs.gql');
 const typeDefs = fs.readFileSync(filePath, 'utf-8');
 const resolvers = require('./resolvers');
 
-// const User = require('./models/User');
-// const Post = require('./models/Post');
-// const Template = require('./models/Template');
-// const Process = require('./models/Process');
-
-// for hosting ----------->
-
 const User = require('./models/user.js');
 const Post = require('./models/post.js');
 const Template = require('./models/template.js');
 const Process = require('./models/process.js');
+const Report = require('./models/report.js');
 
 
 /**
@@ -57,7 +51,7 @@ const server = new ApolloServer({
   },
   context: async ({ req }) => {
     const token = req.headers['authorization'];
-    return { User, Template, Process, Post, currentUser: await getUser(token) };
+    return { User, Template, Process, Post, Report, currentUser: await getUser(token) };
   }
 });
 

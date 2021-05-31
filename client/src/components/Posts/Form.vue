@@ -728,9 +728,9 @@ export default {
       res["title"] = this.update_title;
       return res;
     },
-    addPost(post) {
-      this.$store.dispatch("addPost", post);
-      this.$router.push("/");
+    addReport(report) {
+      this.$store.dispatch("addReport", report);
+      // this.$router.push("/");
     },
     sortBy: function (key) {
       var vm = this;
@@ -865,7 +865,25 @@ export default {
 
     confirmUpdate() {
       let changed_status = this.changed_status;
+      
+      if(changed_status.length > 0){
+        for (let i = 0; i < changed_status.length; i++) {
+          console.log(changed_status[i], this.userId)
+          let report = {
+            "userId": this.userId,
+            "template_name": changed_status[i].title,
+            "project_id": changed_status[i].project_id,
+            "node_id": changed_status[i].node_id,
+            "variable": changed_status[i].variable,
+            "previous": changed_status[i].previous,
+            "modified": changed_status[i].modified,
+          }
 
+          console.log(report)
+          this.addReport(report)
+        }
+      }
+      
       let processedTemplateIDs = new Array();
       let originalTemplateIDs = new Array();
 
@@ -898,6 +916,7 @@ export default {
           oldTemplate,
           originalTemp
         );
+
         this.updateProcTemplate(updateTemplate);
 
         if (this.$refs.updateform.validate()) {
