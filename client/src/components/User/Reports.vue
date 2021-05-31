@@ -53,7 +53,8 @@
               <td class="text-xs-right">{{ props.item.variable }}</td>
               <td class="text-xs-right">{{ props.item.previous }}</td> -->
               <td class="text-xs-right">{{ props.item.createdDate }}</td>
-              <td class="text-xs-right"><a href="#" @click="viewReport(props.item._id)">View</a></td>
+              <td class="text-xs-right"><v-btn text @click="viewReport(props.item._id)">View</v-btn></td>
+
             </tr>
           </template>
         </v-data-table>
