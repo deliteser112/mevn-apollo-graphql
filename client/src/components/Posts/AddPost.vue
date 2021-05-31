@@ -34,7 +34,7 @@
         <v-card-title class="headline grey lighten-2">Sample Dataset</v-card-title>
         <v-container>
             <v-layout row>
-              <v-flex xs12>
+              <v-flex xs12  class="csv-table">
                 <thead ref="ref_update_header">
                   <tr>
                     <th></th>

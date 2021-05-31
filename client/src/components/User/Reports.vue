@@ -47,18 +47,72 @@
                 ></v-checkbox>
               </td>
               <td>{{ props.item._id }}</td>
-              <td class="text-xs-right">{{ props.item.template_name }}</td>
-              <td class="text-xs-right">{{ props.item.project_id }}</td>
-              <td class="text-xs-right">{{ props.item.node_id }}</td>
+              <td class="text-xs-right">{{ props.item.report_name }}</td>
+              <td class="text-xs-right">{{ props.item.report_desc }}</td>
+              <!-- <td class="text-xs-right">{{ props.item.node_id }}</td>
               <td class="text-xs-right">{{ props.item.variable }}</td>
-              <td class="text-xs-right">{{ props.item.previous }}</td>
-              <td class="text-xs-right">{{ props.item.modified }}</td>
-              <td class="text-xs-right">{{ convert(props.item.createdDate) }}</td>
+              <td class="text-xs-right">{{ props.item.previous }}</td> -->
+              <td class="text-xs-right">{{ props.item.createdDate }}</td>
+              <td class="text-xs-right"><a href="#" @click="viewReport(props.item._id)">View</a></td>
             </tr>
           </template>
         </v-data-table>
       </v-flex>
     </v-layout>
+
+    <!-- report -->
+    <v-dialog
+      xs12
+      sm6
+      offset-sm3
+      persistent
+      v-model="reportDialog"
+      style="width: 100px"
+    >
+      <v-card>
+        <v-toolbar color="primary" dark>Template Process</v-toolbar>
+        <v-card-text>
+          <v-layout row wrap>
+            <v-flex xs12 style="text-align: center">
+              <div class="title">{{ reportContent.report_name }}</div>
+              <div style="margin:10px 0px 10px 0px">
+                ({{ reportContent.report_desc }})
+              </div>
+            </v-flex>
+          </v-layout>
+          <v-layout row style="overflow-x: auto;">
+            <v-flex xs12 class="csv-table report-table">
+              <thead>
+                <tr>
+                  <th class="text-left">No</th>
+                  <th class="text-left">ProcessedName</th>
+                  <th class="text-left">ProjectID</th>
+                  <th class="text-left">NodeID</th>
+                  <th class="text-left">Variable</th>
+                  <th class="text-left">Previous</th>
+                  <th class="text-left">Modified</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(item, index) in reportContent.report_content" :key="index">
+                  <td>{{ index + 1 }}</td>
+                  <td>{{ item.template_name }}</td>
+                  <td>{{ item.project_id }}</td>
+                  <td>{{ item.node_id }}</td>
+                  <td>{{ item.variable }}</td>
+                  <td>{{ item.previous }}</td>
+                  <td>{{ item.modified }}</td>
+                </tr>
+              </tbody>
+            </v-flex>
+          </v-layout>
+        </v-card-text>
+        <v-card-actions class="justify-end">
+          <v-btn text @click="downloadReport">Download</v-btn>
+          <v-btn text @click="closeAlertReport">Close</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
     <!-- alert -->
     <v-dialog xs12 sm6 offset-sm3 persistent v-model="alertDialog" style="width:100px">
@@ -101,6 +155,8 @@
       reportIDs: [],
       alertDialog: false,
       alertContent: "",
+      reportDialog:false,
+      reportContent:"",
 
       headers: [
         {
@@ -108,13 +164,13 @@
           align: 'left',
           value: '_id'
         },
-        { text: 'Template Name', value: 'template_name' },
-        { text: 'Project ID', value: 'project_id' },
-        { text: 'Node ID', value: 'node_id' },
-        { text: 'Variable', value: 'variable' },
-        { text: 'Previous', value: 'previous' },
-        { text: 'Modified', value: 'modified' },
-        { text: 'Date', value: 'created_at' }
+        { text: 'Report Name', value: 'template_name' },
+        { text: 'Description', value: 'project_id' },
+        // { text: 'Node ID', value: 'node_id' },
+        // { text: 'Variable', value: 'variable' },
+        // { text: 'Previous', value: 'previous' },
+        { text: 'Modified Date', value: 'created_at' },
+        { text: 'Report View', value: 'modified' }
       ],
       reports: []
     }),
@@ -126,20 +182,6 @@
     },
     mounted() {
       console.log(this.userReports, this.user)
-      // let reports = this.userReports;
-      // for(let i = 0; i < reports.length; i++){
-      //   let row = {}
-      //   row.id = reports[i]._id
-      //   row.template_name = reports[i].template_name
-      //   row.project_id = reports[i].project_id
-      //   row.node_id = reports[i].node_id
-      //   row.variable = reports[i].variable
-      //   row.previous = reports[i].previous
-      //   row.modified = reports[i].modified
-      //   row.created_at = this.convert(reports[i].createdDate)
-        
-      //   this.reports.push(row)
-      // }
     },
     methods: {
       toggleAll () {
@@ -184,12 +226,6 @@
       },
 
       confirmDelete(){
-        console.log("confirm delete")
-        // for(let i in this.selected){
-        //   const index = this.userReports.indexOf(this.selected[i])
-        //   this.userReports.splice(index, 1)
-        // }
-        
         for(let i in this.reportIDs){
           this.deleting(this.reportIDs[i])
         }
@@ -205,6 +241,41 @@
 
       closeAlert(){
         this.alertDialog = false;
+      },
+      viewReport(id){
+        this.reportDialog = true;
+        this.reportContent = this.getReportById(id)
+        console.log(this.reportContent)
+      },
+      closeAlertReport(){
+        this.reportDialog = false
+      },
+      downloadReport(){
+        console.log("here is download")
+      },
+      getReportById(id){
+        let report = new Array();
+        let res = {}
+        for (let r in this.userReports) {
+          if (id == this.userReports[r]._id) {
+            res.report_name = this.userReports[r].report_name
+            res.report_desc = this.userReports[r].report_desc
+            for(let i in this.userReports[r].modified){
+              let row = {}
+              row.modified = this.userReports[r].modified[i];
+              row.node_id = this.userReports[r].node_id[i];
+              row.project_id = this.userReports[r].project_id[i];
+              row.previous = this.userReports[r].previous[i];
+              row.template_name = this.userReports[r].template_name[i];
+              row.variable = this.userReports[r].variable[i];
+              report.push(row)
+            }
+
+            res.report_content = report
+            break;
+          }
+        }
+        return res;
       }
     }
   }

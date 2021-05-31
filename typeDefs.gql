@@ -20,12 +20,14 @@ type Post {
 
 type Report {
   _id: ID
-  template_name: String
-  project_id: String
-  node_id: String
-  variable: String
-  previous: String
-  modified: String
+  report_name: String
+  report_desc: String
+  template_name: [String]
+  project_id: [String]
+  node_id: [String]
+  variable: [String]
+  previous: [String]
+  modified: [String]
   createdDate: String
   userId: User!
 }
@@ -93,12 +95,14 @@ type Mutation {
   ): Post!
 
   addReport(
-    template_name: String!
-    project_id: String!
-    node_id: String!
-    variable: String!
-    previous: String!
-    modified: String!
+    report_name: String!
+    report_desc: String!
+    template_name: [String]!
+    project_id: [String]!
+    node_id: [String]!
+    variable: [String]!
+    previous: [String]!
+    modified: [String]!
     userId: ID!
   ): Report!
 

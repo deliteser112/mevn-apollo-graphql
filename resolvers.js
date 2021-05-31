@@ -142,10 +142,12 @@ module.exports = {
     },
     addReport: async (
       _,
-      { template_name, project_id, node_id, variable, previous, modified, userId },
+      { report_name, report_desc, template_name, project_id, node_id, variable, previous, modified, userId },
       { Report }
     ) => {
       const newReport = await new Report({
+        report_name,
+        report_desc,
         template_name,
         project_id,
         node_id,

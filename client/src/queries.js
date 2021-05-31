@@ -92,15 +92,19 @@ export const ADD_POST = gql`
 
   export const ADD_REPORT = gql`
     mutation(
-      $template_name: String!,
-      $project_id: String!,
-      $node_id: String!,
-      $variable: String!,
-      $previous: String!,
-      $modified: String!,
+      $report_name: String!,
+      $report_desc: String!,
+      $template_name: [String]!,
+      $project_id: [String]!,
+      $node_id: [String]!,
+      $variable: [String]!,
+      $previous: [String]!,
+      $modified: [String]!,
       $userId:ID!
     ) {
       addReport(
+        report_name:$report_name
+        report_desc:$report_desc
         template_name:$template_name
         project_id:$project_id
         node_id:$node_id
@@ -110,6 +114,8 @@ export const ADD_POST = gql`
         userId:$userId
       ){
         _id
+        report_name
+        report_desc
         template_name
         project_id
         node_id
@@ -261,6 +267,8 @@ export const GET_USER_REPORTS = gql`
   query($userId: ID!) {
     getUserReports(userId: $userId) {
       _id
+      report_name
+      report_desc
       template_name
       project_id
       node_id

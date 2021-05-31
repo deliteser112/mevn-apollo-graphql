@@ -1,30 +1,38 @@
 const mongoose = require('mongoose');
 
 const ReportSchema = new mongoose.Schema({
-  template_name: {
+  report_name: {
     type: String,
     required: true,
   },
+  report_desc: {
+    type: String,
+    required: true,
+  },
+  template_name: {
+    type: [String],
+    required: true,
+  },
   project_id: {
-    type: String
+    type: [String]
   },
   node_id: {
-    type: String
+    type: [String]
   },
   variable: {
-    type: String
+    type: [String]
   },
   previous: {
-    type: String
+    type: [String]
   },
   modified: {
-    type: String
+    type: [String]
   },
   createdDate: {
     type: Date,
     default: Date.now()
   },
- 
+
   /**
    * property('userId') === path
    * ref('User') === model
@@ -39,7 +47,7 @@ const ReportSchema = new mongoose.Schema({
 
 // create index for search on all fields
 ReportSchema.index({
-  '$**' : 'text'
+  '$**': 'text'
 });
 
 module.exports = mongoose.model('Report', ReportSchema);

@@ -180,7 +180,7 @@
             </v-flex>
           </v-layout>
 
-          <v-layout row style="margin-top:20px;">
+          <v-layout row style="margin-top: 20px">
             <v-flex xs12>
               <v-form v-model="isFormValid" ref="updateform" @submit.prevent>
                 <v-layout row>
@@ -273,8 +273,65 @@
               {{ alertContent1 }}
             </div>
           </div>
+        </v-card-text>
+        <v-card-actions class="justify-end">
+          <v-btn v-if="isDelete" text @click="confirmAlert">Ok</v-btn>
 
-          <v-card
+          <v-btn v-if="isConfirmUpdate" text @click="reportUpdate">Ok</v-btn>
+
+          <v-btn text @click="closeAlert">Cancel</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- report -->
+    <v-dialog
+      xs12
+      sm6
+      offset-sm3
+      persistent
+      v-model="reportDialog"
+      style="width: 100px"
+    >
+      <v-card>
+        <v-toolbar color="primary" dark>Template Process</v-toolbar>
+        <v-card-text>
+          <!-- Title Input -->
+          <v-layout row>
+            <v-flex xs12>
+              <v-text-field
+                :rules="titleRules"
+                v-model="report_name"
+                label="Report Name"
+                type="text"
+                required
+              ></v-text-field>
+            </v-flex>
+          </v-layout>
+
+          <v-layout row>
+            <v-flex xs12>
+              <v-text-field
+                v-model="report_description"
+                label="Report Description"
+                type="text"
+                required
+              ></v-text-field>
+            </v-flex>
+          </v-layout>
+
+          <!-- <v-layout row>
+            <v-flex xs12>
+              <v-textarea
+                :rules="titleRules"
+                name="input-7-1"
+                label="Report Description"
+                v-model="report_description"
+              ></v-textarea>
+            </v-flex>
+          </v-layout> -->
+
+          <!-- <v-card
             v-for="(item, index) in changed_status"
             :key="index"
             style="margin-bottom: 10px"
@@ -306,14 +363,40 @@
               <v-spacer></v-spacer>
               Modified: &nbsp;<b> {{ item.modified }}</b>
             </v-card-actions>
-          </v-card>
+          </v-card> -->
+          <v-layout row style="overflow-x: auto;">
+            <v-flex xs12 class="csv-table report-table">
+              <thead>
+                <tr>
+                  <th class="text-left">No</th>
+                  <th class="text-left">ProcessedName</th>
+                  <th class="text-left">ProjectID</th>
+                  <th class="text-left">NodeID</th>
+                  <th class="text-left">Variable</th>
+                  <th class="text-left">Previous</th>
+                  <th class="text-left">Modified</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(item, index) in changed_status" :key="index">
+                  <td>{{ index + 1 }}</td>
+                  <td>{{ item.title }}</td>
+                  <td>{{ item.project_id }}</td>
+                  <td>{{ item.node_id }}</td>
+                  <td>{{ item.variable }}</td>
+                  <td>{{ item.previous }}</td>
+                  <td>{{ item.modified }}</td>
+                </tr>
+              </tbody>
+            </v-flex>
+          </v-layout>
         </v-card-text>
         <v-card-actions class="justify-end">
           <v-btn v-if="isDelete" text @click="confirmAlert">Ok</v-btn>
 
           <v-btn v-if="isConfirmUpdate" text @click="confirmUpdate">Ok</v-btn>
 
-          <v-btn text @click="closeAlert">Cancel</v-btn>
+          <v-btn text @click="closeAlertReport">Cancel</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -361,12 +444,15 @@ export default {
       isCSV: false,
       editPostDialog: false,
       alertDialog: false,
+      reportDialog:false,
       alertContent: "",
       alertContent1: "",
       isDelete: false,
       isConfirmUpdate: false,
       changed_status: [],
 
+      report_name: "",
+      report_description: "",
       checked: [],
       channel_name: "",
       channel_fields: [],
@@ -856,6 +942,9 @@ export default {
     closeAlert() {
       this.alertDialog = false;
     },
+    closeAlertReport(){
+      this.reportDialog = false
+    },
     confirmAlert() {
       this.$store.dispatch("deleteUserPost", {
         postId: this.postId,
@@ -863,77 +952,100 @@ export default {
       location.reload();
     },
 
+    reportUpdate(){
+      this.reportDialog = true;
+    },
     confirmUpdate() {
       let changed_status = this.changed_status;
-      
-      if(changed_status.length > 0){
-        for (let i = 0; i < changed_status.length; i++) {
-          console.log(changed_status[i], this.userId)
-          let report = {
-            "userId": this.userId,
-            "template_name": changed_status[i].title,
-            "project_id": changed_status[i].project_id,
-            "node_id": changed_status[i].node_id,
-            "variable": changed_status[i].variable,
-            "previous": changed_status[i].previous,
-            "modified": changed_status[i].modified,
-          }
 
-          console.log(report)
-          this.addReport(report)
-        }
-      }
-      
-      let processedTemplateIDs = new Array();
-      let originalTemplateIDs = new Array();
+      let template_name = new Array()
+      let project_id = new Array()
+      let node_id = new Array()
+      let variable = new Array()
+      let previous = new Array()
+      let modified = new Array()
 
       if (changed_status.length > 0) {
-        processedTemplateIDs.push(changed_status[0].template_id);
-        originalTemplateIDs.push(changed_status[0].original_temp_id);
-        for (let i = 1; i < changed_status.length; i++) {
-          if (
-            changed_status[i - 1].template_id == changed_status[i].template_id
-          )
-            continue;
-          processedTemplateIDs.push(changed_status[i].template_id);
-          originalTemplateIDs.push(changed_status[i].original_temp_id);
+        for (let i = 0; i < changed_status.length; i++) {
+          template_name.push(changed_status[i].title)
+          project_id.push(changed_status[i].project_id)
+          node_id.push(changed_status[i].node_id)
+          variable.push(changed_status[i].variable)
+          previous.push(changed_status[i].previous)
+          modified.push(changed_status[i].modified)
         }
       }
 
-      for (let i = 0; i < processedTemplateIDs.length; i++) {
-        let userID = this.userId;
-        let templateID = processedTemplateIDs[i];
-        let newDataset = this.getDataset();
-        let newTemplate = this.getTempateByID(originalTemplateIDs[i]);
-        let oldTemplate = this.getProcessedTempateByID(processedTemplateIDs[i]);
-        let originalTemp = originalTemplateIDs[i];
+      if(this.report_description != "" && this.report_name != ""){
+        console.log("passed")
+        let report = {
+          userId: this.userId,
+          report_name: this.report_name,
+          report_desc: this.report_description,
+          template_name: template_name,
+          project_id: project_id,
+          node_id: node_id,
+          variable: variable,
+          previous: previous,
+          modified: modified,
+        };
+        this.addReport(report);
+        let processedTemplateIDs = new Array();
+        let originalTemplateIDs = new Array();
 
-        let updateTemplate = TemplateProcess.processData(
-          userID,
-          templateID,
-          newDataset,
-          newTemplate,
-          oldTemplate,
-          originalTemp
-        );
-
-        this.updateProcTemplate(updateTemplate);
-
-        if (this.$refs.updateform.validate()) {
-          EventBus.$emit("submitUpdatePostForm", {
-            parentName: this.parentName,
-            post: {
-              postId: this.postId,
-              userId: this.userId,
-              title: this.getDataset().title,
-              imageUrl: "../../../assets/dataset-icon.jpg",
-              categories: this.getDataset().values,
-              variables: this.getDataset().variables,
-              description: "no description",
-            },
-          });
+        if (changed_status.length > 0) {
+          processedTemplateIDs.push(changed_status[0].template_id);
+          originalTemplateIDs.push(changed_status[0].original_temp_id);
+          for (let i = 1; i < changed_status.length; i++) {
+            if (
+              changed_status[i - 1].template_id == changed_status[i].template_id
+            )
+              continue;
+            processedTemplateIDs.push(changed_status[i].template_id);
+            originalTemplateIDs.push(changed_status[i].original_temp_id);
+          }
         }
+
+        for (let i = 0; i < processedTemplateIDs.length; i++) {
+          let userID = this.userId;
+          let templateID = processedTemplateIDs[i];
+          let newDataset = this.getDataset();
+          let newTemplate = this.getTempateByID(originalTemplateIDs[i]);
+          let oldTemplate = this.getProcessedTempateByID(processedTemplateIDs[i]);
+          let originalTemp = originalTemplateIDs[i];
+
+          let updateTemplate = TemplateProcess.processData(
+            userID,
+            templateID,
+            newDataset,
+            newTemplate,
+            oldTemplate,
+            originalTemp
+          );
+
+          this.updateProcTemplate(updateTemplate);
+
+          if (this.$refs.updateform.validate()) {
+            EventBus.$emit("submitUpdatePostForm", {
+              parentName: this.parentName,
+              post: {
+                postId: this.postId,
+                userId: this.userId,
+                title: this.getDataset().title,
+                imageUrl: "../../../assets/dataset-icon.jpg",
+                categories: this.getDataset().values,
+                variables: this.getDataset().variables,
+                description: "no description",
+              },
+            });
+          }
+        }
+      }else{
+        alert("input failed")
       }
+      
+
+      
     },
   },
 };
@@ -1063,5 +1175,16 @@ checkbox {
   width: 130px;
   height: 130px;
   background-size: 100% 100%;
+}
+
+.report-table {
+  box-shadow: none !important;
+  border-right: 1px solid #adadad;
+  border-bottom: 1px solid #adadad;
+}
+
+.report-table tr:hover{
+  color:#1867c0;
+  cursor: pointer;
 }
 </style>
