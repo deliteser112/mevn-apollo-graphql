@@ -737,10 +737,22 @@ bson@^1.1.4:
   resolved "https://registry.yarnpkg.com/bson/-/bson-1.1.6.tgz#fb819be9a60cd677e0853aee4ca712a785d6618a"
   integrity sha512-EvVNVeGo4tHxwi8L6bPj3y3itEvStdwvvlojVxxbyYfoaxJ6keLgrTuKdyfEAszFK+H3olzBuafE0yoh0D1gdg==
 
+buefy@^0.8.12:
+  version "0.8.20"
+  resolved "https://registry.yarnpkg.com/buefy/-/buefy-0.8.20.tgz#75708800548220654575903d031a81fc8575b7f3"
+  integrity sha512-pg8Cn0m9cjqp2/vaKT4VIfU8KIumuX/gAT1GtearXRs56+kKqAPx3j9O8cm9W6P4jPUCHajKX6H8AqD0ram2Bg==
+  dependencies:
+    bulma "0.7.5"
+
 buffer-equal-constant-time@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/buffer-equal-constant-time/-/buffer-equal-constant-time-1.0.1.tgz#f8e71132f7ffe6e01a5c9697a4c6f3e48d5cc819"
   integrity sha1-+OcRMvf/5uAaXJaXpMbz5I1cyBk=
+
+bulma@0.7.5:
+  version "0.7.5"
+  resolved "https://registry.yarnpkg.com/bulma/-/bulma-0.7.5.tgz#35066c37f82c088b68f94450be758fc00a967208"
+  integrity sha512-cX98TIn0I6sKba/DhW0FBjtaDpxTelU166pf7ICXpCCuplHWyu6C9LYZmL5PEsnePIeJaiorsTEzzNk3Tsm1hw==
 
 busboy@^0.3.1:
   version "0.3.1"
@@ -962,6 +974,11 @@ core-js-pure@^3.10.2:
   version "3.13.1"
   resolved "https://registry.yarnpkg.com/core-js-pure/-/core-js-pure-3.13.1.tgz#5d139d346780f015f67225f45ee2362a6bed6ba1"
   integrity sha512-wVlh0IAi2t1iOEh16y4u1TRk6ubd4KvLE8dlMi+3QUI6SfKphQUh7tAwihGGSQ8affxEXpVIPpOdf9kjR4v4Pw==
+
+core-js@^2.6.5:
+  version "2.6.12"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.12.tgz#d9333dfa7b065e347cc5682219d6f690859cc2ec"
+  integrity sha512-Kb2wC0fvsWfQrgk8HU5lW6U/Lcs8+9aaYcy4ZFc6DDlo4nZ7n70dEgE5rtR0oG6ufKDUnrwfWL1mXR5ljDatrQ==
 
 core-util-is@~1.0.0:
   version "1.0.2"
@@ -2883,6 +2900,11 @@ resolve@^1.10.0:
     is-core-module "^2.2.0"
     path-parse "^1.0.6"
 
+ress@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/ress/-/ress-1.2.2.tgz#4fd00681c8d3ceaa79f5de1e54aaad15617e9777"
+  integrity sha1-T9AGgcjTzqp59d4eVKqtFWF+l3c=
+
 ret@~0.1.10:
   version "0.1.15"
   resolved "https://registry.yarnpkg.com/ret/-/ret-0.1.15.tgz#b8a4825d5bdb1fc3f6f53c2bc33f81388681c7bc"
@@ -3551,6 +3573,22 @@ vary@^1, vary@~1.1.2:
   resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
   integrity sha1-IpnwLG3tMNSllhsLn3RSShj2NPw=
 
+vue-blob-json-csv@^0.1.7:
+  version "0.1.7"
+  resolved "https://registry.yarnpkg.com/vue-blob-json-csv/-/vue-blob-json-csv-0.1.7.tgz#4d354498f541c9e89662ba81be081f7622f4e96c"
+  integrity sha512-7cHsAppT/FmKm1NhyU9KzP7NYHqRB4u7hc//xZogXJ5NpFt+CY8gwLcuZh5Ou1BxQpoBscQ2hLc5619kakO5GQ==
+  dependencies:
+    buefy "^0.8.12"
+    core-js "^2.6.5"
+    ress "^1.2.2"
+    vue "^2.6.10"
+    vue-json-pretty "^1.6.3"
+
+vue-json-pretty@^1.6.3:
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/vue-json-pretty/-/vue-json-pretty-1.8.0.tgz#de60ae70b4fcecc757567ba230a53afb46488f4a"
+  integrity sha512-0qyGHLBdQFIwVP04kjcEA7zmQ78w7hptjSz3zAZ/crIerLuHd/EXnBQzEJGz+eQHG7k3pJrZlEqVmhTDS70BoA==
+
 vue-svg-loader@^0.16.0:
   version "0.16.0"
   resolved "https://registry.yarnpkg.com/vue-svg-loader/-/vue-svg-loader-0.16.0.tgz#adccbdc9aca90132bde9c9d96cd49f74efecd345"
@@ -3566,6 +3604,11 @@ vue-template-compiler@^2.6.12:
   dependencies:
     de-indent "^1.0.2"
     he "^1.1.0"
+
+vue@^2.6.10:
+  version "2.6.12"
+  resolved "https://registry.yarnpkg.com/vue/-/vue-2.6.12.tgz#f5ebd4fa6bd2869403e29a896aed4904456c9123"
+  integrity sha512-uhmLFETqPPNyuLLbsKz6ioJ4q7AZHzD8ZVFNATNyICSZouqP2Sz0rotWQC8UNBF6VGSCs5abnKJoStA6JbCbfg==
 
 which-boxed-primitive@^1.0.2:
   version "1.0.2"

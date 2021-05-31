@@ -108,7 +108,15 @@
           </v-layout>
         </v-card-text>
         <v-card-actions class="justify-end">
-          <v-btn text @click="downloadReport">Download</v-btn>
+          <vue-blob-json-csv
+            file-type="csv"
+            :file-name="csv_download_name"
+            :data="reportContent.report_content"
+          >
+            <v-btn text><v-icon light>download</v-icon>CSV Download</v-btn>
+          </vue-blob-json-csv>
+
+          <v-spacer></v-spacer>
           <v-btn text @click="closeAlertReport">Close</v-btn>
         </v-card-actions>
       </v-card>
@@ -157,7 +165,7 @@
       alertContent: "",
       reportDialog:false,
       reportContent:"",
-
+      csv_download_name:"",
       headers: [
         {
           text: 'Report ID',
@@ -245,13 +253,22 @@
       viewReport(id){
         this.reportDialog = true;
         this.reportContent = this.getReportById(id)
-        console.log(this.reportContent)
+        // for getting timestamp
+        let d = new Date(); 
+        let timestamp = d.getFullYear() + ""
+          + (d.getMonth()+1) + ""
+          + d.getDate() + ""
+          + d.getHours() + ""  
+          + d.getMinutes() + "" 
+          + d.getSeconds() + ""
+          + d.getMilliseconds()
+
+        this.csv_download_name = `report_${timestamp}`
+
+        console.log(this.reportContent.report_content)
       },
       closeAlertReport(){
         this.reportDialog = false
-      },
-      downloadReport(){
-        console.log("here is download")
       },
       getReportById(id){
         let report = new Array();
@@ -262,12 +279,12 @@
             res.report_desc = this.userReports[r].report_desc
             for(let i in this.userReports[r].modified){
               let row = {}
-              row.modified = this.userReports[r].modified[i];
-              row.node_id = this.userReports[r].node_id[i];
-              row.project_id = this.userReports[r].project_id[i];
-              row.previous = this.userReports[r].previous[i];
               row.template_name = this.userReports[r].template_name[i];
+              row.project_id = this.userReports[r].project_id[i];
+              row.node_id = this.userReports[r].node_id[i];
               row.variable = this.userReports[r].variable[i];
+              row.previous = this.userReports[r].previous[i];
+              row.modified = this.userReports[r].modified[i];
               report.push(row)
             }
 

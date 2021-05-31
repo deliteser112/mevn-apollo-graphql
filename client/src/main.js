@@ -12,6 +12,10 @@ import VueApollo from "vue-apollo";
 import FormAlert from './components/System/FormAlert';
 import JSZip from 'jszip'
 
+import VueBlobJsonCsv from 'vue-blob-json-csv';
+
+Vue.use(VueBlobJsonCsv)
+
 Vue.use(JSZip)
 
 Vue.component('form-alert', FormAlert);
