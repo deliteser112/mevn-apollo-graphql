@@ -35,6 +35,7 @@ import { defaultClient as apolloClient } from './main';
 export default new Vuex.Store({
   state: {
     posts: [],
+    templates: [],
     loading: false,
     user: null,
     error: null,
@@ -83,6 +84,9 @@ export default new Vuex.Store({
   mutations: {
     setPosts: (state, posts) => {
       state.posts = posts;
+    },
+    setTemplates: (state, templates) => {
+      state.templates = templates;
     },
     setSearchResults: (state, payload) => {
       if (payload !== null) {
@@ -205,6 +209,19 @@ export default new Vuex.Store({
           query: GET_POSTS
         }).then(({ data }) => {
         commit('setPosts', data.getPosts);
+        commit('setLoading', false);
+      }).catch(err => {
+        // console.log(err)
+        commit('setLoading', false);
+      });
+    },
+    getTemplates: ({ commit }) => {
+      commit('setLoading', true);
+      apolloClient
+        .query({
+          query: GET_TEMPLATES
+        }).then(({ data }) => {
+        commit('getTemplates', data.getTemplates);
         commit('setLoading', false);
       }).catch(err => {
         // console.log(err)

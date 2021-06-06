@@ -140,6 +140,7 @@
           if(id == templates[row]._id){
               this.templateTitle = templates[row].title
               let tempArray = new Array()
+              console.log(templates[row].templates)
               for(let i in templates[row].templates){
                 let temp_row = {}
                 console.log(templates[row].node_ids[i])
@@ -153,6 +154,7 @@
               break;
           } 
         } 
+        console.log(this.userSavedTemplates)
         this.editTemplateDialog = editTemplateDialog;
       },
 

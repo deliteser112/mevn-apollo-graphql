@@ -422,20 +422,20 @@ export default {
           imageUrl: "",
           categories: [],
           variables: [],
-          description: "",
+          description: ""
         };
-      },
-    },
+      }
+    }
   },
   filters: {
-    capitalize: function (str) {
+    capitalize: function(str) {
       return str.charAt(0) + str.slice(1);
-    },
+    }
   },
   watch: {
     post(post) {
       this.assignPostToInputFields(post);
-    },
+    }
   },
   data() {
     return {
@@ -444,7 +444,7 @@ export default {
       isCSV: false,
       editPostDialog: false,
       alertDialog: false,
-      reportDialog:false,
+      reportDialog: false,
       alertContent: "",
       alertContent1: "",
       isDelete: false,
@@ -478,20 +478,19 @@ export default {
       categories: [],
       description: "",
       titleRules: [
-        (title) => !!title || "Title is required",
-        (title) =>
-          title.length < 20 || "Title must have less than 20 characters",
+        title => !!title || "Title is required",
+        title => title.length < 30 || "Title must have less than 30 characters"
       ],
-      imageRules: [(image) => !!image || "Image is required"],
+      imageRules: [image => !!image || "Image is required"],
       categoriesRules: [
-        (categories) =>
-          categories.length >= 1 || "At least one category is required",
+        categories =>
+          categories.length >= 1 || "At least one category is required"
       ],
       descRules: [
-        (desc) => !!desc || "Description is required",
-        (desc) =>
-          desc.length < 200 || "Description must have less than 200 characters",
-      ],
+        desc => !!desc || "Description is required",
+        desc =>
+          desc.length < 200 || "Description must have less than 200 characters"
+      ]
     };
   },
   computed: {
@@ -502,8 +501,8 @@ export default {
       "postCategories",
       "userPosts",
       "userTemplates",
-      "userSavedTemplates",
-    ]),
+      "userSavedTemplates"
+    ])
   },
   created() {
     this.getUserPosts();
@@ -522,8 +521,8 @@ export default {
             imageUrl: "../../../assets/dataset-icon.jpg",
             categories: this.saveDataSet().values,
             variables: this.saveDataSet().variables,
-            description: "no description",
-          },
+            description: "no description"
+          }
         });
       }
     },
@@ -616,8 +615,8 @@ export default {
                 imageUrl: "../../../assets/dataset-icon.jpg",
                 categories: this.getDataset().values,
                 variables: this.getDataset().variables,
-                description: "no description",
-              },
+                description: "no description"
+              }
             });
           }
         }
@@ -632,8 +631,8 @@ export default {
               imageUrl: "../../../assets/dataset-icon.jpg",
               categories: this.getDataset().values,
               variables: this.getDataset().variables,
-              description: "no description",
-            },
+              description: "no description"
+            }
           });
         }
       }
@@ -818,7 +817,7 @@ export default {
       this.$store.dispatch("addReport", report);
       // this.$router.push("/");
     },
-    sortBy: function (key) {
+    sortBy: function(key) {
       var vm = this;
       vm.sortKey = key;
       vm.sortOrders[key] = vm.sortOrders[key] * -1;
@@ -830,17 +829,17 @@ export default {
       var result = [];
       var headers = lines[0].split(",");
       vm.parse_header = lines[0].split(",");
-      lines[0].split(",").forEach(function (key) {
+      lines[0].split(",").forEach(function(key) {
         vm.sortOrders[key] = 1;
       });
 
-      lines.map(function (line, indexLine) {
+      lines.map(function(line, indexLine) {
         if (indexLine < 1) return; // Jump header line
 
         var obj = {};
         var currentline = line.split(",");
 
-        headers.map(function (header, indexHeader) {
+        headers.map(function(header, indexHeader) {
           obj[header] = currentline[indexHeader];
         });
 
@@ -857,11 +856,11 @@ export default {
         var reader = new FileReader();
         reader.readAsText(e.target.files[0]);
         // Handle errors load
-        reader.onload = function (event) {
+        reader.onload = function(event) {
           var csv = event.target.result;
           vm.parse_csv = vm.csvJSON(csv);
         };
-        reader.onerror = function (evt) {
+        reader.onerror = function(evt) {
           if (evt.target.error.name == "NotReadableError") {
             alert("Canno't read file !");
           }
@@ -923,17 +922,17 @@ export default {
     },
     getUserPosts() {
       this.$store.dispatch("getUserPosts", {
-        userId: this.user._id,
+        userId: this.user._id
       });
     },
     getUserSavedTemplates() {
       this.$store.dispatch("getUserSavedTemplates", {
-        userId: this.user._id,
+        userId: this.user._id
       });
     },
     getUserTemplates() {
       this.$store.dispatch("getUserTemplates", {
-        userId: this.user._id,
+        userId: this.user._id
       });
     },
     closeDataset() {
@@ -942,42 +941,60 @@ export default {
     closeAlert() {
       this.alertDialog = false;
     },
-    closeAlertReport(){
-      this.reportDialog = false
+    closeAlertReport() {
+      this.reportDialog = false;
     },
     confirmAlert() {
       this.$store.dispatch("deleteUserPost", {
-        postId: this.postId,
+        postId: this.postId
       });
       location.reload();
     },
 
-    reportUpdate(){
+    reportUpdate() {
+      // for getting timestamp
+      let d = new Date();
+      let timestamp =
+        d.getFullYear() +
+        "" +
+        (d.getMonth() + 1) +
+        "" +
+        d.getDate() +
+        "" +
+        d.getHours() +
+        "" +
+        d.getMinutes() +
+        "" +
+        d.getSeconds() +
+        "" +
+        d.getMilliseconds();
+
+      this.report_name = `report_${timestamp}`;
       this.reportDialog = true;
     },
     confirmUpdate() {
       let changed_status = this.changed_status;
 
-      let template_name = new Array()
-      let project_id = new Array()
-      let node_id = new Array()
-      let variable = new Array()
-      let previous = new Array()
-      let modified = new Array()
+      let template_name = new Array();
+      let project_id = new Array();
+      let node_id = new Array();
+      let variable = new Array();
+      let previous = new Array();
+      let modified = new Array();
 
       if (changed_status.length > 0) {
         for (let i = 0; i < changed_status.length; i++) {
-          template_name.push(changed_status[i].title)
-          project_id.push(changed_status[i].project_id)
-          node_id.push(changed_status[i].node_id)
-          variable.push(changed_status[i].variable)
-          previous.push(changed_status[i].previous)
-          modified.push(changed_status[i].modified)
+          template_name.push(changed_status[i].title);
+          project_id.push(changed_status[i].project_id);
+          node_id.push(changed_status[i].node_id);
+          variable.push(changed_status[i].variable);
+          previous.push(changed_status[i].previous);
+          modified.push(changed_status[i].modified);
         }
       }
 
-      if(this.report_description != "" && this.report_name != ""){
-        console.log("passed")
+      if (this.report_description != "" && this.report_name != "") {
+        console.log("passed");
         let report = {
           userId: this.userId,
           report_name: this.report_name,
@@ -987,7 +1004,7 @@ export default {
           node_id: node_id,
           variable: variable,
           previous: previous,
-          modified: modified,
+          modified: modified
         };
         this.addReport(report);
         let processedTemplateIDs = new Array();
@@ -1011,7 +1028,9 @@ export default {
           let templateID = processedTemplateIDs[i];
           let newDataset = this.getDataset();
           let newTemplate = this.getTempateByID(originalTemplateIDs[i]);
-          let oldTemplate = this.getProcessedTempateByID(processedTemplateIDs[i]);
+          let oldTemplate = this.getProcessedTempateByID(
+            processedTemplateIDs[i]
+          );
           let originalTemp = originalTemplateIDs[i];
 
           let updateTemplate = TemplateProcess.processData(
@@ -1035,19 +1054,16 @@ export default {
                 imageUrl: "../../../assets/dataset-icon.jpg",
                 categories: this.getDataset().values,
                 variables: this.getDataset().variables,
-                description: "no description",
-              },
+                description: "no description"
+              }
             });
           }
         }
-      }else{
-        alert("input failed")
+      } else {
+        alert("input failed");
       }
-      
-
-      
-    },
-  },
+    }
+  }
 };
 </script>
 
@@ -1183,8 +1199,8 @@ checkbox {
   border-bottom: 1px solid #adadad;
 }
 
-.report-table tr:hover{
-  color:#1867c0;
+.report-table tr:hover {
+  color: #1867c0;
   cursor: pointer;
 }
 </style>
