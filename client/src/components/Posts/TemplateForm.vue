@@ -31,7 +31,7 @@
         </v-flex>
       </v-layout>
 
-      <v-layout row v-if="isTree">
+      <v-layout row v-if="!isTree">
         <v-flex xs12>
           <div class="import-icon" v-if="!isTemplate">
             <input
@@ -41,7 +41,7 @@
               class="form-control file-input-type"
             />
             <img
-              src="../../../assets/data-base-icon-27.jpg"
+              src="../../../assets/data-base-icon-17.jpg"
               class="cover-image"
             />
           </div>
@@ -53,8 +53,8 @@
           <div class="import-icon" v-if="!isTemplate">
             <input
               type="file"
-              ref="myFile"
-              @change="selectedFile"
+              ref="myFiles"
+              @change="selectedFiles"
               multiple="multiple"
               class="form-control file-input-type"
             />
@@ -99,8 +99,64 @@
           <textarea
             v-model="text"
             class="text-area"
-            v-if="isTemplate"
+            v-if="isTemplate && !isTree"
           ></textarea>
+        </v-flex>
+      </v-layout>
+
+      <v-layout row wrap v-if="isTemplate && isTree">
+        <v-flex xs12 style="text-align: right">
+          <v-btn color="info" type="button" @click="deleteTemplates">
+            <v-icon light>delete</v-icon>
+            Delete
+          </v-btn>
+          <v-data-table
+            v-model="selected"
+            :headers="headers"
+            :items="treeTemplates"
+            :pagination.sync="pagination"
+            :rows-per-page-items="[15, 30, 50, 100]"
+            select-all
+            item-key="_id"
+          >
+            <template v-slot:headers="props">
+              <tr>
+                <th>
+                  <v-checkbox
+                    :input-value="props.all"
+                    :indeterminate="props.indeterminate"
+                    primary
+                    hide-details
+                    @click.stop="toggleAll"
+                  ></v-checkbox>
+                </th>
+                <th
+                  v-for="header in props.headers"
+                  :key="header.text"
+                  :class="['column sortable', pagination.descending ? 'desc' : 'asc', header.value === pagination.sortBy ? 'active' : '']"
+                  @click="changeSort(header.value)"
+                >
+                  <v-icon small>arrow_upward</v-icon>
+                  {{ header.text }}
+                </th>
+              </tr>
+            </template>
+            <template v-slot:items="props">
+              <tr :active="props.selected" @click="props.selected = !props.selected">
+                <td style="width:50px;text-align:center">
+                  <v-checkbox
+                    :input-value="props.selected"
+                    secondary
+                    hide-details
+                  ></v-checkbox>
+                </td>
+                <td>{{ Number(props.item._id)+1 }}</td>
+                <td class="text-xs-right">{{ props.item.template_name }}</td>
+                <td class="text-xs-right">{{ props.item.file_name }}</td>
+                <td class="text-xs-right"><v-btn text @click="viewTemplate(props.item._id)">View</v-btn></td>
+              </tr>
+            </template>
+          </v-data-table>
         </v-flex>
       </v-layout>
     </v-form>
@@ -257,7 +313,7 @@
                   <v-icon light>close</v-icon>
                   Close
                 </v-btn>
-                <v-btn color="info" type="submit" @click="submitUpdateForm">
+                <v-btn color="info" type="submit" @click="submitUpdateForm" v-if="!isTreeImport">
                   <span slot="loader" class="custom-loader">
                     <v-icon light>cached</v-icon>
                   </span>
@@ -268,6 +324,7 @@
                   color="info"
                   type="button"
                   @click="selectDataset"
+                  v-if="!isTreeImport"
                 >
                   <v-icon light>format_list_bulleted</v-icon>
                   Select dataset
@@ -364,6 +421,9 @@ export default {
       //template tree
       radioGroup:"",
       isTree: false,
+      treeText: [],
+      treeTemplates:[],
+      isTreeImport:false,
 
       titleRules: [
         title => !!title || "Title is required",
@@ -379,6 +439,25 @@ export default {
         desc =>
           desc.length < 200 || "Description must have less than 200 characters"
       ],
+
+      //datatable
+
+      pagination: {
+        sortBy: 'key'
+      },
+      selected: [],
+
+      headers: [
+        {
+          text: 'No',
+          align: 'left',
+          value: 'key'
+        },
+        { text: 'Name', value: 'template_name' },
+        { text: 'File Name', value: 'file_name' },
+        { text: 'Template View', value: 'view' }
+      ],
+      reports: [],
 
       /////////////for testing
       allSelected: false
@@ -406,9 +485,24 @@ export default {
     this.getUserTemplates();
     this.getUserSavedTemplates();
   },
+  mounted() {
+    this.radioGroup = "single"
+  },
   methods: {
+    toggleAll () {
+      if (this.selected.length) this.selected = []
+      else this.selected = this.treeTemplates.slice()
+    },
+    changeSort (column) {
+      if (this.pagination.sortBy === column) {
+        this.pagination.descending = !this.pagination.descending
+      } else {
+        this.pagination.sortBy = column
+        this.pagination.descending = false
+      }
+    },
+    
     typeSet(){
-      console.log(this.radioGroup)
       this.isTree = this.radioGroup=="tree"?true:false
     },
     /////////////////// ----- start the prcess of the template ------ ////////////
@@ -837,6 +931,48 @@ export default {
       };
       this.isTemplate = true;
     },
+
+    async selectedFiles() {
+      let files = this.$refs.myFiles.files;
+      let file_names = new Array()
+      for(let file of files){
+        if (!file || file.type !== "text/plain") return;
+        file_names.push(file.name)
+        let reader = new FileReader();
+        
+        reader.readAsText(file, "UTF-8");
+        
+        const result = await this.getText(reader)
+
+        this.treeText.push(result)
+        reader.onerror = evt => {
+          console.error(evt);
+        };
+      }
+      
+      for(let key in this.treeText){
+        let rowObj = {}
+        rowObj._id = key;
+        rowObj.file_name = file_names[key]
+        rowObj.content = this.treeText[key]
+        rowObj.template_name = this.title==""?`Template_${key}`:`${this.title}_${key}`
+        this.treeTemplates.push(rowObj)
+      }
+
+      console.log(this.treeTemplates)
+      console.log(this.treeText)
+      console.log("HELLO", this.isTree)
+      this.isTemplate = true;
+    },
+
+    getText(reader){
+      return new Promise(resolve => {
+          reader.onload = evt => {
+            const res = evt.target.result
+            resolve(res);
+          };
+      });
+    },
     getUserPosts() {
       this.$store.dispatch("getUserPosts", {
         userId: this.user._id
@@ -851,6 +987,30 @@ export default {
       this.$store.dispatch("getUserSavedTemplates", {
         userId: this.user._id
       });
+    },
+    deleteTemplates(){
+      let templateIDs = new Array()
+      if(this.selected.length > 0){
+        for(let i in this.selected){
+          templateIDs.push(this.selected[i]._id)
+        }
+      }
+
+      // let rTemplates = this.treeTemplates
+
+      for(let i = 0; i < this.treeTemplates.length; i++){
+        console.log("U:", this.treeTemplates[i]._id)
+        for(let id of templateIDs){
+          console.log(this.treeTemplates[i]._id, "==", id)
+          if(this.treeTemplates[i]._id == id){
+
+            this.treeTemplates.splice(i, 1)
+            // i--
+          }
+        }
+        
+      }
+      console.log(this.treeTemplates)
     },
     deleteTemplate(templateId) {
       this.isDelete = true;
@@ -869,6 +1029,7 @@ export default {
       this.editTemplateDialog = false;
     },
     template_view(id, editTemplateDialog = true) {
+      console.log(id)
       this.templateId = id;
       let templates = this.userTemplates;
       for (let row in templates) {
@@ -878,6 +1039,19 @@ export default {
           break;
         }
       }
+      this.editTemplateDialog = editTemplateDialog;
+    },
+    viewTemplate(id, editTemplateDialog = true) {
+      this.templateId = id;
+      let templates = this.treeTemplates;
+      for (let row in templates) {
+        if (id == templates[row]._id) {
+          this.templateContent = templates[row].content;
+          this.templateTitle = templates[row].template_name;
+          break;
+        }
+      }
+      this.isTreeImport = true
       this.editTemplateDialog = editTemplateDialog;
     },
     closeProcess() {
@@ -894,6 +1068,8 @@ export default {
     importAgain() {
       this.isTemplate = false;
       this.text = "";
+      this.treeText = []
+      this.treeTemplates = []
     },
     storeTemplates(template) {
       this.$store.dispatch("saveTemplates", template);

@@ -167,6 +167,7 @@
       reportDialog:false,
       reportContent:"",
       csv_download_name:"",
+      
       headers: [
         {
           text: 'Report ID',
