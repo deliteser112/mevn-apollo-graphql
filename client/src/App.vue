@@ -93,7 +93,38 @@
 
       </v-container>
     </main>
-
+    <v-footer
+      height="auto"
+      color="primary"
+      fixed
+    >
+      <v-layout
+        justify-center
+        row
+        wrap
+      >
+        <v-btn
+          v-for="item in links"
+          :key="item.title"
+          color="white"
+          flat
+          round
+          :to="item.link"
+        >
+          {{ item.title }}
+        </v-btn>
+        <v-flex
+          primary
+          lighten-2
+          py-2
+          text-xs-center
+          white--text
+          xs12
+        >
+          &copy;2021 — <strong>Template Validation</strong>
+        </v-flex>
+      </v-layout>
+    </v-footer>
   </v-app>
 </template>
 
@@ -107,7 +138,14 @@
         authErrorSnackbar: false,
         authSnackbar: false,
         showSideNav: false,
-        badgeAnimated: false
+        badgeAnimated: false,
+        links: [
+          {title: 'Home', link: '/'},
+          {title: 'Datsets', link: '/post/addpost'},
+          {title: 'Templates', link: '/post/addtemplate'},
+          {title: 'Inventory', link: '/dataset'},
+          {title: 'Reports', link: '/reports'}
+        ]
       }
     },
     computed: {

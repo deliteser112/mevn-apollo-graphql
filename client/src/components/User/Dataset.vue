@@ -23,7 +23,19 @@
 
           <span class="v-updated-badge" v-if="template.isUpdated=='1'"><div class="v-updated-badge-shadow">Updated</div></span>
 
-          <div class="v-template-background" @click="template_view(template._id, template.isUpdated)"></div>
+          <!-- <div class="v-template-background" @click="template_view(template._id, template.isUpdated)"></div> -->
+          
+          <div
+            v-if="template.templateType=='single'"
+            class="v-template-background"
+            @click="template_view(template._id, template.isUpdated)"
+          ></div>
+          <div
+            v-else
+            class="v-template-background-1"
+             @click="template_view(template._id, template.isUpdated)"
+          ></div>
+
           <v-card-text>{{template.title}}</v-card-text>
         </v-card>
       </v-flex>
@@ -31,12 +43,12 @@
   </v-container>
 
     <!-- View Template Dialog -->
-    <v-dialog xs6 sm6 offset-sm3 persistent v-model="editTemplateDialog" >
+    <v-dialog xs6 sm6 offset-sm3 persistent v-model="editTemplateDialog">
       <v-card>
         <v-card-title class="headline grey lighten-2">Template ({{templateTitle}})</v-card-title>
         <v-container>
 
-          <v-layout row>
+          <!-- <v-layout row>
             <v-flex xs12>
               <v-card>
                 
@@ -47,8 +59,8 @@
                       <v-icon v-bind:class="[item.iconClass]">{{ item.icon }}</v-icon>
                     </v-list-tile-avatar>
                     <v-list-tile-content>
-                      <v-list-tile-title>{{ item.node_id }}</v-list-tile-title>
-                      <!-- <v-list-tile-sub-title>{{ item.template_content }}</v-list-tile-sub-title> -->
+                      <v-list-tile-title v-if="item.template_type=='single'">{{ item.node_id }}</v-list-tile-title>
+                      <v-list-tile-title v-else>{{ item.file_name }}</v-list-tile-title>
                     </v-list-tile-content>
                     <v-list-tile-action>
                         <v-icon color="grey lighten-1">info</v-icon>
@@ -56,6 +68,62 @@
                   </v-list-tile>
                 </v-list>
               </v-card>
+            </v-flex>
+          </v-layout> -->
+
+          <v-layout row wrap>
+            <v-flex xs12 style="text-align: right">
+              <v-data-table
+                :headers="headers"
+                :items="templateContent"
+                :pagination.sync="pagination"
+                :rows-per-page-items="[10, 20, 50, 100]"
+                select-all
+                item-key="_id"
+              >
+                <template v-slot:headers="props">
+                  <tr>
+                    <th
+                      v-for="header in props.headers"
+                      :key="header.text"
+                      :class="['column sortable', pagination.descending ? 'desc' : 'asc', header.value === pagination.sortBy ? 'active' : '']"
+                      @click="changeSort(header.value)"
+                    >
+                      <v-icon small>arrow_upward</v-icon>
+                      {{ header.text }}
+                    </th>
+                  </tr>
+                </template>
+                <template v-slot:items="props">
+                  <tr>
+                    <td width="20px">{{ Number(props.item._id)+1 }}</td>
+                    <td>
+                      <v-layout row v-if="props.item.template_type == 'single'">
+                        <v-flex xs12>
+                          {{ props.item.node_id }}
+                        </v-flex>
+                      </v-layout>
+                      <v-layout row v-else>
+                        <v-flex xs12>
+                          {{ props.item.file_name }}
+                        </v-flex>
+                      </v-layout>
+                    </td>
+                    <td>
+                      <v-layout row v-if="props.item.template_type == 'single'">
+                        <v-flex xs12>
+                          [ .cfg ] file type
+                        </v-flex>
+                      </v-layout>
+                      <v-layout row v-else>
+                        <v-flex xs12>
+                          [ {{ props.item.file_type }} ] file type
+                        </v-flex>
+                      </v-layout>
+                    </td>
+                  </tr>
+                </template>
+              </v-data-table>
             </v-flex>
           </v-layout>
 
@@ -107,6 +175,21 @@
         templateTitle:'',
         templateID:'',
         updated: false,
+
+        //datatable
+
+        pagination: {
+          sortBy: 'key'
+        },
+        headers: [
+          {
+            text: 'No',
+            align: 'left',
+            value: 'key'
+          },
+          { text: 'File Name', value: 'file_name' },
+          { text: 'File Type', value: 'file_type' }
+        ]
       };
     },
     computed: {
@@ -144,8 +227,12 @@
               for(let i in templates[row].templates){
                 let temp_row = {}
                 console.log(templates[row].node_ids[i])
+                temp_row["_id"] = i
                 temp_row["template_content"] = templates[row].templates[i]
                 temp_row["node_id"] = templates[row].node_ids[i]
+                temp_row["file_name"] = `${templates[row].file_names[i]}${templates[row].file_types[i]}`
+                temp_row["file_type"] = templates[row].file_types[i]
+                temp_row["template_type"] = templates[row].templateType
                 temp_row["icon"] = "folder"
                 temp_row["iconClass"] = "grey lighten-1 white--text"
                 tempArray.push(temp_row)
@@ -197,44 +284,49 @@
         let id = this.templateID
         for(let row in templates){
           if(id == templates[row]._id){
-              this.templateTitle = templates[row].title
-              let tempArray = new Array()
-              const zip = JsZip();
-              for(let i in templates[row].templates){
-                console.log(templates[row])
+            console.log(templates[row])
+            this.templateTitle = templates[row].title
+            let tempArray = new Array()
+            const zip = JsZip();
+            for(let i in templates[row].templates){
 
-                // for getting timestamp
-                let d = new Date(); 
-                let timestamp = d.getFullYear() + ""
-                  + (d.getMonth()+1) + ""
-                  + d.getDate() + ""
-                  + d.getHours() + ""  
-                  + d.getMinutes() + "" 
-                  + d.getSeconds() + ""
-                  + d.getMilliseconds()
-                
-                // download the templates
-                let template = type=='old'?[templates[row].templates[i]]:[templates[row].newTemplates[i]]
-                const blob = new Blob(template, { type: 'text/cfg' }) //text/plain //application/pdf
-                zip.file(`${templates[row].node_ids[i]}_${timestamp}.cfg`, blob);
-
-                tempArray.push(templates[row].templates[i])
+              // for getting timestamp
+              let d = new Date(); 
+              let timestamp = d.getFullYear() + ""
+                + (d.getMonth()+1) + ""
+                + d.getDate() + ""
+                + d.getHours() + ""  
+                + d.getMinutes() + "" 
+                + d.getSeconds() + ""
+                + d.getMilliseconds()
+              
+              // download the templates
+              let template = type=='old'?[templates[row].templates[i]]:[templates[row].newTemplates[i]]
+              let file_name = ""
+              let file_type = ""
+              let blob_type = ""
+              if(templates[row].templateType == 'single'){
+                file_name = `${templates[row].node_ids[i]}_${timestamp}`
+                file_type = 'cfg'
+              }else if(templates[row].templateType == 'tree'){
+                file_name = templates[row].file_names[i]
+                file_type = templates[row].file_types[i].replace('.', '')
               }
 
-              zip.generateAsync({type: 'blob'}).then(zipFile => {
-                // for getting timestamp
-                const d = new Date(); 
-                const timestamp = d.getFullYear() + ""
-                  + (d.getMonth()+1) + ""
-                  + d.getDate() + ""
-                  + d.getHours() + ""  
-                  + d.getMinutes() + "" 
-                  + d.getSeconds() + ""
-                  + d.getMilliseconds()
-                const fileName = `${this.templateTitle}.zip`;
-                return FileSaver.saveAs(zipFile, fileName);
-              });
-              break;
+              blob_type = `text/${file_type}`
+
+              const blob = new Blob(template, { type: blob_type }) //text/plain //application/pdf
+              zip.file(`${file_name}.${file_type}`, blob);
+
+              tempArray.push(templates[row].templates[i])
+            }
+
+            zip.generateAsync({type: 'blob'}).then(zipFile => {
+      
+              const fileName = `${this.templateTitle}.zip`;
+              return FileSaver.saveAs(zipFile, fileName);
+            });
+            break;
           } 
         }
       }
@@ -251,12 +343,19 @@
 .v-dataset-background{
     background-image: url(../../../assets/dataset-icon.jpg);
     width: 100%;
-    height: 180px;
+    height: 190px;
     background-size: 100% 100%;
 }
 
 .v-template-background{
     background-image: url(../../../assets/template-icon.jpg);
+    width: 100%;
+    height: 265px;
+    background-size: 100% 100%;
+}
+
+.v-template-background-1{
+    background-image: url(../../../assets/template-icon-1.jpg);
     width: 100%;
     height: 265px;
     background-size: 100% 100%;
@@ -322,7 +421,14 @@
   .v-template-background{
     background-image: url(../../../assets/template-icon.jpg);
     width: 100%;
-    height: 180px;
+    height: 190px;
+    background-size: 100% 100%;
+  }
+
+  .v-template-background-1{
+    background-image: url(../../../assets/template-icon-1.jpg);
+    width: 100%;
+    height: 190px;
     background-size: 100% 100%;
   }
 }

@@ -11,6 +11,8 @@
   },
   "keywords": [],
   "dependencies": {
+    "@progress/kendo-ui": "^2021.2.511",
+    "@progress/kendo-upload-vue-wrapper": "^2021.2.609",
     "apollo-server": "^2.0.0-rc.7",
     "axios": "^0.19.0",
     "bcrypt": "^5.0.1",

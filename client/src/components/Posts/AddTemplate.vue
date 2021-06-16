@@ -216,7 +216,7 @@ export default {
     EventBus.$on("submitUpdateTemplateForm", ({ parentName, template }) => {
       if (parentName !== this.$options.name) return;
       console.log(template);
-      // this.updateTemplate(template);
+      this.updateTemplate(template);
     });
   },
   mounted() {
@@ -258,14 +258,18 @@ export default {
       this.$store.dispatch("addTemplate", template);
       const path = `/post/addtemplate`;
       if (this.$route.path !== path) this.$router.push(path);
-      location.reload();
+      setTimeout(() => {
+        location.reload();
+      }, 500);
     },
     updateTemplate(template) {
       this.$store.dispatch(
         "updateUserTemplate",
         JSON.parse(JSON.stringify(template))
       );
-      location.reload();
+      setTimeout(() => {
+        location.reload();
+      }, 500);
     },
     sample_template_view(id, viewSampleTemplateDialog = true) {
       let templates = this.sampleTemplates;

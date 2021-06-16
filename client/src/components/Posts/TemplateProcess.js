@@ -241,12 +241,15 @@ export const TemplateProcess = {
       "userId": userID,
       "templateId": templateID,
       "title": title,
-      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrBE7meLSJg_1PE9w2EQzKKG6lqDwuAQ0xMPejJzekaPjl8raNuYw_QCmRwBfYaWM6ny8&usqp=CAU",
+      "templateType": "single",
       "templates": oldTemplate,
       "originalTemp": originalTemp,
       "newTemplates": templates,
       "isUpdated": "1",
-      "node_ids": node_ids
+      "node_ids": node_ids,
+      "project_ids": "",
+      "file_names": "",
+      "file_types": ""
     }
     return template
   }

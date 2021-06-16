@@ -35,9 +35,11 @@ type Report {
 type Template {
   _id: ID
   title: String! @unique
-  imageUrl: String
+  templateType: String
   content: String!
-  description: String
+  treeTemplate: [String]
+  filenames: [String]
+  filetypes: [String]
   createdDate: String
   userId: User!
 }
@@ -45,12 +47,15 @@ type Template {
 type Process {
   _id: ID
   title: String!
-  imageUrl: String
+  templateType: String
   templates: [String]!
   originalTemp: String
   newTemplates: [String]!
   isUpdated: String
   node_ids: [String]
+  project_ids: [String]
+  file_names: [String]
+  file_types: [String]
   createdDate: String
   userId: User!
 }
@@ -108,19 +113,24 @@ type Mutation {
 
   addTemplate(
     title: String!
-    imageUrl: String!
+    templateType: String!
     content: String!
-    description: String!
+    treeTemplate: [String]!
+    filenames: [String]!
+    filetypes: [String]!
     userId: ID!
   ): Template!
   saveTemplates(
     title: String!
-    imageUrl: String!
+    templateType: String!
     templates: [String]!
     originalTemp: String!
     newTemplates: [String]!
     isUpdated: String!
     node_ids: [String]!
+    project_ids: [String]!
+    file_names: [String]!
+    file_types: [String]!
     userId: ID!
   ): Process!
   updateUserPost(
@@ -137,21 +147,26 @@ type Mutation {
     templateId: ID!
     userId: ID!
     title: String!
-    imageUrl: String!
+    templateType: String!
     content: String!
-    description: String!
+    treeTemplate: [String]!
+    filenames: [String]!
+    filetypes: [String]!
   ): Template!
 
   updateProcTemplate(
     templateId: ID!
     userId: ID!
     title: String!
-    imageUrl: String!
+    templateType: String!
     templates: [String]!
     originalTemp: String!
     newTemplates: [String]!
     isUpdated: String!
     node_ids: [String]!
+    project_ids: [String]!
+    file_names: [String]!
+    file_types: [String]!
   ): Process!
   deleteUserPost(postId: ID!): Post!
   deleteUserReport(reportId: ID!): Report!

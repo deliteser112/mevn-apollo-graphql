@@ -160,44 +160,49 @@ module.exports = {
     },
     addTemplate: async (
       _,
-      { title, imageUrl, content, description, userId },
+      { title, templateType, content, treeTemplate, filenames, filetypes, userId },
       { Template }
     ) => {
       const newTemplate = await new Template({
         title,
-        imageUrl,
+        templateType,
         content,
-        description,
-        userId,
+        treeTemplate,
+        filenames,
+        filetypes,
+        userId
       }).save();
       return newTemplate;
     },
   saveTemplates: async (
       _,
-      { title, imageUrl, templates, originalTemp, newTemplates, isUpdated, node_ids, userId },
+      { title, templateType, templates, originalTemp, newTemplates, isUpdated, node_ids, project_ids, file_names, file_types, userId },
       { Process }
     ) => {
       const newSavedTemplates = await new Process({
         title,
-        imageUrl,
+        templateType,
         templates,
         originalTemp,
         newTemplates,
         isUpdated,
         node_ids,
-        userId,
+        project_ids,
+        file_names,
+        file_types,
+        userId
       }).save();
       return newSavedTemplates;
     },
   updateProcTemplate: async (
       _,
-      { templateId, userId, title, imageUrl, templates, originalTemp, newTemplates, isUpdated, node_ids },
+      { templateId, userId, title, templateType, templates, originalTemp, newTemplates, isUpdated, node_ids, project_ids, file_names, file_types },
       { Process }
     ) => {
       const process = await Process.findOneAndUpdate(
         // Find processedTemplate by templateId and createdBy
         { _id: templateId, userId: userId },
-        { $set: { title, imageUrl, templates, originalTemp, newTemplates, isUpdated, node_ids } },
+        { $set: { title, templateType, templates, originalTemp, newTemplates, isUpdated, node_ids, project_ids, file_names, file_types } },
         { new: true }
       );
       return process;
@@ -219,13 +224,13 @@ module.exports = {
 
     updateUserTemplate: async (
       _,
-      { templateId, userId, title, imageUrl, content, description },
+      { templateId, userId, title, templateType, content, treeTemplate, filenames, filetypes },
       { Template }
     ) => {
       const template = await Template.findOneAndUpdate(
         // Find post by postId and createdBy
         { _id: templateId, userId: userId },
-        { $set: { title, imageUrl, content, description } },
+        { $set: { title, templateType, content, treeTemplate, filenames, filetypes } },
         { new: true }
       );
       return template;

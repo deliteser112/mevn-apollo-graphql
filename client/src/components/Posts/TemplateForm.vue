@@ -18,7 +18,7 @@
     <!-- Template Type -->
       <v-layout row>
         <v-flex xs6>
-          <v-radio-group v-model="radioGroup" row @change="typeSet">
+          <v-radio-group v-model="radioTemplateType" row @change="typeSet">
             <v-radio
               label="Single Template"
               value="single"
@@ -48,7 +48,7 @@
         </v-flex>
       </v-layout>
 
-      <v-layout row v-else>
+      <!-- <v-layout row v-else>
         <v-flex xs12>
           <div class="import-icon" v-if="!isTemplate">
             <input
@@ -64,11 +64,25 @@
             />
           </div>
         </v-flex>
+      </v-layout> -->
+
+      <v-layout row v-show="isTree">
+        <v-flex xs12>
+          <upload ref="upload"
+            name="files"
+            :async-save-url="'custom-save-url'"
+            :async-remove-url="'custom-remove-url'"
+            :async-chunk-size="11000"
+            :directory="true"
+            :directory-drop="true">
+          </upload>
+        </v-flex>
       </v-layout>
 
       <v-layout row>
         <v-flex xs12 class="left-padding">
           <v-btn
+            v-if="!isTree"
             :loading="loading"
             :disabled="!isTemplate || loading"
             color="info"
@@ -78,7 +92,21 @@
             <span slot="loader" class="custom-loader">
               <v-icon light>cached</v-icon>
             </span>
-            Save template
+            Save
+          </v-btn>
+
+          <v-btn
+            v-if="isTree"
+            :loading="loading"
+            :disabled="!isTreeImport || loading"
+            color="info"
+            type="submit"
+            @click="submitForm"
+          >
+            <span slot="loader" class="custom-loader">
+              <v-icon light>cached</v-icon>
+            </span>
+            Save
           </v-btn>
 
           <v-btn
@@ -87,6 +115,18 @@
             color="info"
             type="button"
             @click="importAgain"
+          >
+            <v-icon light>cached</v-icon>
+            Import again
+          </v-btn>
+
+          <v-btn
+            :loading="loading"
+            :disabled="!isTreeImport || loading"
+            v-if="isTree"
+            color="info"
+            type="button"
+            @click="treeImportAgain"
           >
             <v-icon light>cached</v-icon>
             Import again
@@ -153,7 +193,7 @@
                 <td>{{ Number(props.item._id)+1 }}</td>
                 <td class="text-xs-right">{{ props.item.template_name }}</td>
                 <td class="text-xs-right">{{ props.item.file_name }}</td>
-                <td class="text-xs-right"><v-btn text @click="viewTemplate(props.item._id)">View</v-btn></td>
+                <td class="text-xs-right"><v-btn text @click="viewTemplate(props.item._id, viewTemplateType = 'single', isTemplateView = 'tree')">View</v-btn></td>
               </tr>
             </template>
           </v-data-table>
@@ -196,8 +236,14 @@
               <v-icon>delete</v-icon>
             </v-btn>
             <div
+              v-if="template.templateType=='single'"
               class="v-template-background"
-              @click="template_view(template._id)"
+              @click="template_view(template._id, viewTemplateType = 'single', isTemplateView = 'template')"
+            ></div>
+            <div
+              v-else
+              class="v-template-background-1"
+              @click="template_view(template._id, viewTemplateType = 'tree', isTemplateView = 'template')"
             ></div>
             <v-card-text>{{ template.title }}</v-card-text>
           </v-card>
@@ -271,12 +317,20 @@
                 Close
               </v-btn>
 
-              <v-btn color="info" type="button" @click="processData">
+              <v-btn color="info" type="button" @click="processData" v-if="viewTemplateType=='single'">
                 <span slot="loader" class="custom-loader">
                   <v-icon light>cached</v-icon>
                 </span>
                 Process
               </v-btn>
+
+              <v-btn color="info" type="button" @click="treeTemplateProcess" v-if="viewTemplateType=='tree'">
+                <span slot="loader" class="custom-loader">
+                  <v-icon light>cached</v-icon>
+                </span>
+                Process
+              </v-btn>
+
             </v-flex>
           </v-layout>
         </v-container>
@@ -298,12 +352,68 @@
         >
         <v-container>
           <v-form v-model="isFormValid" ref="updateform" @submit.prevent>
-            <v-layout row>
+            <v-layout row v-if="viewTemplateType=='single'">
               <v-flex xs12>
                 <textarea
                   v-model="templateContent"
                   class="text-area"
                 ></textarea>
+              </v-flex>
+            </v-layout>
+
+            <v-layout row wrap v-else>
+              <v-flex xs12 style="text-align: right">
+                <v-btn color="info" type="button" @click="uDeleteTemplates">
+                  <v-icon light>delete</v-icon>
+                  Delete
+                </v-btn>
+                <v-data-table
+                  v-model="uSelected"
+                  :headers="updateHeaders"
+                  :items="updateTreeTemplates"
+                  :pagination.sync="pagination"
+                  :rows-per-page-items="[10, 15, 50, 100]"
+                  select-all
+                  item-key="_id"
+                >
+                  <template v-slot:headers="props">
+                    <tr>
+                      <th>
+                        <v-checkbox
+                          :input-value="props.all"
+                          :indeterminate="props.indeterminate"
+                          primary
+                          hide-details
+                          @click.stop="uToggleAll"
+                        ></v-checkbox>
+                      </th>
+                      <th
+                        v-for="header in props.headers"
+                        :key="header.text"
+                        :class="['column sortable', pagination.descending ? 'desc' : 'asc', header.value === pagination.sortBy ? 'active' : '']"
+                        @click="changeSort(header.value)"
+                      >
+                        <v-icon small>arrow_upward</v-icon>
+                        {{ header.text }}
+                      </th>
+                    </tr>
+                  </template>
+                  <template v-slot:items="props">
+                    <tr :active="props.selected" @click="props.selected = !props.selected">
+                      <td style="width:50px;text-align:center">
+                        <v-checkbox
+                          :input-value="props.selected"
+                          secondary
+                          hide-details
+                        ></v-checkbox>
+                      </td>
+                      <td>{{ Number(props.item._id)+1 }}</td>
+                      <td class="text-xs-right">{{ props.item.template_name }}</td>
+                      <td class="text-xs-right">{{ props.item.file_type }}</td>
+                      <td class="text-xs-right"><v-btn text @click="updateViewTemplate(props.item._id)">View</v-btn></td>
+                    </tr>
+                  </template>
+                </v-data-table>
               </v-flex>
             </v-layout>
 
@@ -313,7 +423,7 @@
                   <v-icon light>close</v-icon>
                   Close
                 </v-btn>
-                <v-btn color="info" type="submit" @click="submitUpdateForm" v-if="!isTreeImport">
+                <v-btn color="info" type="submit" @click="submitUpdateForm" v-if="viewStatus=='template'">
                   <span slot="loader" class="custom-loader">
                     <v-icon light>cached</v-icon>
                   </span>
@@ -324,7 +434,7 @@
                   color="info"
                   type="button"
                   @click="selectDataset"
-                  v-if="!isTreeImport"
+                  v-if="viewStatus=='template'"
                 >
                   <v-icon light>format_list_bulleted</v-icon>
                   Select dataset
@@ -332,6 +442,41 @@
               </v-flex>
             </v-layout>
           </v-form>
+        </v-container>
+      </v-card>
+    </v-dialog>
+
+    <!-- View Template Dialog -->
+    <v-dialog
+      xs12
+      sm6
+      offset-sm3
+      persistent
+      v-model="viewSubTemplateDialog"
+      style="width:100px"
+    >
+      <v-card>
+        <v-card-title class="headline grey lighten-2"
+          >SubTemplate ({{ templateSubTitle }})</v-card-title
+        >
+        <v-container>
+            <v-layout row>
+              <v-flex xs12>
+                <textarea
+                  v-model="templateSubContent"
+                  class="text-area"
+                ></textarea>
+              </v-flex>
+            </v-layout>
+
+            <v-layout row>
+              <v-flex xs12>
+                <v-btn color="info" type="button" @click="closeSubTemplate">
+                  <v-icon light>close</v-icon>
+                  Close
+                </v-btn>
+              </v-flex>
+            </v-layout>
         </v-container>
       </v-card>
     </v-dialog>
@@ -367,9 +512,13 @@
 <script>
 import { mapState } from "vuex";
 import { EventBus } from "../../event";
+import { Upload } from '@progress/kendo-upload-vue-wrapper';
 
 export default {
   name: "PostForm",
+  components: {
+      'upload': Upload
+  },
   props: {
     userId: String,
     parentName: String,
@@ -378,9 +527,9 @@ export default {
       default: () => {
         return {
           title: "",
-          imageUrl: "",
+          templateType: "",
           content: "",
-          description: ""
+          treeTemplate: []
         };
       }
     }
@@ -405,25 +554,35 @@ export default {
       alertContent: "",
       alertType: "",
       isDelete: false,
+      viewStatus: "",
       processDialog: false,
       allDataset: [],
       templateContent: "",
       templateTitle: "",
       editTemplateDialog: false,
+      template_title: "",
+
+      viewSubTemplateDialog:false,
+      templateSubTitle: "",
+      templateSubContent:"",
+
       // adding template
       isFormValid: true,
       templateId: null,
       title: "",
-      imageUrl: "",
+      templateType: "",
       content: "",
-      description: "",
+      treeTemplate: [],
 
       //template tree
-      radioGroup:"",
+      radioTemplateType:"",
       isTree: false,
       treeText: [],
       treeTemplates:[],
+      updateTreeTemplates:[],
       isTreeImport:false,
+
+      viewTemplateType:"single",
 
       titleRules: [
         title => !!title || "Title is required",
@@ -446,7 +605,7 @@ export default {
         sortBy: 'key'
       },
       selected: [],
-
+      uSelected: [],
       headers: [
         {
           text: 'No',
@@ -457,7 +616,17 @@ export default {
         { text: 'File Name', value: 'file_name' },
         { text: 'Template View', value: 'view' }
       ],
-      reports: [],
+
+      updateHeaders: [
+        {
+          text: 'No',
+          align: 'left',
+          value: 'key'
+        },
+        { text: 'Template Name', value: 'template_name' },
+        { text: 'File Type', value: 'file_type' },
+        { text: 'Template View', value: 'view' }
+      ],
 
       /////////////for testing
       allSelected: false
@@ -486,12 +655,67 @@ export default {
     this.getUserSavedTemplates();
   },
   mounted() {
-    this.radioGroup = "single"
+    this.radioTemplateType = "single"
+    this.templateType = "single"
+
+    var upload = this.$refs.upload.kendoWidget();
+
+    let getFile = this.getFile
+
+    upload._module.postFormData = async function (url, data, fileEntry, xhr) {
+        var module = this;
+        var counter = 0;
+
+        var uid = fileEntry.data("files")[0].uid;
+
+        let file = fileEntry.data("files")[0].rawFile
+
+        let filetype = fileEntry.data("files")[0].extension
+        let tmp_name = fileEntry.data("files")[0].name
+        tmp_name = tmp_name.split('/')
+        tmp_name = tmp_name[tmp_name.length-1]
+
+        let ext_name = tmp_name.split('.')
+
+        let ext = ext_name[ext_name.length-1]
+        let filename = tmp_name.replace(`.${ext}`, '')
+
+        const result = await getFile(file, filename, filetype)
+
+        var refreshIntervalId = setInterval(function () {
+            if (counter > 100) {
+                clearInterval(refreshIntervalId);
+                var e = { target: { responseText: '{"uploaded":true,"fileUid":"' + uid + '"}', statusText: "OK", status: 200 } };
+                 module.onRequestSuccess.call(module, e, fileEntry);
+                return;
+            }
+            module.upload._onFileProgress({ target: $(fileEntry, module.upload.wrapper) }, counter);
+            counter += 49;
+        }, 100);
+    };
+
+    upload._submitRemove = function (fileNames, eventArgs, onSuccess, onError) {
+      
+      onSuccess(()=>{
+        console.log("OK")
+      });
+    };
+    upload._module.stopUploadRequest= function(fileEntry) {
+      console.log("test")
+    };
   },
+
   methods: {
+    test(){
+      console.log("this is test!!!")
+    },
     toggleAll () {
       if (this.selected.length) this.selected = []
       else this.selected = this.treeTemplates.slice()
+    },
+    uToggleAll () {
+      if (this.uSelected.length) this.uSelected = []
+      else this.uSelected = this.updateTreeTemplates.slice()
     },
     changeSort (column) {
       if (this.pagination.sortBy === column) {
@@ -503,23 +727,23 @@ export default {
     },
     
     typeSet(){
-      this.isTree = this.radioGroup=="tree"?true:false
+      this.isTree = this.radioTemplateType=="tree"?true:false
+      this.templateType = this.radioTemplateType
+      this.isTemplate = false
     },
-    /////////////////// ----- start the prcess of the template ------ ////////////
+
+    /////////////////// ----- start the prcess of the template ------ //////////// ----------------------------------------------
+    // singleTemplateProcess(){
+
+    // },
+
     processData() {
       let ext_data = this.extractID(this.templateContent);
       let full_data = this.getData(this.userPosts);
 
       let arr = this.userPosts;
-      let selected_id = new Array(); // selected id of dataset
+      let selected_id = this.getSelectIDs()
 
-      if (this.selection.length > 0)
-        for (let r in this.selection) selected_id.push(this.selection[r]._id);
-      else {
-        for (let r in full_data) {
-          selected_id.push(full_data[r][0][0]);
-        }
-      }
       /// --- main processing section --- ///
       let temp_type = ext_data.type;
       let dataExists = false;
@@ -546,6 +770,7 @@ export default {
                 let row = {};
                 if (full_data[r][w][2] == e_project_id) {
                   p_node_ids.push(full_data[r][w][3]);
+
                   // checking if template variables exist in dataset, and take the variables.
                   for (let q in template_variables) {
                     for (let m in dataset_variables) {
@@ -570,11 +795,18 @@ export default {
 
               if (processedTemplate.length > 0) {
                 proStatus = true;
+                let p_project_ids=""
+                let p_file_names=""
+                let p_file_types=""
                 let saveTemplates = this.configTemplate(
+                  'single',
                   processedTemplate,
                   this.templateId,
                   e_project_id,
-                  p_node_ids
+                  p_node_ids,
+                  p_project_ids="",
+                  p_file_names="",
+                  p_file_types=""
                 );
                 this.storeTemplates(saveTemplates);
               }
@@ -622,13 +854,22 @@ export default {
                 project_variables
               );
 
+              console.log(project_variables)
+
               if (processedTemplate.length > 0) {
                 proStatus = true;
+                let p_project_ids=""
+                let p_file_names=""
+                let p_file_types=""
                 let saveTemplates = this.configTemplate(
+                  'single',
                   processedTemplate,
                   this.templateId,
                   e_project_id,
-                  res_node_ids
+                  res_node_ids,
+                  p_project_ids="",
+                  p_file_names="",
+                  p_file_types=""
                 );
                 this.storeTemplates(saveTemplates);
               }
@@ -670,11 +911,19 @@ export default {
               );
               if (processedTemplate.length > 0) {
                 proStatus = true;
+                let p_project_ids=""
+                let p_file_names=""
+                let p_file_types=""
+
                 let saveTemplates = this.configTemplate(
+                  'single',
                   processedTemplate,
                   this.templateId,
                   e_project_id,
-                  p_node_ids
+                  p_node_ids,
+                  p_project_ids="",
+                  p_file_names="",
+                  p_file_types=""
                 );
                 this.storeTemplates(saveTemplates);
               }
@@ -693,6 +942,22 @@ export default {
         this.alertContent = "Data is not exist!";
       }
     },
+    
+    getSelectIDs(){
+
+      let full_data = this.getData(this.userPosts);
+      let selected_id = new Array(); // selected id of dataset
+
+      if (this.selection.length > 0)
+        for (let r in this.selection) selected_id.push(this.selection[r]._id);
+      else {
+        for (let r in full_data) {
+          selected_id.push(full_data[r][0][0]);
+        }
+      }
+      return selected_id
+    },
+
     extractID(text) {
       let temp_string = text;
 
@@ -740,27 +1005,13 @@ export default {
         }
       }
       res["variables"] = variables;
+      res["content"] = text
       return res;
     },
     downloadTemplate(m_template) {
       let res_template = this.makeTemplate(m_template);
 
-      // for getting timestamp
-      let d = new Date();
-      let timestamp =
-        d.getFullYear() +
-        "" +
-        (d.getMonth() + 1) +
-        "" +
-        d.getDate() +
-        "" +
-        d.getHours() +
-        "" +
-        d.getMinutes() +
-        "" +
-        d.getSeconds() +
-        "" +
-        d.getMilliseconds();
+      let timestamp = this.getTimestamp()
 
       // download the templates
       const blob = new Blob([res_template], { type: "text/plain" }); //text/plain //application/pdf
@@ -831,34 +1082,40 @@ export default {
       return processedTemplate;
     },
     selectDataset() {
-      if (
-        this.templateContent.indexOf("project_id") > -1 &&
-        this.templateContent.indexOf("node_id") > -1
-      ) {
-        let rowObj = {};
-        let pData = new Array();
-        let full_data = this.getData(this.userPosts);
-
-        for (let r in full_data) {
-          let _id = full_data[r][0][0];
-          let ds_nm = full_data[r][0][1];
-          let pj_id = full_data[r][0][2];
-          rowObj = {
-            _id: _id,
-            dataset_name: ds_nm,
-            project_id: pj_id,
-            selected: false
-          };
-          pData.push(rowObj);
+      if(this.viewTemplateType == 'single'){
+        if ( this.templateContent.indexOf("project_id") > -1 && this.templateContent.indexOf("node_id") > -1 ) {
+          this.viewDatasetList()
+        } else {
+          this.alertDialog = true;
+          this.alertContent = "Project ID or Node ID is not exist!";
         }
-
-        this.allDataset = pData;
-        this.processDialog = true;
-      } else {
-        this.alertDialog = true;
-        this.alertContent = "Project ID or Node ID is not exist!";
+      }else if(this.viewTemplateType == 'tree'){
+        this.viewDatasetList()
       }
+      
     },
+    viewDatasetList(){
+      let rowObj = {};
+      let pData = new Array();
+      let full_data = this.getData(this.userPosts);
+
+      for (let r in full_data) {
+        let _id = full_data[r][0][0];
+        let ds_nm = full_data[r][0][1];
+        let pj_id = full_data[r][0][2];
+        rowObj = {
+          _id: _id,
+          dataset_name: ds_nm,
+          project_id: pj_id,
+          selected: false
+        };
+        pData.push(rowObj);
+      }
+
+      this.allDataset = pData;
+      this.processDialog = true;
+    },
+
     getData(data) {
       let res = new Array();
 
@@ -883,7 +1140,151 @@ export default {
 
     //////////////////////// ----- end process ----- //////////////////
 
+
+    //////////////////////// ----- Start Tree Template process ----- //////////////////
+    treeTemplateProcess(){
+      let treeTemplates = new Array()
+      let tp_data = this.updateTreeTemplates
+      for(let item of tp_data){
+        treeTemplates.push(item.content)
+      }
+
+      let datasets = this.getData(this.userPosts)
+      let selectedIDs = this.getSelectIDs()
+      let selectedDatasets = this.getSelectedDatasets(datasets, selectedIDs)
+      let selectedVariables = this.getSelectedVariables(this.userPosts, selectedIDs)
+      this.treeProcessingData(treeTemplates, selectedDatasets, selectedVariables)
+    },
+
+    treeProcessingData(treeTemplates, datasets, variables){
+      let templateData = new Array()
+      for(let template of treeTemplates) templateData.push(this.extractID(template))
+
+      let processedTemplate = new Array()
+      let p_node_ids = new Array();
+      let p_project_ids = new Array();
+      let p_file_names = new Array();
+      let p_file_types = new Array();
+
+      let tp_data = this.updateTreeTemplates
+      for(let item of tp_data){
+        p_file_names.push(item.template_name)
+        p_file_types.push(item.file_type)
+      }
+
+      for (let template of templateData){
+        let e_project_id = template.project_id;
+        if(e_project_id == undefined){
+          processedTemplate.push(template.content)
+          continue
+        }
+
+        let project_variables = new Array();
+        p_node_ids.push(template.node_id.trim());
+        p_project_ids.push(template.project_id.trim());
+
+        for (let r in datasets) {
+          let f_project_id = Array();
+
+          for (let m in datasets[r])
+            f_project_id.push(datasets[r][m][2]);
+
+
+
+          for (let w in datasets[r]) {
+            // in case of template node id is matched with dataset node id,
+            if (
+              datasets[r][w][3] == template.node_id.trim() &&
+              datasets[r][w][2] == e_project_id.trim()
+            ) {
+              let dataset_variables = variables[r];
+              let template_variables = template.variables;
+              let row = {};
+
+              // checking if template variables exist in dataset, and take the variables.
+              for (let q in template_variables) {
+                for (let m in dataset_variables) {
+                  if (
+                    template_variables[q].trim() ==
+                    dataset_variables[m].trim()
+                  ) {
+                    let index = Number(m) + 2;
+                    let key = dataset_variables[m].trim();
+                    row[key] = datasets[r][w][index];
+                  }
+                }
+              }
+              project_variables.push(row);
+            }
+          }
+        }
+        let maketemplate = this.makeTemplate(
+            template.content,
+            project_variables
+          );
+        maketemplate[0] = maketemplate[0] == undefined ? template.content : maketemplate[0]
+        processedTemplate.push(maketemplate[0])
+      }
+
+      if (processedTemplate.length > 0) {
+        let templateType = 'tree'
+        let saveTemplates = this.configTemplate(
+          templateType,
+          processedTemplate,
+          this.templateId,
+          this.template_title,
+          p_node_ids,
+          p_project_ids,
+          p_file_names,
+          p_file_types
+        );
+
+        console.log(saveTemplates)
+        this.storeTemplates(saveTemplates);
+      }
+    },
+
+    getSelectedDatasets(datasets, selectedIDs){
+      let sel_datasets = new Array()
+      for(let id of selectedIDs){
+        for(let dataset of datasets){
+          if(dataset[0][0] == id){
+            sel_datasets.push(dataset)
+            break;
+          }
+        }
+      }
+      return sel_datasets
+    },
+
+    getSelectedVariables(datasets, selectedIDs){
+      let sel_variables = new Array()
+      for(let id of selectedIDs){
+        for(let dataset of datasets){
+          if(dataset._id == id){
+            sel_variables.push(dataset.variables)
+            break;
+          }
+        }
+      }
+      return sel_variables
+    },
+
+    //////////////////////// ----- end process ----- //////////////////
+
     submitForm() {
+      if(this.templateType == "tree") this.text = "tree"
+      let treeTemplate = new Array()
+      let filetypes = new Array()
+      let filenames = new Array()
+
+      console.log(this.treeTemplates)
+      for(let template of this.treeTemplates){
+        treeTemplate.push(template.content)
+        filetypes.push(template.filetype)
+        filenames.push(template.filename)
+      }
+
       if (this.$refs.form.validate()) {
         EventBus.$emit("submitTemplateForm", {
           parentName: this.parentName,
@@ -891,16 +1292,33 @@ export default {
             templateId: this.templateId,
             userId: this.userId,
             title: this.title,
-            imageUrl:
-              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrBE7meLSJg_1PE9w2EQzKKG6lqDwuAQ0xMPejJzekaPjl8raNuYw_QCmRwBfYaWM6ny8&usqp=CAU",
+            templateType: this.templateType,
             content: this.text,
-            description: "no description"
+            treeTemplate: treeTemplate,
+            filenames: filenames,
+            filetypes: filetypes
           }
         });
       }
     },
 
     submitUpdateForm() {
+      console.log(this.viewTemplateType)
+      
+      let templates = new Array()
+      let filenames = new Array()
+      let filetypes = new Array()
+      if(this.viewTemplateType=='single'){
+        this.updateTreeTemplates = "single"
+      }else{
+        this.templateContent = "tree"
+        for(let item of this.updateTreeTemplates){
+          templates.push(item.content)
+          filenames.push(item.template_name)
+          filetypes.push(item.file_type)
+        }
+      }
+
       if (this.$refs.updateform.validate()) {
         EventBus.$emit("submitUpdateTemplateForm", {
           parentName: this.parentName,
@@ -908,62 +1326,83 @@ export default {
             templateId: this.templateId,
             userId: this.userId,
             title: this.templateTitle,
-            imageUrl:
-              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrBE7meLSJg_1PE9w2EQzKKG6lqDwuAQ0xMPejJzekaPjl8raNuYw_QCmRwBfYaWM6ny8&usqp=CAU",
+            templateType: this.viewTemplateType,
             content: this.templateContent,
-            description: "no description"
+            treeTemplate: templates,
+            filenames: filenames,
+            filetypes: filetypes
           }
         });
       }
     },
 
-    selectedFile() {
+    async getFile(ref_file, filename, filetype) {
+      let file = ref_file;
+
+      let reader = new FileReader();
+      reader.readAsText(file, "UTF-8");
+      const result = await this.getText(reader)
+
+      let rowObj = {}
+      rowObj.filename = filename
+      rowObj.filetype = filetype=="" ? ".cfg" : filetype
+      rowObj.content = result
+      this.treeTemplates.push(rowObj)
+
+      if(this.treeTemplates.length>0) this.isTreeImport = true
+      reader.onerror = evt => {
+        console.error(evt);
+      };
+      return result
+    },
+
+    async selectedFile() {
       let file = this.$refs.myFile.files[0];
+      console.log(file)
       if (!file || file.type !== "text/plain") return;
 
       let reader = new FileReader();
       reader.readAsText(file, "UTF-8");
-      reader.onload = evt => {
-        this.text = evt.target.result;
-      };
+      const result = await this.getText(reader)
+      this.text = result
       reader.onerror = evt => {
         console.error(evt);
       };
       this.isTemplate = true;
     },
 
-    async selectedFiles() {
-      let files = this.$refs.myFiles.files;
-      let file_names = new Array()
-      for(let file of files){
-        if (!file || file.type !== "text/plain") return;
-        file_names.push(file.name)
-        let reader = new FileReader();
+    // async selectedFiles() {
+    //   let files = this.$refs.myFiles.files;
+    //   let file_names = new Array()
+    //   for(let file of files){
+    //     if (!file || file.type !== "text/plain") return;
+    //     file_names.push(file.name)
+    //     let reader = new FileReader();
         
-        reader.readAsText(file, "UTF-8");
+    //     reader.readAsText(file, "UTF-8");
         
-        const result = await this.getText(reader)
+    //     const result = await this.getText(reader)
 
-        this.treeText.push(result)
-        reader.onerror = evt => {
-          console.error(evt);
-        };
-      }
+    //     this.treeText.push(result)
+    //     reader.onerror = evt => {
+    //       console.error(evt);
+    //     };
+    //   }
       
-      for(let key in this.treeText){
-        let rowObj = {}
-        rowObj._id = key;
-        rowObj.file_name = file_names[key]
-        rowObj.content = this.treeText[key]
-        rowObj.template_name = this.title==""?`Template_${key}`:`${this.title}_${key}`
-        this.treeTemplates.push(rowObj)
-      }
+    //   for(let key in this.treeText){
+    //     let rowObj = {}
+    //     rowObj._id = key;
+    //     rowObj.file_name = file_names[key]
+    //     rowObj.content = this.treeText[key]
+    //     rowObj.template_name = this.title==""?`Template_${key}`:`${this.title}_${key}`
+    //     this.treeTemplates.push(rowObj)
+    //   }
 
-      console.log(this.treeTemplates)
-      console.log(this.treeText)
-      console.log("HELLO", this.isTree)
-      this.isTemplate = true;
-    },
+    //   console.log("M:", this.treeTemplates)
+    //   console.log("U:", this.treeText)
+    //   console.log("HELLO", this.isTree)
+    //   this.isTemplate = true;
+    // },
 
     getText(reader){
       return new Promise(resolve => {
@@ -1012,6 +1451,31 @@ export default {
       }
       console.log(this.treeTemplates)
     },
+
+    uDeleteTemplates(){
+      let templateIDs = new Array()
+      if(this.uSelected.length > 0){
+        for(let i in this.uSelected){
+          templateIDs.push(this.uSelected[i]._id)
+        }
+      }
+
+      console.log(templateIDs)
+
+      for(let i = 0; i < this.updateTreeTemplates.length; i++){
+        console.log("U:", this.updateTreeTemplates[i]._id)
+        for(let id of templateIDs){
+          console.log(this.updateTreeTemplates[i]._id, "==", id)
+          if(this.updateTreeTemplates[i]._id == id){
+
+            this.updateTreeTemplates.splice(i, 1)
+            // i--
+          }
+        }
+        
+      }
+      console.log(this.updateTreeTemplates)
+    },
     deleteTemplate(templateId) {
       this.isDelete = true;
       this.templateId = templateId;
@@ -1028,22 +1492,46 @@ export default {
     closeTemplate() {
       this.editTemplateDialog = false;
     },
-    template_view(id, editTemplateDialog = true) {
-      console.log(id)
+    closeSubTemplate() {
+      this.viewSubTemplateDialog = false;
+    },
+    template_view(id, viewTemplateType, templateStatus, editTemplateDialog = true) {
+      this.viewStatus = templateStatus
+      this.viewTemplateType = viewTemplateType
+      this.updateTreeTemplates = []
       this.templateId = id;
+      console.log("H:", this.templateId)
       let templates = this.userTemplates;
       for (let row in templates) {
         if (id == templates[row]._id) {
-          this.templateContent = templates[row].content;
+          this.template_title = templates[row].title
+          if(viewTemplateType=='tree'){
+            for(let i in templates[row].treeTemplate){
+              let rowObj = {}
+              rowObj._id = i
+              rowObj.template_name = `${templates[row].filenames[i]}`
+              rowObj.file_type = templates[row].filetypes[i]
+              rowObj.content = templates[row].treeTemplate[i]
+              this.updateTreeTemplates.push(rowObj);
+            }
+          }else{
+            this.templateContent = templates[row].content
+          }
+          
           this.templateTitle = templates[row].title;
           break;
         }
       }
       this.editTemplateDialog = editTemplateDialog;
     },
-    viewTemplate(id, editTemplateDialog = true) {
+
+    //tree template view in table when is imported
+    viewTemplate(id, templateStatus, editTemplateDialog = true) {
       this.templateId = id;
+      console.log('U:', this.templateId)
+      this.viewStatus = templateStatus
       let templates = this.treeTemplates;
+
       for (let row in templates) {
         if (id == templates[row]._id) {
           this.templateContent = templates[row].content;
@@ -1054,6 +1542,21 @@ export default {
       this.isTreeImport = true
       this.editTemplateDialog = editTemplateDialog;
     },
+
+    //tree template view in table when updated
+    updateViewTemplate(id, viewSubTemplateDialog = true){
+      
+      let templates = this.updateTreeTemplates;
+      for (let row in templates) {
+        if (id == templates[row]._id) {
+          this.templateSubContent = templates[row].content;
+          this.templateSubTitle = templates[row].template_name;
+          break;
+        }
+      }
+      this.viewSubTemplateDialog = viewSubTemplateDialog;
+    },
+
     closeProcess() {
       this.processDialog = false;
     },
@@ -1071,13 +1574,17 @@ export default {
       this.treeText = []
       this.treeTemplates = []
     },
+    treeImportAgain() {
+      location.reload()
+    },
     storeTemplates(template) {
       this.$store.dispatch("saveTemplates", template);
       this.$router.push("/dataset");
-      location.reload();
+      setTimeout(() => {
+        location.reload();
+      }, 500);
     },
-    configTemplate(templates, originalTemp, project_id, node_ids) {
-      // for getting timestamp
+    getTimestamp(){
       let d = new Date();
       let timestamp =
         d.getFullYear() +
@@ -1093,18 +1600,27 @@ export default {
         d.getSeconds() +
         "" +
         d.getMilliseconds();
+      return timestamp
+    },
+    configTemplate(templateType, templates, originalTemp, project_id, node_ids, project_ids, file_names, file_types) {
+      // for getting timestamp
+      let timestamp = this.getTimestamp()
+      let title = ""
 
-      let title = project_id + "_" + timestamp;
+      title = templateType == 'single' ? `${project_id}_${timestamp}` : `${project_id}`
+
       let template = {
         userId: this.userId,
         title: title,
-        imageUrl:
-          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrBE7meLSJg_1PE9w2EQzKKG6lqDwuAQ0xMPejJzekaPjl8raNuYw_QCmRwBfYaWM6ny8&usqp=CAU",
+        templateType: templateType,
         templates: templates,
         originalTemp: originalTemp,
         newTemplates: templates,
         isUpdated: "0",
-        node_ids: node_ids
+        node_ids: node_ids,
+        project_ids: project_ids,
+        file_names: file_names,
+        file_types: file_types
       };
       return template;
     }
@@ -1166,6 +1682,7 @@ export default {
 .left-padding {
   padding: 20px;
 }
+
 @media only screen and (min-width: 500px) {
   .text-area {
     width: 100%;

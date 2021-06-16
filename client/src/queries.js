@@ -20,8 +20,11 @@ export const GET_TEMPLATES = gql`
       getTemplates {
         _id
         title
-        imageUrl
-        description
+        templateType
+        content
+        treeTemplate
+        filenames
+        filetypes
       }
     }
     `;
@@ -31,7 +34,7 @@ export const GET_SAVED_TEMPLATES = gql`
       getSavedTemplates {
         _id
         title
-        imageUrl
+        templateType
       }
     }
     `;
@@ -55,9 +58,11 @@ export const GET_TEMPLATE = gql`
       getTemplate(templateId: $templateId){
           _id
           title
-          imageUrl
+          templateType
           content
-          description
+          treeTemplate
+          filenames
+          filetypes
           createdDate
       }
     }
@@ -129,23 +134,29 @@ export const ADD_POST = gql`
   export const ADD_TEMPLATE = gql`
     mutation(
       $title: String!,
-      $imageUrl:String!,
+      $templateType:String!,
       $content: String!,
-      $description: String!,
+      $treeTemplate: [String]!,
+      $filenames: [String]!,
+      $filetypes: [String]!,
       $userId:ID!
     ) {
       addTemplate(
         title:$title
-        imageUrl:$imageUrl
+        templateType:$templateType
         content:$content
-        description:$description
+        treeTemplate:$treeTemplate
+        filenames:$filenames
+        filetypes:$filetypes
         userId:$userId
       ){
         _id
         title
-        imageUrl
+        templateType
         content
-        description
+        treeTemplate
+        filenames
+        filetypes
       }
     }
     `;
@@ -153,32 +164,41 @@ export const ADD_POST = gql`
   export const SAVE_TEMPLATES = gql`
     mutation(
       $title: String!,
-      $imageUrl:String!,
+      $templateType:String!,
       $templates: [String]!,
       $originalTemp:String!,
       $newTemplates: [String]!,
       $isUpdated:String!,
       $node_ids: [String]!,
+      $project_ids: [String]!,
+      $file_names: [String]!,
+      $file_types: [String]!,
       $userId:ID!
     ) {
       saveTemplates(
         title:$title
-        imageUrl:$imageUrl
+        templateType:$templateType
         templates:$templates
         originalTemp:$originalTemp
         newTemplates:$newTemplates
         isUpdated:$isUpdated
         node_ids:$node_ids
+        project_ids:$project_ids
+        file_names:$file_names
+        file_types:$file_types
         userId:$userId
       ){
         _id
         title
-        imageUrl
+        templateType
         templates
         originalTemp
         newTemplates
         isUpdated
         node_ids
+        project_ids
+        file_names
+        file_types
       }
     }
   `;
@@ -235,9 +255,11 @@ export const INFINITE_SCROLL_POSTS = gql`
         templates {
           _id
           title
-          imageUrl
+          templateType
           content
-          description
+          treeTemplate
+          filenames
+          filetypes
           createdDate
           userId {
             _id
@@ -285,9 +307,11 @@ export const GET_USER_TEMPLATES = gql`
     getUserTemplates(userId: $userId) {
       _id
       title
-      imageUrl
-      description
+      templateType
       content
+      treeTemplate
+      filenames
+      filetypes
       createdDate
     }
   }
@@ -298,12 +322,15 @@ export const GET_USER_SAVED_TEMPLATES = gql`
     getUserSavedTemplates(userId: $userId) {
       _id
       title
-      imageUrl
+      templateType
       node_ids
       templates
       newTemplates
       originalTemp
       isUpdated
+      project_ids
+      file_names
+      file_types
       createdDate
     }
   }
@@ -348,32 +375,41 @@ export const UPDATE_PROC_TEMPLATE = gql`
       $templateId: ID!
       $userId:ID!
       $title: String!,
-      $imageUrl:String!,
+      $templateType:String!,
       $templates: [String]!,
       $originalTemp:String!,
       $newTemplates: [String]!,
       $isUpdated:String!,
       $node_ids: [String]!,
+      $project_ids: [String]!,
+      $file_names: [String]!,
+      $file_types: [String]!,
     ) {
       updateProcTemplate(
         templateId: $templateId
         userId:$userId
         title:$title
-        imageUrl:$imageUrl
+        templateType:$templateType
         templates:$templates
         originalTemp:$originalTemp
         newTemplates:$newTemplates
         isUpdated:$isUpdated
         node_ids:$node_ids
+        project_ids:$project_ids
+        file_names:$file_names
+        file_types:$file_types
       ){
         _id
         title
-        imageUrl
+        templateType
         templates
         originalTemp
         newTemplates
         isUpdated
         node_ids
+        project_ids
+        file_names
+        file_types
         userId {
           _id
           avatar
@@ -387,23 +423,29 @@ export const UPDATE_USER_TEMPLATE = gql`
     $templateId: ID!
     $userId: ID!
     $title: String!
-    $imageUrl: String!
+    $templateType: String!
     $content: String!
-    $description: String!
+    $treeTemplate: [String]!
+    $filenames: [String]!
+    $filetypes: [String]!
   ) {
     updateUserTemplate(
       templateId: $templateId
       userId: $userId
       title: $title
-      imageUrl: $imageUrl
+      templateType: $templateType
       content: $content
-      description: $description
+      treeTemplate: $treeTemplate
+      filenames: $filenames
+      filetypes: $filetypes
     ) {
       _id
       title
-      imageUrl
-      description
+      templateType
       content
+      treeTemplate
+      filenames
+      filetypes
       createdDate
       userId {
         _id

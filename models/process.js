@@ -5,7 +5,7 @@ const ProcessSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  imageUrl: {
+  templateType: {
     type: String
   },
   templates: {
@@ -23,6 +23,15 @@ const ProcessSchema = new mongoose.Schema({
     type: String
   },
   node_ids: {
+    type: [String],
+  },
+  project_ids: {
+    type: [String],
+  },
+  file_names: {
+    type: [String],
+  },
+  file_types: {
     type: [String],
   },
   createdDate: {

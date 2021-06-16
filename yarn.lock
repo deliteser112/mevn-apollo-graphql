@@ -66,6 +66,25 @@
     semver "^7.3.4"
     tar "^6.1.0"
 
+"@progress/kendo-base-components-vue-wrapper@2021.2.609":
+  version "2021.2.609"
+  resolved "https://registry.yarnpkg.com/@progress/kendo-base-components-vue-wrapper/-/kendo-base-components-vue-wrapper-2021.2.609.tgz#366dc2a62026ff0a875f390958ac8097b48edafb"
+  integrity sha512-BYeXNGMFigbp8VMAO6n4KbYsnXMLXxE0ieS86OeEdSZd4VdEz/eU2E5GJf7gUwT+YR3BFYL7CFY0riRutCORJg==
+
+"@progress/kendo-ui@^2021.2.511":
+  version "2021.2.511"
+  resolved "https://registry.yarnpkg.com/@progress/kendo-ui/-/kendo-ui-2021.2.511.tgz#b454600b3a6932bffc273809592327aa61694005"
+  integrity sha512-OslTbXLsYug8ZcxTQZXC5nDuAkOYuTXRoYn9Mp3hXCjKCW1EfL1UwIIImsbXEUiUQ3EAdJ3JWROpXyRuRrEZeg==
+  dependencies:
+    jquery "3.5.1"
+
+"@progress/kendo-upload-vue-wrapper@^2021.2.609":
+  version "2021.2.609"
+  resolved "https://registry.yarnpkg.com/@progress/kendo-upload-vue-wrapper/-/kendo-upload-vue-wrapper-2021.2.609.tgz#0730f21c7bab5dd4d5686f37717c0ed76c404c89"
+  integrity sha512-HU+qYBqe/CNBBK8uv0iL22LFMrLlw4Xn5xGoGsyL27vLm/Qn3kiIsbleAN1yHLqd1BoUurAHR8qi912kVNiDug==
+  dependencies:
+    "@progress/kendo-base-components-vue-wrapper" "2021.2.609"
+
 "@protobufjs/aspromise@^1.1.1", "@protobufjs/aspromise@^1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@protobufjs/aspromise/-/aspromise-1.1.2.tgz#9b8b0cc663d669a7d8f6f5d0893a14d348f30fbf"
@@ -2048,6 +2067,11 @@ iterall@^1.1.3, iterall@^1.2.1, iterall@^1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/iterall/-/iterall-1.3.0.tgz#afcb08492e2915cbd8a0884eb93a8c94d0d72fea"
   integrity sha512-QZ9qOMdF+QLHxy1QIpUHUU1D5pS2CG2P69LF6L6CPjPYA/XMOmKV3PZpawHoAjHNyB0swdVTRxdYT4tbBbxqwg==
+
+jquery@3.5.1:
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.5.1.tgz#d7b4d08e1bfdb86ad2f1a3d039ea17304717abb5"
+  integrity sha512-XwIBPqcMn57FxfT+Go5pzySnm4KWkT1Tv7gjrpT1srtf8Weynl6R273VJ5GjkRb51IzMp5nbaPjJXMWeju2MKg==
 
 js-yaml@^3.13.1:
   version "3.14.1"

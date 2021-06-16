@@ -6,15 +6,21 @@ const TemplateSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
-  imageUrl: {
+  templateType: {
     type: String
   },
   content: {
     type: String,
-    required: true,
+    required: true
   },
-  description: {
-    type: String,
+  treeTemplate: {
+    type: [String]
+  },
+  filenames: {
+    type: [String]
+  },
+  filetypes: {
+    type: [String]
   },
   createdDate: {
     type: Date,
