@@ -312,19 +312,6 @@ export default new Vuex.Store({
         .mutate({
           mutation: SAVE_TEMPLATES,
           variables: payload,
-          update: (cache, { data: { saveTemplates } }) => {
-
-            // First read the query you want to update
-            // const data = cache.readQuery({ query: GET_USER_SAVED_TEMPLATES });
-
-            // Create updated data
-            // data.getPosts.unshift(saveTemplates);
-            // Write updated data back to query
-            // cache.writeQuery({
-            //   query: GET_USER_SAVED_TEMPLATES,
-            //   data
-            // });
-          },
           // optimistic response ensures data is added immediately as we specified for the update function
           optimisticResponse: {
             __typename: "Mutation",
@@ -334,18 +321,9 @@ export default new Vuex.Store({
               ...payload
             }
           },
-          // Rerun specified queries after performing the mutation in order to get fresh data
-          refetchQueries: [
-            {
-              query: INFINITE_SCROLL_TEMPLATES,
-              variables: {
-                pageNum: 1,
-                pageSize: 2
-              }
-            }
-          ]
         })
         .then(({ data }) => {
+          console.log(data)
           //console.log(data.addPost);
         })
         .catch(err => {

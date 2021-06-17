@@ -192,6 +192,8 @@ module.exports = {
         file_types,
         userId
       }).save();
+
+      console.log("Here is Resolver")
       return newSavedTemplates;
     },
   updateProcTemplate: async (

@@ -11,7 +11,7 @@
           :headers="headers"
           :items="userReports"
           :pagination.sync="pagination"
-          :rows-per-page-items="[15, 30, 50, 100]"
+          :rows-per-page-items="[10, 20, 50, 100]"
           select-all
           item-key="_id"
         >

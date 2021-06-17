@@ -408,6 +408,7 @@ import { mapState } from "vuex";
 import { EventBus } from "../../event";
 
 import { TemplateProcess } from "./TemplateProcess.js";
+import { TreeTemplateProcess } from "./TreeTemplateProcess.js";
 
 export default {
   name: "PostForm",
@@ -537,6 +538,7 @@ export default {
 
       let ids = new Array();
 
+      // check the table is changed
       for (let i = 0; i < oldTable.length; i++) {
         for (let j = 2; j < oldTable[i].length; j++) {
           let id_row = {};
@@ -551,6 +553,9 @@ export default {
         }
       }
 
+      console.log("A:", ids)
+
+      // if changed, fetching the processed data
       if (ids.length > 0) {
         let pcd_template = this.userSavedTemplates;
         let pcd_data = new Array();
@@ -562,15 +567,20 @@ export default {
           let original_template = pcd_template[i].originalTemp;
           for (let j = 0; j < node_ids.length; j++) {
             let id_row = {};
+            if(pcd_template[i].templateType == 'tree') pj_id = pcd_template[i].project_ids[j]
             id_row.project_id = pj_id;
             id_row.node_id = node_ids[j];
             id_row.template_id = temp_id;
             id_row.title = temp_title;
             id_row.original_template = original_template;
+            id_row.template_type = pcd_template[i].templateType
             pcd_data.push(id_row);
           }
         }
 
+        console.log("B:", pcd_data)
+
+        // check changed dataset and processed template data is related.
         let isChanged = false;
         let changed_status = new Array();
         for (let i = 0; i < ids.length; i++) {
@@ -579,7 +589,8 @@ export default {
             if (
               ids[i].project_id == pcd_data[j].project_id &&
               ids[i].node_id == pcd_data[j].node_id
-            ) {
+            ) { // if it's related
+
               isChanged = true;
               changed_row.template_id = pcd_data[j].template_id;
               changed_row.title = pcd_data[j].title;
@@ -590,10 +601,13 @@ export default {
               changed_row.modified = ids[i].modified;
               changed_row.variable = ids[i].variable;
               changed_row.original_temp_id = pcd_data[j].original_template;
+              changed_row.template_type = pcd_data[j].template_type;
               changed_status.push(changed_row);
             }
           }
         }
+
+        console.log("C:", changed_status)
 
         if (isChanged) {
           this.alertDialog = true;
@@ -643,8 +657,10 @@ export default {
         "updateProcTemplate",
         JSON.parse(JSON.stringify(template))
       );
-      // this.$router.push("/dataset");
-      // location.reload()
+      this.$router.push("/dataset");
+      setTimeout(() => {
+        location.reload();
+      }, 500);
     },
 
     getTempateByID(id) {
@@ -656,11 +672,38 @@ export default {
       }
       return template;
     },
+    getTreeTempateByID(id) {
+      let template = "";
+      for (let r in this.userTemplates) {
+        if (id == this.userTemplates[r]._id) {
+          template = this.userTemplates[r].treeTemplate;
+        }
+      }
+      return template;
+    },
     getProcessedTempateByID(id) {
       let template = "";
       for (let r in this.userSavedTemplates) {
         if (id == this.userSavedTemplates[r]._id) {
           template = this.userSavedTemplates[r].templates;
+        }
+      }
+      return template;
+    },
+    getProcessedTempateFileNamesByID(id) {
+      let template = "";
+      for (let r in this.userSavedTemplates) {
+        if (id == this.userSavedTemplates[r]._id) {
+          template = this.userSavedTemplates[r].file_names;
+        }
+      }
+      return template;
+    },
+    getProcessedTempateFileTypesByID(id) {
+      let template = "";
+      for (let r in this.userSavedTemplates) {
+        if (id == this.userSavedTemplates[r]._id) {
+          template = this.userSavedTemplates[r].file_types;
         }
       }
       return template;
@@ -948,7 +991,9 @@ export default {
       this.$store.dispatch("deleteUserPost", {
         postId: this.postId
       });
-      location.reload();
+      setTimeout(() => {
+        location.reload();
+      }, 500);
     },
 
     reportUpdate() {
@@ -972,6 +1017,8 @@ export default {
       this.report_name = `report_${timestamp}`;
       this.reportDialog = true;
     },
+
+    // starting update
     confirmUpdate() {
       let changed_status = this.changed_status;
 
@@ -1007,41 +1054,83 @@ export default {
           modified: modified
         };
         this.addReport(report);
+
+        // re-processing the templates regarding changed dataset
         let processedTemplateIDs = new Array();
         let originalTemplateIDs = new Array();
 
+        // get changed and processed template for reverse checking process
         if (changed_status.length > 0) {
-          processedTemplateIDs.push(changed_status[0].template_id);
-          originalTemplateIDs.push(changed_status[0].original_temp_id);
+
+          let proc_init = {};
+          let org_init = {};
+
+          proc_init.id = changed_status[0].template_id
+          proc_init.template_type = changed_status[0].template_type
+          proc_init.template_title = changed_status[0].title
+
+          org_init.id = changed_status[0].original_temp_id
+          org_init.template_type = changed_status[0].template_type
+          org_init.template_title = changed_status[0].title
+
+          processedTemplateIDs.push(proc_init);
+          originalTemplateIDs.push(org_init);
+
           for (let i = 1; i < changed_status.length; i++) {
-            if (
-              changed_status[i - 1].template_id == changed_status[i].template_id
-            )
-              continue;
-            processedTemplateIDs.push(changed_status[i].template_id);
-            originalTemplateIDs.push(changed_status[i].original_temp_id);
+            if (changed_status[i - 1].template_id == changed_status[i].template_id) continue;
+            let proc_row = {}; 
+            let org_row = {}
+
+            proc_row.id = changed_status[i].template_id
+            proc_row.template_type = changed_status[i].template_type
+            proc_row.template_title = changed_status[0].title
+
+            org_row.id = changed_status[i].original_temp_id
+            org_row.template_type = changed_status[i].template_type
+            org_row.template_title = changed_status[0].title
+
+            processedTemplateIDs.push(proc_row);
+            originalTemplateIDs.push(org_row);
           }
         }
 
         for (let i = 0; i < processedTemplateIDs.length; i++) {
           let userID = this.userId;
-          let templateID = processedTemplateIDs[i];
+          let templateID = processedTemplateIDs[i].id;
           let newDataset = this.getDataset();
-          let newTemplate = this.getTempateByID(originalTemplateIDs[i]);
-          let oldTemplate = this.getProcessedTempateByID(
-            processedTemplateIDs[i]
-          );
-          let originalTemp = originalTemplateIDs[i];
+          let newTemplate = this.getTempateByID(originalTemplateIDs[i].id);
+          if(processedTemplateIDs[i].template_type == 'tree') newTemplate = this.getTreeTempateByID(originalTemplateIDs[i].id);
+          let oldTemplate = this.getProcessedTempateByID(processedTemplateIDs[i].id);
+          let originalTemp = originalTemplateIDs[i].id;
+          let templateTitle = originalTemplateIDs[i].template_title;
+          let fileNames = this.getProcessedTempateFileNamesByID(processedTemplateIDs[i].id);
+          let fileTypes = this.getProcessedTempateFileTypesByID(processedTemplateIDs[i].id);
 
-          let updateTemplate = TemplateProcess.processData(
-            userID,
-            templateID,
-            newDataset,
-            newTemplate,
-            oldTemplate,
-            originalTemp
-          );
-
+          let updateTemplate = ""
+          if(processedTemplateIDs[i].template_type == 'single'){
+            updateTemplate = TemplateProcess.processData(
+              userID,
+              templateID,
+              newDataset,
+              newTemplate,
+              oldTemplate,
+              originalTemp
+            );
+          }else{
+            updateTemplate = TreeTemplateProcess.processData(
+              userID,
+              templateID,
+              templateTitle,
+              newDataset,
+              newTemplate,
+              oldTemplate,
+              originalTemp,
+              fileNames,
+              fileTypes
+            );
+          }
+          
+          console.log("ETC:", updateTemplate)
           this.updateProcTemplate(updateTemplate);
 
           if (this.$refs.updateform.validate()) {

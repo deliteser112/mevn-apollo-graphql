@@ -4,6 +4,7 @@ export const TemplateProcess = {
     let ext_data = this.extractID(template)
     let full_data = this.getData(dataset)
 
+    console.log("Special:", full_data)
     let res = []
 
     let arr = dataset

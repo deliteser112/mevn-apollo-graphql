@@ -1238,8 +1238,7 @@ export default {
           p_file_names,
           p_file_types
         );
-
-        console.log(saveTemplates)
+        
         this.storeTemplates(saveTemplates);
       }
     },
@@ -1487,7 +1486,9 @@ export default {
       this.$store.dispatch("deleteUserTemplate", {
         templateId: this.templateId
       });
-      location.reload();
+      setTimeout(() => {
+        location.reload();
+      }, 500);
     },
     closeTemplate() {
       this.editTemplateDialog = false;
