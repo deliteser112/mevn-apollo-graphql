@@ -13,7 +13,7 @@ export const TreeTemplateProcess = {
 
     for (let template of templateData){
       let e_project_id = template.project_id;
-      if(e_project_id == undefined){
+      if(e_project_id == undefined || template.node_id == undefined){
         processedTemplate.push(template.content)
         continue
       }

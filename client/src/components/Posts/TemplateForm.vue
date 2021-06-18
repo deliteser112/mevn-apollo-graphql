@@ -274,9 +274,7 @@
                     <v-btn
                       class="ml-4"
                       @click="clear"
-                      depressed
                       color="blue lighten-4"
-                      small
                       >reset</v-btn
                     >
                   </v-subheader>
@@ -292,14 +290,6 @@
                           item.dataset_name
                         }}</v-list-tile-title>
                       </v-list-tile-content>
-                      <v-list-tile-action id="role" class="pr-2">
-                        <v-list-tile-action-text
-                          >Project ID</v-list-tile-action-text
-                        >
-                        <v-list-tile-text>{{
-                          item.project_id
-                        }}</v-list-tile-text>
-                      </v-list-tile-action>
                     </v-list-tile>
                     <v-divider v-if="index + 1 < item.length"></v-divider>
                   </div>
@@ -1174,7 +1164,8 @@ export default {
 
       for (let template of templateData){
         let e_project_id = template.project_id;
-        if(e_project_id == undefined){
+        console.log("AAAAAAAAAA", template.node_id)
+        if(e_project_id == undefined || template.node_id == undefined){
           processedTemplate.push(template.content)
           continue
         }
