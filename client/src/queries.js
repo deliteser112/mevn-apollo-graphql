@@ -100,6 +100,7 @@ export const ADD_POST = gql`
       $report_name: String!,
       $report_desc: String!,
       $template_name: [String]!,
+      $file_name: [String]!,
       $project_id: [String]!,
       $node_id: [String]!,
       $variable: [String]!,
@@ -111,6 +112,7 @@ export const ADD_POST = gql`
         report_name:$report_name
         report_desc:$report_desc
         template_name:$template_name
+        file_name:$file_name
         project_id:$project_id
         node_id:$node_id
         variable:$variable
@@ -122,6 +124,7 @@ export const ADD_POST = gql`
         report_name
         report_desc
         template_name
+        file_name
         project_id
         node_id
         variable
@@ -292,6 +295,7 @@ export const GET_USER_REPORTS = gql`
       report_name
       report_desc
       template_name
+      file_name
       project_id
       node_id
       variable

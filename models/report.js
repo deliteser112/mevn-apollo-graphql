@@ -13,6 +13,10 @@ const ReportSchema = new mongoose.Schema({
     type: [String],
     required: true,
   },
+  file_name: {
+    type: [String],
+    required: true,
+  },
   project_id: {
     type: [String]
   },

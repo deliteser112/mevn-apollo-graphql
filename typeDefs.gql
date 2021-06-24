@@ -23,6 +23,7 @@ type Report {
   report_name: String
   report_desc: String
   template_name: [String]
+  file_name: [String]
   project_id: [String]
   node_id: [String]
   variable: [String]
@@ -103,6 +104,7 @@ type Mutation {
     report_name: String!
     report_desc: String!
     template_name: [String]!
+    file_name: [String]!
     project_id: [String]!
     node_id: [String]!
     variable: [String]!

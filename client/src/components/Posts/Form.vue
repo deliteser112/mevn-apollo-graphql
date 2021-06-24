@@ -565,11 +565,32 @@ export default {
           let temp_id = pcd_template[i]._id;
           let temp_title = pcd_template[i].title;
           let original_template = pcd_template[i].originalTemp;
+
+          let c_temp = this.getTemplateByID(pcd_template[i].originalTemp);
+
+          let tp_type = c_temp.templateType;
+          
+          let file_names = new Array()
+          if(tp_type == 'single'){
+            for(let node_id of pcd_template[i].node_ids) file_names.push(`${node_id}_timestamp.cfg`);
+          }else if(tp_type == 'tree'){
+            for(let i in c_temp.treeTemplate){
+              let m_temp = this.extractID(c_temp.treeTemplate[i]);
+              if(m_temp.variables.length > 0 && m_temp.type == 'single' && m_temp.project_id != undefined && m_temp.node_id != undefined){
+                console.log(c_temp.filenames[i])
+                file_names.push(`${c_temp.filenames[i]}${c_temp.filetypes[i]}`)
+              }
+            }
+          }
+
+          console.log('M:', file_names);
+
           for (let j = 0; j < node_ids.length; j++) {
             let id_row = {};
             if(pcd_template[i].templateType == 'tree') pj_id = pcd_template[i].project_ids[j]
             id_row.project_id = pj_id;
             id_row.node_id = node_ids[j];
+            id_row.filename = file_names[j];
             id_row.template_id = temp_id;
             id_row.title = temp_title;
             id_row.original_template = original_template;
@@ -594,6 +615,7 @@ export default {
               isChanged = true;
               changed_row.template_id = pcd_data[j].template_id;
               changed_row.title = pcd_data[j].title;
+              changed_row.filename = pcd_data[j].filename;
               changed_row.project_id = pcd_data[j].project_id;
               changed_row.node_id = pcd_data[j].node_id;
               changed_row.template_id = pcd_data[j].template_id;
@@ -652,6 +674,195 @@ export default {
       }
     },
 
+    // starting update
+    confirmUpdate() {
+      let changed_status = this.changed_status;
+
+      let template_name = new Array();
+      let project_id = new Array();
+      let node_id = new Array();
+      let variable = new Array();
+      let previous = new Array();
+      let modified = new Array();
+      let filenames = new Array();
+
+      if (changed_status.length > 0) {
+        for (let i = 0; i < changed_status.length; i++) {
+          template_name.push(changed_status[i].title);
+          filenames.push(changed_status[i].filename)
+          project_id.push(changed_status[i].project_id);
+          node_id.push(changed_status[i].node_id);
+          variable.push(changed_status[i].variable);
+          previous.push(changed_status[i].previous);
+          modified.push(changed_status[i].modified);
+        }
+      }
+
+      if (this.report_description != "" && this.report_name != "") {
+        console.log("passed");
+        let report = {
+          userId: this.userId,
+          report_name: this.report_name,
+          report_desc: this.report_description,
+          template_name: template_name,
+          file_name: filenames,
+          project_id: project_id,
+          node_id: node_id,
+          variable: variable,
+          previous: previous,
+          modified: modified
+        };
+        this.addReport(report);
+
+        // re-processing the templates regarding changed dataset
+        let processedTemplateIDs = new Array();
+        let originalTemplateIDs = new Array();
+
+        // get changed and processed template for reverse checking process
+        if (changed_status.length > 0) {
+
+          let proc_init = {};
+          let org_init = {};
+
+          proc_init.id = changed_status[0].template_id
+          proc_init.template_type = changed_status[0].template_type
+          proc_init.template_title = changed_status[0].title
+
+          org_init.id = changed_status[0].original_temp_id
+          org_init.template_type = changed_status[0].template_type
+          org_init.template_title = changed_status[0].title
+
+          processedTemplateIDs.push(proc_init);
+          originalTemplateIDs.push(org_init);
+
+          for (let i = 1; i < changed_status.length; i++) {
+            if (changed_status[i - 1].template_id == changed_status[i].template_id) continue;
+            let proc_row = {}; 
+            let org_row = {}
+
+            proc_row.id = changed_status[i].template_id
+            proc_row.template_type = changed_status[i].template_type
+            proc_row.template_title = changed_status[0].title
+
+            org_row.id = changed_status[i].original_temp_id
+            org_row.template_type = changed_status[i].template_type
+            org_row.template_title = changed_status[0].title
+
+            processedTemplateIDs.push(proc_row);
+            originalTemplateIDs.push(org_row);
+          }
+        }
+
+        for (let i = 0; i < processedTemplateIDs.length; i++) {
+          let userID = this.userId;
+          let templateID = processedTemplateIDs[i].id;
+          let newDataset = this.getDataset();
+          let newTemplate = this.getTemplateByID(originalTemplateIDs[i].id).content;
+          if(processedTemplateIDs[i].template_type == 'tree') newTemplate = this.getTreeTemplateByID(originalTemplateIDs[i].id).treeTemplate;
+          let oldTemplate = this.getProcessedTempateByID(processedTemplateIDs[i].id);
+          let originalTemp = originalTemplateIDs[i].id;
+          let templateTitle = originalTemplateIDs[i].template_title;
+          let fileNames = this.getProcessedTempateFileNamesByID(processedTemplateIDs[i].id);
+          let fileTypes = this.getProcessedTempateFileTypesByID(processedTemplateIDs[i].id);
+
+          let updateTemplate = ""
+          if(processedTemplateIDs[i].template_type == 'single'){
+            updateTemplate = TemplateProcess.processData(
+              userID,
+              templateID,
+              newDataset,
+              newTemplate,
+              oldTemplate,
+              originalTemp
+            );
+          }else{
+            updateTemplate = TreeTemplateProcess.processData(
+              userID,
+              templateID,
+              templateTitle,
+              newDataset,
+              newTemplate,
+              oldTemplate,
+              originalTemp,
+              fileNames,
+              fileTypes
+            );
+          }
+          
+          console.log("ETC:", updateTemplate)
+          this.updateProcTemplate(updateTemplate);
+
+          if (this.$refs.updateform.validate()) {
+            EventBus.$emit("submitUpdatePostForm", {
+              parentName: this.parentName,
+              post: {
+                postId: this.postId,
+                userId: this.userId,
+                title: this.getDataset().title,
+                imageUrl: "../../../assets/dataset-icon.jpg",
+                categories: this.getDataset().values,
+                variables: this.getDataset().variables,
+                description: "no description"
+              }
+            });
+          }
+        }
+      } else {
+        alert("input failed");
+      }
+    },
+
+    extractID(text) {
+      let temp_string = text;
+
+      while (temp_string.indexOf("\n") > -1) {
+        temp_string = temp_string.replace("\n", " ");
+      }
+      while (temp_string.indexOf("  ") > -1) {
+        temp_string = temp_string.replace("  ", " ");
+      }
+
+      temp_string = temp_string.split(" ");
+
+      let res = {};
+      let variables = new Array();
+      for (let i = 0; i < temp_string.length; i++) {
+        if (temp_string[i] == "project_id:")
+          res["project_id"] = temp_string[i + 1];
+        if (temp_string[i] == "node_id:") {
+          if (temp_string[i + 1].indexOf(",") > 1) {
+            res["type"] = "multiple";
+            let j = i + 1;
+            let node_ids = new Array();
+
+            while (temp_string[j].indexOf(",") > 1) {
+              temp_string[j] = temp_string[j].replace(",", "");
+              node_ids.push(temp_string[j]);
+              j++;
+            }
+            node_ids.push(temp_string[j]);
+            res["node_id"] = node_ids;
+          } else if (temp_string[i + 1].indexOf("*") > -1) {
+            res["type"] = "any";
+          } else {
+            res["node_id"] = temp_string[i + 1];
+            res["type"] = "single";
+          }
+        }
+
+        if (temp_string[i].indexOf("$var_") > -1) {
+          let val = temp_string[i];
+          if (val.indexOf(".")) val = val.replace(".", "");
+          if (val.indexOf(",")) val = val.replace(",", "");
+          if (val.indexOf(":")) val = val.replace(":", "");
+          variables.push(val);
+        }
+      }
+      res["variables"] = variables;
+      res["content"] = text
+      return res;
+    },
+
     updateProcTemplate(template) {
       this.$store.dispatch(
         "updateProcTemplate",
@@ -663,20 +874,20 @@ export default {
       }, 500);
     },
 
-    getTempateByID(id) {
+    getTemplateByID(id) {
       let template = "";
       for (let r in this.userTemplates) {
         if (id == this.userTemplates[r]._id) {
-          template = this.userTemplates[r].content;
+          template = this.userTemplates[r];
         }
       }
       return template;
     },
-    getTreeTempateByID(id) {
+    getTreeTemplateByID(id) {
       let template = "";
       for (let r in this.userTemplates) {
         if (id == this.userTemplates[r]._id) {
-          template = this.userTemplates[r].treeTemplate;
+          template = this.userTemplates[r];
         }
       }
       return template;
@@ -1018,140 +1229,6 @@ export default {
       this.reportDialog = true;
     },
 
-    // starting update
-    confirmUpdate() {
-      let changed_status = this.changed_status;
-
-      let template_name = new Array();
-      let project_id = new Array();
-      let node_id = new Array();
-      let variable = new Array();
-      let previous = new Array();
-      let modified = new Array();
-
-      if (changed_status.length > 0) {
-        for (let i = 0; i < changed_status.length; i++) {
-          template_name.push(changed_status[i].title);
-          project_id.push(changed_status[i].project_id);
-          node_id.push(changed_status[i].node_id);
-          variable.push(changed_status[i].variable);
-          previous.push(changed_status[i].previous);
-          modified.push(changed_status[i].modified);
-        }
-      }
-
-      if (this.report_description != "" && this.report_name != "") {
-        console.log("passed");
-        let report = {
-          userId: this.userId,
-          report_name: this.report_name,
-          report_desc: this.report_description,
-          template_name: template_name,
-          project_id: project_id,
-          node_id: node_id,
-          variable: variable,
-          previous: previous,
-          modified: modified
-        };
-        this.addReport(report);
-
-        // re-processing the templates regarding changed dataset
-        let processedTemplateIDs = new Array();
-        let originalTemplateIDs = new Array();
-
-        // get changed and processed template for reverse checking process
-        if (changed_status.length > 0) {
-
-          let proc_init = {};
-          let org_init = {};
-
-          proc_init.id = changed_status[0].template_id
-          proc_init.template_type = changed_status[0].template_type
-          proc_init.template_title = changed_status[0].title
-
-          org_init.id = changed_status[0].original_temp_id
-          org_init.template_type = changed_status[0].template_type
-          org_init.template_title = changed_status[0].title
-
-          processedTemplateIDs.push(proc_init);
-          originalTemplateIDs.push(org_init);
-
-          for (let i = 1; i < changed_status.length; i++) {
-            if (changed_status[i - 1].template_id == changed_status[i].template_id) continue;
-            let proc_row = {}; 
-            let org_row = {}
-
-            proc_row.id = changed_status[i].template_id
-            proc_row.template_type = changed_status[i].template_type
-            proc_row.template_title = changed_status[0].title
-
-            org_row.id = changed_status[i].original_temp_id
-            org_row.template_type = changed_status[i].template_type
-            org_row.template_title = changed_status[0].title
-
-            processedTemplateIDs.push(proc_row);
-            originalTemplateIDs.push(org_row);
-          }
-        }
-
-        for (let i = 0; i < processedTemplateIDs.length; i++) {
-          let userID = this.userId;
-          let templateID = processedTemplateIDs[i].id;
-          let newDataset = this.getDataset();
-          let newTemplate = this.getTempateByID(originalTemplateIDs[i].id);
-          if(processedTemplateIDs[i].template_type == 'tree') newTemplate = this.getTreeTempateByID(originalTemplateIDs[i].id);
-          let oldTemplate = this.getProcessedTempateByID(processedTemplateIDs[i].id);
-          let originalTemp = originalTemplateIDs[i].id;
-          let templateTitle = originalTemplateIDs[i].template_title;
-          let fileNames = this.getProcessedTempateFileNamesByID(processedTemplateIDs[i].id);
-          let fileTypes = this.getProcessedTempateFileTypesByID(processedTemplateIDs[i].id);
-
-          let updateTemplate = ""
-          if(processedTemplateIDs[i].template_type == 'single'){
-            updateTemplate = TemplateProcess.processData(
-              userID,
-              templateID,
-              newDataset,
-              newTemplate,
-              oldTemplate,
-              originalTemp
-            );
-          }else{
-            updateTemplate = TreeTemplateProcess.processData(
-              userID,
-              templateID,
-              templateTitle,
-              newDataset,
-              newTemplate,
-              oldTemplate,
-              originalTemp,
-              fileNames,
-              fileTypes
-            );
-          }
-          
-          console.log("ETC:", updateTemplate)
-          this.updateProcTemplate(updateTemplate);
-
-          if (this.$refs.updateform.validate()) {
-            EventBus.$emit("submitUpdatePostForm", {
-              parentName: this.parentName,
-              post: {
-                postId: this.postId,
-                userId: this.userId,
-                title: this.getDataset().title,
-                imageUrl: "../../../assets/dataset-icon.jpg",
-                categories: this.getDataset().values,
-                variables: this.getDataset().variables,
-                description: "no description"
-              }
-            });
-          }
-        }
-      } else {
-        alert("input failed");
-      }
-    }
   }
 };
 </script>

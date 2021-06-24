@@ -86,6 +86,7 @@
               <thead>
                 <tr>
                   <th class="text-left">No</th>
+                  <th class="text-left">FileName</th>
                   <th class="text-left">ProcessedName</th>
                   <th class="text-left">ProjectID</th>
                   <th class="text-left">NodeID</th>
@@ -97,6 +98,7 @@
               <tbody>
                 <tr v-for="(item, index) in reportContent.report_content" :key="index">
                   <td>{{ index + 1 }}</td>
+                  <td>{{ item.file_name }}</td>
                   <td>{{ item.template_name }}</td>
                   <td>{{ item.project_id }}</td>
                   <td>{{ item.node_id }}</td>
@@ -281,6 +283,7 @@
             res.report_desc = this.userReports[r].report_desc
             for(let i in this.userReports[r].modified){
               let row = {}
+              row.file_name = this.userReports[r].file_name[i];
               row.template_name = this.userReports[r].template_name[i];
               row.project_id = this.userReports[r].project_id[i];
               row.node_id = this.userReports[r].node_id[i];
