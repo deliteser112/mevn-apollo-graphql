@@ -1103,6 +1103,7 @@ export default {
       result.pop(); // remove the last item because undefined values
 
       return result; // JavaScript object
+      console.log('Result:', result);
     },
     loadCSV(e) {
       var vm = this;

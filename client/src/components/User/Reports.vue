@@ -6,58 +6,62 @@
           <v-icon light>delete</v-icon>
           Delete
         </v-btn>
-        <v-data-table
-          v-model="selected"
-          :headers="headers"
-          :items="userReports"
-          :pagination.sync="pagination"
-          :rows-per-page-items="[10, 20, 50, 100]"
-          select-all
-          item-key="_id"
+        <v-card
+          elevation="2"
         >
-          <template v-slot:headers="props">
-            <tr>
-              <th>
-                <v-checkbox
-                  :input-value="props.all"
-                  :indeterminate="props.indeterminate"
-                  primary
-                  hide-details
-                  @click.stop="toggleAll"
-                ></v-checkbox>
-              </th>
-              <th
-                v-for="header in props.headers"
-                :key="header.text"
-                :class="['column sortable', pagination.descending ? 'desc' : 'asc', header.value === pagination.sortBy ? 'active' : '']"
-                @click="changeSort(header.value)"
-              >
-                <v-icon small>arrow_upward</v-icon>
-                {{ header.text }}
-              </th>
-            </tr>
-          </template>
-          <template v-slot:items="props">
-            <tr :active="props.selected" @click="props.selected = !props.selected">
-              <td>
-                <v-checkbox
-                  :input-value="props.selected"
-                  secondary
-                  hide-details
-                ></v-checkbox>
-              </td>
-              <td>{{ props.item._id }}</td>
-              <td class="text-xs-right">{{ props.item.report_name }}</td>
-              <td class="text-xs-right">{{ props.item.report_desc }}</td>
-              <!-- <td class="text-xs-right">{{ props.item.node_id }}</td>
-              <td class="text-xs-right">{{ props.item.variable }}</td>
-              <td class="text-xs-right">{{ props.item.previous }}</td> -->
-              <td class="text-xs-right">{{ props.item.createdDate }}</td>
-              <td class="text-xs-right"><v-btn text @click="viewReport(props.item._id)">View</v-btn></td>
+          <v-data-table
+            v-model="selected"
+            :headers="headers"
+            :items="userReports"
+            :pagination.sync="pagination"
+            :rows-per-page-items="[10, 20, 50, 100]"
+            select-all
+            item-key="_id"
+          >
+            <template v-slot:headers="props">
+              <tr>
+                <th>
+                  <v-checkbox
+                    :input-value="props.all"
+                    :indeterminate="props.indeterminate"
+                    primary
+                    hide-details
+                    @click.stop="toggleAll"
+                  ></v-checkbox>
+                </th>
+                <th
+                  v-for="header in props.headers"
+                  :key="header.text"
+                  :class="['column sortable', pagination.descending ? 'desc' : 'asc', header.value === pagination.sortBy ? 'active' : '']"
+                  @click="changeSort(header.value)"
+                >
+                  <v-icon small>arrow_upward</v-icon>
+                  {{ header.text }}
+                </th>
+              </tr>
+            </template>
+            <template v-slot:items="props">
+              <tr :active="props.selected" @click="props.selected = !props.selected">
+                <td>
+                  <v-checkbox
+                    :input-value="props.selected"
+                    secondary
+                    hide-details
+                  ></v-checkbox>
+                </td>
+                <td>{{ props.item._id }}</td>
+                <td class="text-xs-right">{{ props.item.report_name }}</td>
+                <td class="text-xs-right">{{ props.item.report_desc }}</td>
+                <!-- <td class="text-xs-right">{{ props.item.node_id }}</td>
+                <td class="text-xs-right">{{ props.item.variable }}</td>
+                <td class="text-xs-right">{{ props.item.previous }}</td> -->
+                <td class="text-xs-right">{{ props.item.createdDate }}</td>
+                <td class="text-xs-right"><v-btn text @click="viewReport(props.item._id)">View</v-btn></td>
 
-            </tr>
-          </template>
-        </v-data-table>
+              </tr>
+            </template>
+          </v-data-table>
+        </v-card>
       </v-flex>
     </v-layout>
 

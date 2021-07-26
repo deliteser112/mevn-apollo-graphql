@@ -1,5 +1,5 @@
 <template>
-  <v-app style="background-color:#e4e0e0">
+  <v-app>
     <v-navigation-drawer app temporary fixed v-model="showSideNav">
       <v-toolbar color="accent" flat dark>
         <v-toolbar-side-icon @click="toggleSideNav"></v-toolbar-side-icon>
