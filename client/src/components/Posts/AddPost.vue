@@ -25,7 +25,7 @@
           :key="dataset._id"
           class="grid-view-cus"
         >
-          <v-card class="mt-3 ml-1 mr-2" hover>
+          <v-card class="mt-3 ml-1 mr-2 item-style" hover>
             <div
               class="v-dataset-background"
               @click="SampleOpen(dataset._id)"
@@ -215,8 +215,6 @@ export default {
         currentUserTitleArr.push(objAllData[row].title);
       for (let row in otherData) otherUserTitleArr.push(otherData[row].title);
 
-      console.log(otherUserTitleArr, currentUserTitleArr);
-
       for (let i = 0; i < currentUserTitleArr.length; i++) {
         if (currentUserTitleArr[i] == createdPost.title) {
           currentUserDouble = true;
@@ -259,7 +257,6 @@ export default {
       const result = await this.resolveAfterSeconds();
       if (result == "resolved") {
         if (this.userPosts.length == 0) {
-          console.log("this is 0000");
           this.isDataset = false;
           this.alertType = "check";
           this.alertContent =
@@ -273,7 +270,6 @@ export default {
           this.alertWizardDialog = true;
         }
       }
-      console.log(result);
     },
     resolveAfterSeconds() {
       return new Promise(resolve => {
@@ -333,5 +329,9 @@ export default {
 <style>
 .layout {
   justify-content: center;
+}
+
+.item-style {
+  border-radius: 30px;
 }
 </style>

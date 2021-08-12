@@ -135,7 +135,7 @@
           :key="post._id"
           class="grid-view-cus"
         >
-          <v-card class="mt-3 ml-1 mr-2" hover>
+          <v-card class="mt-3 ml-1 mr-2 item-style" hover>
             <v-btn
               @click="deletePost(post._id)"
               color="error"

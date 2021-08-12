@@ -93,38 +93,6 @@
 
       </v-container>
     </main>
-    <v-footer
-      height="auto"
-      color="primary"
-      fixed
-    >
-      <v-layout
-        justify-center
-        row
-        wrap
-      >
-        <v-btn
-          v-for="item in links"
-          :key="item.title"
-          color="white"
-          flat
-          round
-          :to="item.link"
-        >
-          {{ item.title }}
-        </v-btn>
-        <v-flex
-          primary
-          lighten-2
-          py-2
-          text-xs-center
-          white--text
-          xs12
-        >
-          &copy;2021 — <strong>Template Validation</strong>
-        </v-flex>
-      </v-layout>
-    </v-footer>
   </v-app>
 </template>
 
@@ -175,6 +143,7 @@
             { icon: 'summarize', title: 'Import Template', link: '/post/addtemplate' },
             { icon: 'inventory', title: 'Inventory', link: '/dataset' },
             { icon: 'report', title: 'Reports', link: '/reports' },
+            { icon: 'computer', title: 'Rollout', link: '/rollout' },
           ];
         }
         return items;
