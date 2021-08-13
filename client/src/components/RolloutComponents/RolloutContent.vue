@@ -10,8 +10,8 @@
             <v-btn-toggle v-model="toggle_one" v-if="templateData.type === 'single'" mandatory>
               <v-btn class="btn-rollout-single" v-for="(item, index) in templateData.data" v-bind:key="index" @click="selectedSingleRollout('single', item.nodeId, item.templateId, item.template)">
                 <p />
-                <p class="headline font-weight-bold text-initial">
-                    {{item.nodeId}}
+                <p class="subheading font-weight-bold text-initial">
+                    {{item.nodeId}}.cfg
                 </p>
                 <p class="font-weight-bold">
                     {{item.templateTitle}}
