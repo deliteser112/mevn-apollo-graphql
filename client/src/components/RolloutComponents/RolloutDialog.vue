@@ -7,8 +7,6 @@
         dark
       >Template Process</v-toolbar>
       <v-card-text>
-        <v-icon light style="width: 100%; font-size: 100px; color:rgb(237, 86, 27)">child_friendly</v-icon>
-
         <div class="code-viewer">
           <div v-if="dialogContent.type === undefined && dialogContent.cleanup !== undefined">
             <div v-if="dialogContent.cleanup.length > 0">

@@ -26,6 +26,7 @@
     "vuex": "^3.0.1"
   },
   "devDependencies": {
+    "@mdi/font": "^5.9.55",
     "@vue/cli-plugin-babel": "^3.0.0",
     "@vue/cli-service": "^4.5.12",
     "stylus": "^0.54.5",

@@ -62,14 +62,20 @@
         const data = [];
         this.userSavedTemplates.map((temp) => {
           if (temp.templateType === 'single') {
+            const groupTitle = temp.title;
+            const groupItems = [];
             temp.templates.map((tp, index) => {
-              data.push({
+              groupItems.push({
                 templateId: temp._id,
                 templateTitle: temp.title,
                 template: tp,
                 nodeId: temp.node_ids[index]
               });
             })
+            data.push({
+              groupTitle,
+              groupItems
+            });
           }
         })
         this.rolloutData.data = data;
@@ -82,8 +88,10 @@
         const data = [];
         this.userSavedTemplates.map((temp) => {
           if (temp.templateType === 'tree') {
+            const groupTitle = temp.title;
+            const groupItems = [];
             temp.templates.map((tp, index) => {
-              data.push({
+              groupItems.push({
                 templateId: temp._id,
                 templateTitle: temp.title,
                 template: tp,
@@ -91,6 +99,10 @@
                 filetype: temp.file_types[index]
               });
             })
+            data.push({
+              groupTitle,
+              groupItems
+            });
           }
         })
         this.rolloutData.data = data;
