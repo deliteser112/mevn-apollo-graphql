@@ -33,7 +33,7 @@
           :key="template._id"
           class="grid-view-cus"
         >
-          <v-card class="mt-3 ml-1 mr-2" hover>
+          <v-card class="mt-3 ml-1 mr-2 item-style" hover>
             <div
               class="v-template-background"
               @click="sample_template_view(template._id)"
@@ -183,8 +183,6 @@ export default {
         currentUserTitleArr.push(objAllData[row].title);
       for (let row in otherData) otherUserTitleArr.push(otherData[row].title);
 
-      console.log(otherUserTitleArr, currentUserTitleArr);
-
       for (let i = 0; i < currentUserTitleArr.length; i++) {
         if (currentUserTitleArr[i] == createdTemplate.title) {
           currentUserDouble = true;
@@ -208,7 +206,6 @@ export default {
         this.alertContent =
           "This template name is already used by another user!";
       } else {
-        console.log(createdTemplate);
         this.addTemplate(createdTemplate);
       }
     });

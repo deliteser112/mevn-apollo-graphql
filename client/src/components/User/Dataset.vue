@@ -16,7 +16,7 @@
     </v-flex>
     <v-layout row wrap style="justify-content:left; position:relative; margin:0 auto">
       <v-flex xs12 v-for="template in userSavedTemplates" :key="template._id" class="grid-view-cus">
-        <v-card class="mt-3 ml-1 mr-2" hover>
+        <v-card class="mt-3 ml-1 mr-2 item-style" hover>
           <v-btn @click="deleteSavedTemplate(template._id)" color="error" floating fab small dark>
             <v-icon>delete</v-icon>
           </v-btn>
